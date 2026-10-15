@@ -7,7 +7,7 @@ import { serverApi, unwrap, unwrapRequired } from "./server";
  * `use cache` and tagged, so a revalidation call to /_internal/revalidate can
  * purge exactly what changed. Tags: `drivers`, `driver:<slug>`, `constructors`,
  * `constructor:<slug>`, `circuits`, `circuit:<slug>`, `seasons`, `season:<year>`,
- * `round:<year>-<round>` and `search`. See `tags` below for the builders.
+ * `round:<year>-<round>`, `standings` and `search`. See `tags` below for the builders.
  *
  * Detail functions return null for a 404 so pages can call notFound(); list
  * functions return null for a page past the end; other failures throw (and are
@@ -25,6 +25,7 @@ export const tags = {
   season: (year: number) => `season:${year}`,
   round: (year: number, round: number) => `round:${year}-${round}`,
   search: "search",
+  standings: "standings",
 } as const;
 
 type Schemas = components["schemas"];
@@ -118,4 +119,24 @@ export async function searchCatalog(q: string) {
   cacheLife("minutes");
   cacheTag(tags.search);
   return unwrapRequired(serverApi().GET("/api/v1/search/", { params: { query: { q } } }));
+}
+
+export type StandingsKind = "drivers" | "constructors";
+export type Standings = Schemas["Standings"];
+export type StandingRow = Schemas["StandingRow"];
+export type Progress = Schemas["Progress"];
+
+const standingsPath = {
+  drivers: "/api/v1/standings/drivers/",
+  constructors: "/api/v1/standings/constructors/",
+} as const;
+
+/** Championship table. Without a season the API answers for the latest one. Returns null for an unknown season or round. */
+export async function getStandings(kind: StandingsKind, season?: number, afterRound?: number) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(tags.standings, ...(season ? [tags.season(season)] : []));
+  return unwrap(
+    serverApi().GET(standingsPath[kind], { params: { query: { season, after_round: afterRound } } }),
+  );
 }

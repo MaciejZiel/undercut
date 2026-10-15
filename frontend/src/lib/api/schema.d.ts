@@ -4,6 +4,104 @@
  */
 
 export interface paths {
+    "/api/v1/account/delete/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["v1_account_delete_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/account/export/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["v1_account_export_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/account/settings/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["v1_account_settings_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["v1_account_settings_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/auth/csrf/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Sets the ``csrftoken`` cookie. Call once on page load, before any unsafe request. */
+        get: operations["v1_auth_csrf_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/demo/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Log in as the shared demo account ("Try without registering", FR-507). */
+        post: operations["v1_auth_demo_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/me/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["v1_auth_me_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/circuits/": {
         parameters: {
             query?: never;
@@ -124,6 +222,320 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/favorites/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["v1_favorites_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/favorites/constructors/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description PUT adds, DELETE removes; both are idempotent. Both return the current state. */
+        put: operations["v1_favorites_constructors_update"];
+        post?: never;
+        /** @description PUT adds, DELETE removes; both are idempotent. Both return the current state. */
+        delete: operations["v1_favorites_constructors_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/favorites/drivers/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description PUT adds, DELETE removes; both are idempotent. Both return the current state. */
+        put: operations["v1_favorites_drivers_update"];
+        post?: never;
+        /** @description PUT adds, DELETE removes; both are idempotent. Both return the current state. */
+        delete: operations["v1_favorites_drivers_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leagues/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My leagues
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        get: operations["v1_leagues_list"];
+        put?: never;
+        /**
+         * Create a league (max 10 per user)
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        post: operations["v1_leagues_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leagues/{code}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * League details (members only)
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        get: operations["v1_leagues_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete a league (owner)
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        delete: operations["v1_leagues_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leagues/{code}/leave/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Leave a league
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        post: operations["v1_leagues_leave_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leagues/{code}/members/{user_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a member (owner)
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        delete: operations["v1_leagues_members_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leagues/{code}/renew-code/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Renew the invite code (owner); the old code stops working
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        post: operations["v1_leagues_renew_code_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leagues/{code}/rounds/{year}/{round}/picks/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All members' picks for a round (after predictions close)
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        get: operations["v1_leagues_rounds_picks_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leagues/join/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Join a league by invite code (max 50 members)
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        post: operations["v1_leagues_join_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/unsubscribe/{token}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description One-click unsubscribe from the link in e-mails: no login, the token is the credential.
+         *
+         *     Both verbs unsubscribe (idempotent): GET serves the plain link in the mail, POST serves RFC 8058
+         *     one-click clients. No session is used, so CSRF does not apply. Opting out is the safe direction,
+         *     so a link prefetcher triggering it is harmless.
+         */
+        get: operations["notifications_unsubscribe_get"];
+        put?: never;
+        /**
+         * @description One-click unsubscribe from the link in e-mails: no login, the token is the credential.
+         *
+         *     Both verbs unsubscribe (idempotent): GET serves the plain link in the mail, POST serves RFC 8058
+         *     one-click clients. No session is used, so CSRF does not apply. Opting out is the safe direction,
+         *     so a link prefetcher triggering it is harmless.
+         */
+        post: operations["notifications_unsubscribe_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/predictions/history/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My prediction history
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        get: operations["v1_predictions_history_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/predictions/leaderboard/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Leaderboard (global, per round or league)
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        get: operations["v1_predictions_leaderboard_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/predictions/rounds/{year}/{round}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Prediction state of a round: open or closed, closing time, my pick
+         * @description Read the state of a round (public) and submit or change my pick (auth).
+         */
+        get: operations["v1_predictions_rounds_retrieve"];
+        /**
+         * Submit or change my pick; 403 after predictions close
+         * @description Read the state of a round (public) and submit or change my pick (auth).
+         */
+        put: operations["v1_predictions_rounds_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/predictions/rounds/{year}/{round}/stats/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Global pick statistics of a round (after predictions close)
+         * @description Turn domain errors into {"detail", "code"} responses with the right status.
+         */
+        get: operations["v1_predictions_rounds_stats_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/rounds/{year}/{round}/": {
         parameters: {
             query?: never;
@@ -136,6 +548,166 @@ export interface paths {
          * @description Anonymous GET-only access; no session lookup, so responses are cacheable.
          */
         get: operations["v1_rounds_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rounds/{year}/{round}/analytics/laps/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lap times with sector times and per driver summary
+         * @description Anonymous GET-only access to the analytics of one session of a round.
+         */
+        get: operations["v1_rounds_analytics_laps_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rounds/{year}/{round}/analytics/pit-stops/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Pit stops and team ranking of the fastest stops
+         * @description Anonymous GET-only access to the analytics of one session of a round.
+         */
+        get: operations["v1_rounds_analytics_pit_stops_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rounds/{year}/{round}/analytics/positions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Position of every driver at the end of every lap
+         * @description Anonymous GET-only access to the analytics of one session of a round.
+         */
+        get: operations["v1_rounds_analytics_positions_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rounds/{year}/{round}/analytics/race-control/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Race control messages
+         * @description Anonymous GET-only access to the analytics of one session of a round.
+         */
+        get: operations["v1_rounds_analytics_race_control_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rounds/{year}/{round}/analytics/stints/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tyre strategy per driver
+         * @description Anonymous GET-only access to the analytics of one session of a round.
+         */
+        get: operations["v1_rounds_analytics_stints_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rounds/{year}/{round}/analytics/weather/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Weather during the session (at most 120 points)
+         * @description Anonymous GET-only access to the analytics of one session of a round.
+         */
+        get: operations["v1_rounds_analytics_weather_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rounds/{year}/{round}/replay/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Compact race replay timeline sampled at a fixed step
+         * @description Column encoded frames every `step` seconds from the start of lap 1. A frame value is the last known sample at or before its time. `pos`, `gap` and `int` are dense arrays aligned to `frames.t`; `lap`, `tyre`, `age` and `pit` are run encoded (`at` frame indexes, `v` values). Cacheable for finished sessions.
+         */
+        get: operations["v1_rounds_replay_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rounds/{year}/{round}/replay/laps/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Jump-to-lap offsets: lap number to the leader's lap start time
+         * @description Anonymous GET-only access to the analytics of one session of a round.
+         */
+        get: operations["v1_rounds_replay_laps_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -292,6 +864,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/standings/title-race/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Mathematical title race */
+        get: operations["v1_standings_title_race_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -372,6 +961,26 @@ export interface components {
             driver: components["schemas"]["DriverRef"];
             team: components["schemas"]["TeamRef"];
         };
+        /**
+         * @description * `SOFT` - SOFT
+         *     * `MEDIUM` - MEDIUM
+         *     * `HARD` - HARD
+         *     * `INTERMEDIATE` - INTERMEDIATE
+         *     * `WET` - WET
+         *     * `UNKNOWN` - UNKNOWN
+         * @enum {string}
+         */
+        CompoundEnum: "SOFT" | "MEDIUM" | "HARD" | "INTERMEDIATE" | "WET" | "UNKNOWN";
+        /**
+         * @description * `S` - S
+         *     * `M` - M
+         *     * `H` - H
+         *     * `I` - I
+         *     * `W` - W
+         *     * `?` - ?
+         * @enum {string}
+         */
+        CompoundLetterEnum: "S" | "M" | "H" | "I" | "W" | "?";
         /** @description Constructor page. TODO: ``stats.titles`` is null until the standings module exists. */
         ConstructorDetail: {
             slug: string;
@@ -401,6 +1010,28 @@ export interface components {
             /** @description Null until the standings module exists. */
             championship_position: number | null;
             drivers: components["schemas"]["SeasonDriver"][];
+        };
+        Contender: {
+            position: number | null;
+            entity: components["schemas"]["Entity"];
+            /** Format: double */
+            points: number;
+            /**
+             * Format: double
+             * @description Current points plus everything left in remaining races and sprints.
+             */
+            max_points: number;
+            /** Format: double */
+            gap_to_leader: number;
+            /** @description Can at best equal the best rival's points; the countback would decide. */
+            tie_break_needed: boolean;
+        };
+        Csrf: {
+            csrf_token: string;
+        };
+        DeleteAccount: {
+            /** @description The account's display name, typed to confirm. */
+            display_name: string;
         };
         /** @description Driver page. TODO: ``stats.titles`` is null until the standings module exists. */
         DriverDetail: {
@@ -475,6 +1106,134 @@ export interface components {
             code: string | null;
             nationality: string | null;
         };
+        Error: {
+            detail: string;
+            code: string;
+        };
+        FavoriteConstructor: {
+            slug: string;
+            name: string;
+        };
+        FavoriteDriver: {
+            slug: string;
+            readonly name: string;
+            code: string | null;
+        };
+        FavoriteLimits: {
+            /** @default 10 */
+            drivers: number;
+            /** @default 5 */
+            constructors: number;
+        };
+        FavoriteState: {
+            favorite: boolean;
+        };
+        Favorites: {
+            drivers: components["schemas"]["FavoriteDriver"][];
+            constructors: components["schemas"]["FavoriteConstructor"][];
+            limits: components["schemas"]["FavoriteLimits"];
+        };
+        HistoryRow: {
+            round: components["schemas"]["PredictionRound"] | null;
+            pick: components["schemas"]["Pick"];
+            result: components["schemas"]["Pick"] | null;
+            points: number | null;
+            breakdown: {
+                [key: string]: unknown;
+            };
+        };
+        LapSummary: {
+            count: number;
+            best_ms: number | null;
+            /** Format: double */
+            median_ms: number | null;
+            /** Format: double */
+            stdev_ms: number | null;
+        };
+        Laps: {
+            session: components["schemas"]["SessionHeader"];
+            hide_slow: boolean;
+            drivers: components["schemas"]["LapsDriver"][];
+            neutralisations: components["schemas"]["Neutralisation"][];
+        };
+        LapsDriver: {
+            driver_id: number;
+            code: string;
+            full_name: string;
+            constructor_id: number;
+            constructor_name: string;
+            /** @description #rrggbb, null = neutral colour. */
+            color_hex: string | null;
+            lap_numbers: (number | null)[];
+            /** @description Aligned to lap_numbers. */
+            duration_ms: (number | null)[];
+            sector1_ms: (number | null)[];
+            sector2_ms: (number | null)[];
+            sector3_ms: (number | null)[];
+            summary: components["schemas"]["LapSummary"];
+        };
+        Leaderboard: {
+            season: number | null;
+            round: number | null;
+            count: number;
+            results: components["schemas"]["LeaderboardRow"][];
+        };
+        LeaderboardRow: {
+            rank: number;
+            user_id: number | null;
+            name: string;
+            points: number;
+            exact_hits: number;
+            pole_hits: number;
+            exact_podiums: number;
+            predictions: number;
+        };
+        LeagueCreate: {
+            name: string;
+        };
+        LeagueDetail: {
+            name: string;
+            invite_code: string;
+            owner_id: number | null;
+            is_owner: boolean;
+            member_count: number;
+            max_members: number;
+            members: components["schemas"]["LeagueMember"][];
+        };
+        LeagueJoin: {
+            code: string;
+        };
+        LeagueMember: {
+            user_id: number;
+            name: string;
+            /** Format: date-time */
+            joined_at: string;
+        };
+        LeagueSummary: {
+            name: string;
+            invite_code: string;
+            is_owner: boolean;
+            member_count: number;
+        };
+        Me: {
+            is_authenticated: boolean;
+            user: components["schemas"]["User"] | null;
+        };
+        MemberPick: {
+            user_id: number | null;
+            name: string;
+            pick: components["schemas"]["Pick"];
+            points: number | null;
+            breakdown: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * @description * `stop_duration` - stop_duration
+         *     * `lane_duration` - lane_duration
+         * @enum {string}
+         */
+        MethodEnum: "stop_duration" | "lane_duration";
         MostWinsDriver: {
             slug: string;
             name: string;
@@ -488,6 +1247,36 @@ export interface components {
             /** @description #rrggbb or null (neutral colour). */
             color: string | null;
             wins: number;
+        };
+        MyPick: {
+            p1: components["schemas"]["PickDriver"] | null;
+            p2: components["schemas"]["PickDriver"] | null;
+            p3: components["schemas"]["PickDriver"] | null;
+            pole: components["schemas"]["PickDriver"] | null;
+            fastest_lap: components["schemas"]["PickDriver"] | null;
+            points: number | null;
+            breakdown: {
+                [key: string]: unknown;
+            };
+            /** Format: date-time */
+            updated_at: string;
+        };
+        Neutralisation: {
+            kind: components["schemas"]["NeutralisationKindEnum"];
+            start_lap: number;
+            /** @description Inclusive. */
+            end_lap: number;
+        };
+        /**
+         * @description * `SC` - SC
+         *     * `VSC` - VSC
+         * @enum {string}
+         */
+        NeutralisationKindEnum: "SC" | "VSC";
+        NotFound: {
+            detail: string;
+            /** @description Whether detailed analytics exist for the season (2023 onwards). */
+            analytics_available: boolean;
         };
         /** @enum {unknown} */
         NullEnum: null;
@@ -551,6 +1340,110 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["SeasonList"][];
         };
+        PatchedSettingsUpdate: {
+            display_name?: string;
+            timezone?: string;
+            theme?: components["schemas"]["SettingsUpdateThemeEnum"];
+            race_result_email?: boolean;
+        };
+        Pick: {
+            p1: components["schemas"]["PickDriver"] | null;
+            p2: components["schemas"]["PickDriver"] | null;
+            p3: components["schemas"]["PickDriver"] | null;
+            pole: components["schemas"]["PickDriver"] | null;
+            fastest_lap: components["schemas"]["PickDriver"] | null;
+        };
+        PickDriver: {
+            id: number;
+            name: string;
+            code: string | null;
+        };
+        PickInput: {
+            /** @description Driver id for P1 */
+            p1: number;
+            /** @description Driver id for P2 */
+            p2: number;
+            /** @description Driver id for P3 */
+            p3: number;
+            /** @description Driver id for pole position */
+            pole: number;
+            /** @description Driver id for fastest lap */
+            fastest_lap: number;
+        };
+        PickStats: {
+            round: components["schemas"]["PredictionRound"];
+            total: number;
+            slots: {
+                [key: string]: components["schemas"]["StatEntry"][];
+            };
+        };
+        PitRanking: {
+            rank: number;
+            constructor_id: number;
+            constructor_name: string;
+            color_hex: string | null;
+            driver_code: string;
+            lap: number | null;
+            /** @description Value of the method used. */
+            duration_ms: number;
+        };
+        PitStop: {
+            driver_id: number;
+            driver_code: string;
+            constructor_id: number;
+            constructor_name: string;
+            color_hex: string | null;
+            lap: number | null;
+            /** @description Stationary time. */
+            stop_ms: number | null;
+            /** @description Pit lane time. */
+            lane_ms: number | null;
+            /** @description Compound before the stop. */
+            compound_from: string | null;
+            /** @description Compound after the stop. */
+            compound_to: string | null;
+        };
+        PitStops: {
+            session: components["schemas"]["SessionHeader"];
+            /**
+             * @description Which duration ranks the teams.
+             *
+             *     * `stop_duration` - stop_duration
+             *     * `lane_duration` - lane_duration
+             */
+            method: components["schemas"]["MethodEnum"];
+            stops: components["schemas"]["PitStop"][];
+            ranking: components["schemas"]["PitRanking"][];
+        };
+        Positions: {
+            session: components["schemas"]["SessionHeader"];
+            laps: number[];
+            drivers: components["schemas"]["PositionsDriver"][];
+            neutralisations: components["schemas"]["Neutralisation"][];
+        };
+        PositionsDriver: {
+            driver_id: number;
+            code: string;
+            full_name: string;
+            constructor_id: number;
+            constructor_name: string;
+            /** @description #rrggbb, null = neutral colour. */
+            color_hex: string | null;
+            /** @description Position at the end of each lap, aligned to `laps`. */
+            positions: (number | null)[];
+            /** @description Lap numbers with a pit stop. */
+            pit_laps: (number | null)[];
+        };
+        PredictionError: {
+            detail: string;
+            code: string;
+        };
+        PredictionRound: {
+            id: number;
+            year: number;
+            round: number;
+            name: string;
+        };
         Progress: {
             season: number | null;
             rounds: number[];
@@ -579,6 +1472,22 @@ export interface components {
             session: components["schemas"]["ResultsSession"];
             results: components["schemas"]["QualifyingResult"][];
         };
+        RaceControl: {
+            session: components["schemas"]["SessionHeader"];
+            categories: string[];
+            messages: components["schemas"]["RaceControlMessage"][];
+        };
+        RaceControlMessage: {
+            /** Format: date-time */
+            ts: string;
+            lap_number: number | null;
+            category: string;
+            flag: string;
+            scope: string;
+            sector: number | null;
+            driver_code: string | null;
+            message: string;
+        };
         RaceResult: {
             position: number | null;
             /** @description For example R, D or W. */
@@ -604,6 +1513,106 @@ export interface components {
             round: number;
             session: components["schemas"]["ResultsSession"];
             results: components["schemas"]["RaceResult"][];
+        };
+        Replay: {
+            session: components["schemas"]["ReplaySession"];
+            drivers: components["schemas"]["ReplayDriver"][];
+            frames: components["schemas"]["ReplayFrames"];
+            events: components["schemas"]["ReplayEvent"][];
+        };
+        ReplayDriver: {
+            driver_id: number;
+            code: string;
+            full_name: string;
+            constructor_name: string;
+            /** @description #rrggbb, null = neutral. */
+            color_hex: string | null;
+            /**
+             * Format: double
+             * @description Start (seconds) of the lap the driver did not complete; null = classified.
+             */
+            retired_t: number | null;
+        };
+        ReplayDriverFrames: {
+            /** @description Position per frame. */
+            pos: (number | null)[];
+            /** @description Gap to the leader per frame: milliseconds, text such as '+1 LAP', or null. */
+            gap: unknown[];
+            /** @description Interval to the car ahead per frame: milliseconds, text or null. */
+            int: unknown[];
+            /** @description Current lap number, run encoded. */
+            lap: components["schemas"]["Runs"];
+            /** @description Compound, run encoded (null without stint data). */
+            tyre: components["schemas"]["Runs"];
+            /** @description Tyre age in laps, run encoded. */
+            age: components["schemas"]["Runs"];
+            /** @description 1 while inside the pit lane window, else 0; run encoded. */
+            pit: components["schemas"]["Runs"];
+        };
+        ReplayEvent: {
+            kind: components["schemas"]["ReplayEventKindEnum"];
+            /** Format: double */
+            t: number;
+            lap: number;
+            label: string;
+            /** @description Driver code for pit stops. */
+            driver: string | null;
+            /**
+             * Format: double
+             * @description End of SC/VSC periods.
+             */
+            end_t: number | null;
+            end_lap: number | null;
+        };
+        /**
+         * @description * `start` - start
+         *     * `pit` - pit
+         *     * `safety_car` - safety_car
+         *     * `vsc` - vsc
+         *     * `red_flag` - red_flag
+         *     * `chequered` - chequered
+         * @enum {string}
+         */
+        ReplayEventKindEnum: "start" | "pit" | "safety_car" | "vsc" | "red_flag" | "chequered";
+        ReplayFrames: {
+            step_s: number;
+            count: number;
+            /** @description Seconds from the start, one per frame. */
+            t: number[];
+            /** @description Aligned to `drivers`. */
+            drivers: components["schemas"]["ReplayDriverFrames"][];
+        };
+        ReplayLapOffset: {
+            lap: number;
+            /**
+             * Format: double
+             * @description Seconds from the start to the leader's lap start.
+             */
+            t: number;
+        };
+        ReplayLaps: {
+            session: components["schemas"]["SessionHeader"];
+            total_laps: number;
+            /** Format: double */
+            duration_s: number;
+            laps: components["schemas"]["ReplayLapOffset"][];
+        };
+        ReplaySession: {
+            year: number;
+            round: number;
+            round_name: string;
+            type: components["schemas"]["TypeEnum"];
+            status: string;
+            /**
+             * Format: date-time
+             * @description Start of lap 1, t = 0.
+             */
+            start: string;
+            /** Format: date-time */
+            end: string;
+            laps: number;
+            /** Format: double */
+            duration_s: number;
         };
         ResultsSession: {
             type: string;
@@ -643,9 +1652,22 @@ export interface components {
             start_utc: string | null;
             has_results: boolean;
         };
+        RoundState: {
+            round: components["schemas"]["PredictionRound"];
+            status: components["schemas"]["StatusEnum"];
+            /** Format: date-time */
+            closes_at: string | null;
+            my_pick: components["schemas"]["MyPick"] | null;
+        };
         RoundWinner: {
             driver: components["schemas"]["DriverRef"];
             team: components["schemas"]["TeamRef"];
+        };
+        Runs: {
+            /** @description Frame indexes where the value changes. */
+            at: number[];
+            /** @description Value from that frame index until the next entry. */
+            v: unknown[];
         };
         Search: {
             drivers: components["schemas"]["SearchDriver"][];
@@ -695,7 +1717,21 @@ export interface components {
             readonly driver_champion: components["schemas"]["DriverRef"] | null;
             readonly constructor_champion: components["schemas"]["TeamRef"] | null;
         };
+        SessionHeader: {
+            year: number;
+            round: number;
+            round_name: string;
+            type: components["schemas"]["TypeEnum"];
+            status: string;
+        };
         SessionResults: components["schemas"]["RaceSessionResults"] | components["schemas"]["QualifyingSessionResults"];
+        /**
+         * @description * `system` - system
+         *     * `light` - light
+         *     * `dark` - dark
+         * @enum {string}
+         */
+        SettingsUpdateThemeEnum: "system" | "light" | "dark";
         StandingRow: {
             position: number | null;
             position_text: string;
@@ -715,11 +1751,125 @@ export interface components {
             rounds: number[];
             results: components["schemas"]["StandingRow"][];
         };
+        StatEntry: {
+            driver: components["schemas"]["PickDriver"] | null;
+            count: number;
+            /** Format: double */
+            percent: number;
+        };
+        /**
+         * @description * `open` - open
+         *     * `closed` - closed
+         *     * `unavailable` - unavailable
+         * @enum {string}
+         */
+        StatusEnum: "open" | "closed" | "unavailable";
+        Stint: {
+            stint_number: number;
+            compound: components["schemas"]["CompoundEnum"];
+            compound_letter: components["schemas"]["CompoundLetterEnum"];
+            lap_start: number | null;
+            lap_end: number | null;
+            /** @description Stint length in laps. */
+            laps: number | null;
+            tyre_age_at_start: number | null;
+        };
+        Stints: {
+            session: components["schemas"]["SessionHeader"];
+            drivers: components["schemas"]["StintsDriver"][];
+        };
+        StintsDriver: {
+            driver_id: number;
+            code: string;
+            full_name: string;
+            constructor_id: number;
+            constructor_name: string;
+            /** @description #rrggbb, null = neutral colour. */
+            color_hex: string | null;
+            /** @description Final classification. */
+            position: number | null;
+            stints: components["schemas"]["Stint"][];
+        };
         TeamRef: {
             slug: string;
             name: string;
             /** @description #rrggbb or null (neutral colour). */
             color: string | null;
+        };
+        TitleRace: {
+            season: number | null;
+            after_round: number | null;
+            rounds_remaining: number | null;
+            sprints_remaining: number | null;
+            /**
+             * Format: double
+             * @description Most a single driver can still score.
+             */
+            max_points_available: number | null;
+            fastest_lap_point: boolean | null;
+            decided: boolean;
+            champion: components["schemas"]["Entity"] | null;
+            decided_in_round: number | null;
+            /** @description "Champion decided in round N". */
+            message: string | null;
+            /** @description Drivers who can still win the title. */
+            contenders: components["schemas"]["Contender"][];
+            /** @description Drivers in the table without a chance. */
+            eliminated: number;
+        };
+        /**
+         * @description * `RACE` - RACE
+         *     * `SPRINT` - SPRINT
+         *     * `Q` - Q
+         * @enum {string}
+         */
+        TypeEnum: "RACE" | "SPRINT" | "Q";
+        UnsubscribeResult: {
+            race_result_email: boolean;
+        };
+        User: {
+            readonly id: number;
+            readonly display_name: string | null;
+            /**
+             * Email address
+             * Format: email
+             */
+            readonly email: string;
+            readonly email_verified: boolean;
+            readonly can_predict: boolean;
+            readonly timezone: string;
+            readonly theme: components["schemas"]["UserThemeEnum"];
+            readonly is_demo: boolean;
+            readonly race_result_email: boolean;
+        };
+        /**
+         * @description * `system` - System
+         *     * `light` - Light
+         *     * `dark` - Dark
+         * @enum {string}
+         */
+        UserThemeEnum: "system" | "light" | "dark";
+        Weather: {
+            session: components["schemas"]["SessionHeader"];
+            /** @description Samples stored before downsampling. */
+            total_samples: number;
+            samples: components["schemas"]["WeatherSample"][];
+        };
+        WeatherSample: {
+            /** Format: date-time */
+            ts: string;
+            /** Format: double */
+            air_temperature: number | null;
+            /** Format: double */
+            track_temperature: number | null;
+            /** Format: double */
+            humidity: number | null;
+            /** Format: double */
+            pressure: number | null;
+            /** Format: double */
+            wind_speed: number | null;
+            wind_direction: number | null;
+            rainfall: boolean;
         };
     };
     responses: never;
@@ -730,6 +1880,189 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    v1_account_delete_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteAccount"];
+                "application/x-www-form-urlencoded": components["schemas"]["DeleteAccount"];
+                "multipart/form-data": components["schemas"]["DeleteAccount"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    v1_account_export_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Personal data export */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_account_settings_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+        };
+    };
+    v1_account_settings_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedSettingsUpdate"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedSettingsUpdate"];
+                "multipart/form-data": components["schemas"]["PatchedSettingsUpdate"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    v1_auth_csrf_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Csrf"];
+                };
+            };
+        };
+    };
+    v1_auth_demo_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    v1_auth_me_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
     v1_circuits_list: {
         parameters: {
             query?: {
@@ -796,11 +2129,13 @@ export interface operations {
                  * @description * `name` - name
                  *     * `wins` - wins
                  *     * `starts` - starts
+                 *     * `titles` - titles
                  *     * `-name` - -name
                  *     * `-wins` - -wins
                  *     * `-starts` - -starts
+                 *     * `-titles` - -titles
                  */
-                ordering?: "name" | "wins" | "starts" | "-name" | "-wins" | "-starts";
+                ordering?: "name" | "wins" | "starts" | "titles" | "-name" | "-wins" | "-starts" | "-titles";
                 /** @description A page number within the paginated result set. */
                 page?: number;
                 /** @description Number of results to return per page. */
@@ -912,6 +2247,686 @@ export interface operations {
             };
         };
     };
+    v1_favorites_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Favorites"];
+                };
+            };
+        };
+    };
+    v1_favorites_constructors_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteState"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    v1_favorites_constructors_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteState"];
+                };
+            };
+        };
+    };
+    v1_favorites_drivers_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteState"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    v1_favorites_drivers_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteState"];
+                };
+            };
+        };
+    };
+    v1_leagues_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueSummary"][];
+                };
+            };
+        };
+    };
+    v1_leagues_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LeagueCreate"];
+                "application/x-www-form-urlencoded": components["schemas"]["LeagueCreate"];
+                "multipart/form-data": components["schemas"]["LeagueCreate"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    v1_leagues_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueDetail"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    v1_leagues_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    v1_leagues_leave_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    v1_leagues_members_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    v1_leagues_renew_code_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueDetail"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    v1_leagues_rounds_picks_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberPick"][];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    v1_leagues_join_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LeagueJoin"];
+                "application/x-www-form-urlencoded": components["schemas"]["LeagueJoin"];
+                "multipart/form-data": components["schemas"]["LeagueJoin"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueDetail"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    notifications_unsubscribe_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnsubscribeResult"];
+                };
+            };
+        };
+    };
+    notifications_unsubscribe_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnsubscribeResult"];
+                };
+            };
+        };
+    };
+    v1_predictions_history_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryRow"][];
+                };
+            };
+        };
+    };
+    v1_predictions_leaderboard_retrieve: {
+        parameters: {
+            query?: {
+                league?: string;
+                limit?: number;
+                offset?: number;
+                round?: number;
+                season?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Leaderboard"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    v1_predictions_rounds_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundState"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    v1_predictions_rounds_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PickInput"];
+                "application/x-www-form-urlencoded": components["schemas"]["PickInput"];
+                "multipart/form-data": components["schemas"]["PickInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundState"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundState"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
+    v1_predictions_rounds_stats_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PickStats"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionError"];
+                };
+            };
+        };
+    };
     v1_rounds_retrieve: {
         parameters: {
             query?: never;
@@ -930,6 +2945,315 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoundDetail"];
+                };
+            };
+        };
+    };
+    v1_rounds_analytics_laps_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Comma separated driver codes, for example VER,NOR. Default: all drivers. */
+                drivers?: string;
+                /** @description Exclude pit-out laps, in laps and laps under SC/VSC (default true). */
+                hide_slow?: boolean;
+                /**
+                 * @description * `RACE` - RACE
+                 *     * `SPRINT` - SPRINT
+                 *     * `Q` - Q
+                 */
+                session?: "RACE" | "SPRINT" | "Q";
+            };
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Laps"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotFound"];
+                };
+            };
+        };
+    };
+    v1_rounds_analytics_pit_stops_retrieve: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `RACE` - RACE
+                 *     * `SPRINT` - SPRINT
+                 *     * `Q` - Q
+                 */
+                session?: "RACE" | "SPRINT" | "Q";
+            };
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PitStops"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotFound"];
+                };
+            };
+        };
+    };
+    v1_rounds_analytics_positions_retrieve: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `RACE` - RACE
+                 *     * `SPRINT` - SPRINT
+                 *     * `Q` - Q
+                 */
+                session?: "RACE" | "SPRINT" | "Q";
+            };
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Positions"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotFound"];
+                };
+            };
+        };
+    };
+    v1_rounds_analytics_race_control_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Category, for example Flag or SafetyCar. */
+                category?: string;
+                /**
+                 * @description * `RACE` - RACE
+                 *     * `SPRINT` - SPRINT
+                 *     * `Q` - Q
+                 */
+                session?: "RACE" | "SPRINT" | "Q";
+            };
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RaceControl"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotFound"];
+                };
+            };
+        };
+    };
+    v1_rounds_analytics_stints_retrieve: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `RACE` - RACE
+                 *     * `SPRINT` - SPRINT
+                 *     * `Q` - Q
+                 */
+                session?: "RACE" | "SPRINT" | "Q";
+            };
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Stints"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotFound"];
+                };
+            };
+        };
+    };
+    v1_rounds_analytics_weather_retrieve: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `RACE` - RACE
+                 *     * `SPRINT` - SPRINT
+                 *     * `Q` - Q
+                 */
+                session?: "RACE" | "SPRINT" | "Q";
+            };
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Weather"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotFound"];
+                };
+            };
+        };
+    };
+    v1_rounds_replay_retrieve: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `RACE` - RACE
+                 *     * `SPRINT` - SPRINT
+                 */
+                session?: "RACE" | "SPRINT";
+                /** @description Seconds between frames (1 to 30). */
+                step?: number;
+            };
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Replay"];
+                };
+            };
+            /** @description Invalid query parameter, for example step outside 1..30. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotFound"];
+                };
+            };
+        };
+    };
+    v1_rounds_replay_laps_retrieve: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `RACE` - RACE
+                 *     * `SPRINT` - SPRINT
+                 */
+                session?: "RACE" | "SPRINT";
+            };
+            header?: never;
+            path: {
+                round: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplayLaps"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotFound"];
                 };
             };
         };
@@ -1124,6 +3448,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Progress"];
+                };
+            };
+        };
+    };
+    v1_standings_title_race_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Season year (default: latest season with standings). */
+                season?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TitleRace"];
                 };
             };
         };

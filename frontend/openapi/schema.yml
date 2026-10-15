@@ -4,6 +4,152 @@ info:
   version: 0.1.0
   description: Formula 1 stats, analytics and predictions.
 paths:
+  /api/v1/account/delete/:
+    post:
+      operationId: v1_account_delete_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAccount'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DeleteAccount'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeleteAccount'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/account/export/:
+    get:
+      operationId: v1_account_export_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: Personal data export
+  /api/v1/account/settings/:
+    get:
+      operationId: v1_account_settings_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: v1_account_settings_partial_update
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSettingsUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSettingsUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSettingsUpdate'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/auth/csrf/:
+    get:
+      operationId: v1_auth_csrf_retrieve
+      description: Sets the ``csrftoken`` cookie. Call once on page load, before any
+        unsafe request.
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Csrf'
+          description: ''
+  /api/v1/auth/demo/:
+    post:
+      operationId: v1_auth_demo_create
+      description: Log in as the shared demo account ("Try without registering", FR-507).
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/auth/me/:
+    get:
+      operationId: v1_auth_me_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
   /api/v1/circuits/:
     get:
       operationId: v1_circuits_list
@@ -113,9 +259,11 @@ paths:
           - name
           - wins
           - starts
+          - titles
           - -name
           - -wins
           - -starts
+          - -titles
           type: string
           default: name
           minLength: 1
@@ -123,9 +271,11 @@ paths:
           * `name` - name
           * `wins` - wins
           * `starts` - starts
+          * `titles` - titles
           * `-name` - -name
           * `-wins` - -wins
           * `-starts` - -starts
+          * `-titles` - -titles
       - name: page
         required: false
         in: query
@@ -301,6 +451,707 @@ paths:
               schema:
                 $ref: '#/components/schemas/DriverDetail'
           description: ''
+  /api/v1/favorites/:
+    get:
+      operationId: v1_favorites_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorites'
+          description: ''
+  /api/v1/favorites/constructors/{slug}/:
+    put:
+      operationId: v1_favorites_constructors_update
+      description: PUT adds, DELETE removes; both are idempotent. Both return the
+        current state.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteState'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+    delete:
+      operationId: v1_favorites_constructors_destroy
+      description: PUT adds, DELETE removes; both are idempotent. Both return the
+        current state.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteState'
+          description: ''
+  /api/v1/favorites/drivers/{slug}/:
+    put:
+      operationId: v1_favorites_drivers_update
+      description: PUT adds, DELETE removes; both are idempotent. Both return the
+        current state.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteState'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+    delete:
+      operationId: v1_favorites_drivers_destroy
+      description: PUT adds, DELETE removes; both are idempotent. Both return the
+        current state.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteState'
+          description: ''
+  /api/v1/leagues/:
+    get:
+      operationId: v1_leagues_list
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: My leagues
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeagueSummary'
+          description: ''
+    post:
+      operationId: v1_leagues_create
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: Create a league (max 10 per user)
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeagueCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LeagueCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LeagueCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeagueDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+  /api/v1/leagues/{code}/:
+    get:
+      operationId: v1_leagues_retrieve
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: League details (members only)
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeagueDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+    delete:
+      operationId: v1_leagues_destroy
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: Delete a league (owner)
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+  /api/v1/leagues/{code}/leave/:
+    post:
+      operationId: v1_leagues_leave_create
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: Leave a league
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+  /api/v1/leagues/{code}/members/{user_id}/:
+    delete:
+      operationId: v1_leagues_members_destroy
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: Remove a member (owner)
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+  /api/v1/leagues/{code}/renew-code/:
+    post:
+      operationId: v1_leagues_renew_code_create
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: Renew the invite code (owner); the old code stops working
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeagueDetail'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+  /api/v1/leagues/{code}/rounds/{year}/{round}/picks/:
+    get:
+      operationId: v1_leagues_rounds_picks_list
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: All members' picks for a round (after predictions close)
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberPick'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+  /api/v1/leagues/join/:
+    post:
+      operationId: v1_leagues_join_create
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: Join a league by invite code (max 50 members)
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeagueJoin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LeagueJoin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LeagueJoin'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeagueDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+  /api/v1/notifications/unsubscribe/{token}/:
+    get:
+      operationId: notifications_unsubscribe_get
+      description: |-
+        One-click unsubscribe from the link in e-mails: no login, the token is the credential.
+
+        Both verbs unsubscribe (idempotent): GET serves the plain link in the mail, POST serves RFC 8058
+        one-click clients. No session is used, so CSRF does not apply. Opting out is the safe direction,
+        so a link prefetcher triggering it is harmless.
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnsubscribeResult'
+          description: ''
+    post:
+      operationId: notifications_unsubscribe_post
+      description: |-
+        One-click unsubscribe from the link in e-mails: no login, the token is the credential.
+
+        Both verbs unsubscribe (idempotent): GET serves the plain link in the mail, POST serves RFC 8058
+        one-click clients. No session is used, so CSRF does not apply. Opting out is the safe direction,
+        so a link prefetcher triggering it is harmless.
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnsubscribeResult'
+          description: ''
+  /api/v1/predictions/history/:
+    get:
+      operationId: v1_predictions_history_list
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: My prediction history
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryRow'
+          description: ''
+  /api/v1/predictions/leaderboard/:
+    get:
+      operationId: v1_predictions_leaderboard_retrieve
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: Leaderboard (global, per round or league)
+      parameters:
+      - in: query
+        name: league
+        schema:
+          type: string
+          maxLength: 16
+          minLength: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: round
+        schema:
+          type: integer
+          minimum: 1
+      - in: query
+        name: season
+        schema:
+          type: integer
+          minimum: 1900
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Leaderboard'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+  /api/v1/predictions/rounds/{year}/{round}/:
+    get:
+      operationId: v1_predictions_rounds_retrieve
+      description: Read the state of a round (public) and submit or change my pick
+        (auth).
+      summary: 'Prediction state of a round: open or closed, closing time, my pick'
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoundState'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+    put:
+      operationId: v1_predictions_rounds_update
+      description: Read the state of a round (public) and submit or change my pick
+        (auth).
+      summary: Submit or change my pick; 403 after predictions close
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PickInput'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PickInput'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PickInput'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoundState'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoundState'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+  /api/v1/predictions/rounds/{year}/{round}/stats/:
+    get:
+      operationId: v1_predictions_rounds_stats_retrieve
+      description: Turn domain errors into {"detail", "code"} responses with the right
+        status.
+      summary: Global pick statistics of a round (after predictions close)
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PickStats'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionError'
+          description: ''
   /api/v1/rounds/{year}/{round}/:
     get:
       operationId: v1_rounds_retrieve
@@ -328,6 +1179,419 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RoundDetail'
+          description: ''
+  /api/v1/rounds/{year}/{round}/analytics/laps/:
+    get:
+      operationId: v1_rounds_analytics_laps_retrieve
+      description: Anonymous GET-only access to the analytics of one session of a
+        round.
+      summary: Lap times with sector times and per driver summary
+      parameters:
+      - in: query
+        name: drivers
+        schema:
+          type: string
+        description: 'Comma separated driver codes, for example VER,NOR. Default:
+          all drivers.'
+      - in: query
+        name: hide_slow
+        schema:
+          type: boolean
+          default: true
+        description: Exclude pit-out laps, in laps and laps under SC/VSC (default
+          true).
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: session
+        schema:
+          enum:
+          - RACE
+          - SPRINT
+          - Q
+          type: string
+          default: RACE
+          minLength: 1
+        description: |-
+          * `RACE` - RACE
+          * `SPRINT` - SPRINT
+          * `Q` - Q
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - analytics
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Laps'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+          description: ''
+  /api/v1/rounds/{year}/{round}/analytics/pit-stops/:
+    get:
+      operationId: v1_rounds_analytics_pit_stops_retrieve
+      description: Anonymous GET-only access to the analytics of one session of a
+        round.
+      summary: Pit stops and team ranking of the fastest stops
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: session
+        schema:
+          enum:
+          - RACE
+          - SPRINT
+          - Q
+          type: string
+          default: RACE
+          minLength: 1
+        description: |-
+          * `RACE` - RACE
+          * `SPRINT` - SPRINT
+          * `Q` - Q
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - analytics
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PitStops'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+          description: ''
+  /api/v1/rounds/{year}/{round}/analytics/positions/:
+    get:
+      operationId: v1_rounds_analytics_positions_retrieve
+      description: Anonymous GET-only access to the analytics of one session of a
+        round.
+      summary: Position of every driver at the end of every lap
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: session
+        schema:
+          enum:
+          - RACE
+          - SPRINT
+          - Q
+          type: string
+          default: RACE
+          minLength: 1
+        description: |-
+          * `RACE` - RACE
+          * `SPRINT` - SPRINT
+          * `Q` - Q
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - analytics
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Positions'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+          description: ''
+  /api/v1/rounds/{year}/{round}/analytics/race-control/:
+    get:
+      operationId: v1_rounds_analytics_race_control_retrieve
+      description: Anonymous GET-only access to the analytics of one session of a
+        round.
+      summary: Race control messages
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+          maxLength: 40
+          minLength: 1
+        description: Category, for example Flag or SafetyCar.
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: session
+        schema:
+          enum:
+          - RACE
+          - SPRINT
+          - Q
+          type: string
+          default: RACE
+          minLength: 1
+        description: |-
+          * `RACE` - RACE
+          * `SPRINT` - SPRINT
+          * `Q` - Q
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - analytics
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceControl'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+          description: ''
+  /api/v1/rounds/{year}/{round}/analytics/stints/:
+    get:
+      operationId: v1_rounds_analytics_stints_retrieve
+      description: Anonymous GET-only access to the analytics of one session of a
+        round.
+      summary: Tyre strategy per driver
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: session
+        schema:
+          enum:
+          - RACE
+          - SPRINT
+          - Q
+          type: string
+          default: RACE
+          minLength: 1
+        description: |-
+          * `RACE` - RACE
+          * `SPRINT` - SPRINT
+          * `Q` - Q
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - analytics
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stints'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+          description: ''
+  /api/v1/rounds/{year}/{round}/analytics/weather/:
+    get:
+      operationId: v1_rounds_analytics_weather_retrieve
+      description: Anonymous GET-only access to the analytics of one session of a
+        round.
+      summary: Weather during the session (at most 120 points)
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: session
+        schema:
+          enum:
+          - RACE
+          - SPRINT
+          - Q
+          type: string
+          default: RACE
+          minLength: 1
+        description: |-
+          * `RACE` - RACE
+          * `SPRINT` - SPRINT
+          * `Q` - Q
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - analytics
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Weather'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+          description: ''
+  /api/v1/rounds/{year}/{round}/replay/:
+    get:
+      operationId: v1_rounds_replay_retrieve
+      description: Column encoded frames every `step` seconds from the start of lap
+        1. A frame value is the last known sample at or before its time. `pos`, `gap`
+        and `int` are dense arrays aligned to `frames.t`; `lap`, `tyre`, `age` and
+        `pit` are run encoded (`at` frame indexes, `v` values). Cacheable for finished
+        sessions.
+      summary: Compact race replay timeline sampled at a fixed step
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: session
+        schema:
+          enum:
+          - RACE
+          - SPRINT
+          type: string
+          default: RACE
+          minLength: 1
+        description: |-
+          * `RACE` - RACE
+          * `SPRINT` - SPRINT
+      - in: query
+        name: step
+        schema:
+          type: integer
+          maximum: 30
+          minimum: 1
+          default: 5
+        description: Seconds between frames (1 to 30).
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - analytics
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Replay'
+          description: ''
+        '400':
+          description: Invalid query parameter, for example step outside 1..30.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+          description: ''
+  /api/v1/rounds/{year}/{round}/replay/laps/:
+    get:
+      operationId: v1_rounds_replay_laps_retrieve
+      description: Anonymous GET-only access to the analytics of one session of a
+        round.
+      summary: 'Jump-to-lap offsets: lap number to the leader''s lap start time'
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: session
+        schema:
+          enum:
+          - RACE
+          - SPRINT
+          type: string
+          default: RACE
+          minLength: 1
+        description: |-
+          * `RACE` - RACE
+          * `SPRINT` - SPRINT
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - analytics
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplayLaps'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
           description: ''
   /api/v1/rounds/{year}/{round}/results/:
     get:
@@ -576,6 +1840,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Progress'
           description: ''
+  /api/v1/standings/title-race/:
+    get:
+      operationId: v1_standings_title_race_retrieve
+      summary: Mathematical title race
+      parameters:
+      - in: query
+        name: season
+        schema:
+          type: integer
+          maximum: 2200
+          minimum: 1950
+        description: 'Season year (default: latest season with standings).'
+      tags:
+      - standings
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TitleRace'
+          description: ''
 components:
   schemas:
     CalendarRound:
@@ -785,6 +2073,38 @@ components:
       - round_name
       - team
       - year
+    CompoundEnum:
+      enum:
+      - SOFT
+      - MEDIUM
+      - HARD
+      - INTERMEDIATE
+      - WET
+      - UNKNOWN
+      type: string
+      description: |-
+        * `SOFT` - SOFT
+        * `MEDIUM` - MEDIUM
+        * `HARD` - HARD
+        * `INTERMEDIATE` - INTERMEDIATE
+        * `WET` - WET
+        * `UNKNOWN` - UNKNOWN
+    CompoundLetterEnum:
+      enum:
+      - S
+      - M
+      - H
+      - I
+      - W
+      - '?'
+      type: string
+      description: |-
+        * `S` - S
+        * `M` - M
+        * `H` - H
+        * `I` - I
+        * `W` - W
+        * `?` - ?
     ConstructorDetail:
       type: object
       description: 'Constructor page. TODO: ``stats.titles`` is null until the standings
@@ -874,6 +2194,63 @@ components:
       - points
       - wins
       - year
+    Contender:
+      type: object
+      properties:
+        position:
+          type: integer
+          nullable: true
+        entity:
+          $ref: '#/components/schemas/Entity'
+        points:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+        max_points:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          description: Current points plus everything left in remaining races and
+            sprints.
+        gap_to_leader:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+        tie_break_needed:
+          type: boolean
+          description: Can at best equal the best rival's points; the countback would
+            decide.
+      required:
+      - entity
+      - gap_to_leader
+      - max_points
+      - points
+      - position
+      - tie_break_needed
+    Csrf:
+      type: object
+      properties:
+        csrf_token:
+          type: string
+      required:
+      - csrf_token
+    DeleteAccount:
+      type: object
+      properties:
+        display_name:
+          type: string
+          description: The account's display name, typed to confirm.
+      required:
+      - display_name
     DriverDetail:
       type: object
       description: 'Driver page. TODO: ``stats.titles`` is null until the standings
@@ -1085,6 +2462,363 @@ components:
       - name
       - nationality
       - slug
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+        code:
+          type: string
+      required:
+      - code
+      - detail
+    FavoriteConstructor:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+      required:
+      - name
+      - slug
+    FavoriteDriver:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+          readOnly: true
+        code:
+          type: string
+          nullable: true
+      required:
+      - code
+      - name
+      - slug
+    FavoriteLimits:
+      type: object
+      properties:
+        drivers:
+          type: integer
+          default: 10
+        constructors:
+          type: integer
+          default: 5
+    FavoriteState:
+      type: object
+      properties:
+        favorite:
+          type: boolean
+      required:
+      - favorite
+    Favorites:
+      type: object
+      properties:
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavoriteDriver'
+        constructors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavoriteConstructor'
+        limits:
+          $ref: '#/components/schemas/FavoriteLimits'
+      required:
+      - constructors
+      - drivers
+      - limits
+    HistoryRow:
+      type: object
+      properties:
+        round:
+          allOf:
+          - $ref: '#/components/schemas/PredictionRound'
+          nullable: true
+        pick:
+          $ref: '#/components/schemas/Pick'
+        result:
+          allOf:
+          - $ref: '#/components/schemas/Pick'
+          nullable: true
+        points:
+          type: integer
+          nullable: true
+        breakdown:
+          type: object
+          additionalProperties: {}
+      required:
+      - breakdown
+      - pick
+      - points
+      - result
+      - round
+    LapSummary:
+      type: object
+      properties:
+        count:
+          type: integer
+        best_ms:
+          type: integer
+          nullable: true
+        median_ms:
+          type: number
+          format: double
+          nullable: true
+        stdev_ms:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - best_ms
+      - count
+      - median_ms
+      - stdev_ms
+    Laps:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/SessionHeader'
+        hide_slow:
+          type: boolean
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/LapsDriver'
+        neutralisations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Neutralisation'
+      required:
+      - drivers
+      - hide_slow
+      - neutralisations
+      - session
+    LapsDriver:
+      type: object
+      properties:
+        driver_id:
+          type: integer
+        code:
+          type: string
+        full_name:
+          type: string
+        constructor_id:
+          type: integer
+        constructor_name:
+          type: string
+        color_hex:
+          type: string
+          nullable: true
+          description: '#rrggbb, null = neutral colour.'
+        lap_numbers:
+          type: array
+          items:
+            type: integer
+            nullable: true
+        duration_ms:
+          type: array
+          items:
+            type: integer
+            nullable: true
+          description: Aligned to lap_numbers.
+        sector1_ms:
+          type: array
+          items:
+            type: integer
+            nullable: true
+        sector2_ms:
+          type: array
+          items:
+            type: integer
+            nullable: true
+        sector3_ms:
+          type: array
+          items:
+            type: integer
+            nullable: true
+        summary:
+          $ref: '#/components/schemas/LapSummary'
+      required:
+      - code
+      - color_hex
+      - constructor_id
+      - constructor_name
+      - driver_id
+      - duration_ms
+      - full_name
+      - lap_numbers
+      - sector1_ms
+      - sector2_ms
+      - sector3_ms
+      - summary
+    Leaderboard:
+      type: object
+      properties:
+        season:
+          type: integer
+          nullable: true
+        round:
+          type: integer
+          nullable: true
+        count:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaderboardRow'
+      required:
+      - count
+      - results
+      - round
+      - season
+    LeaderboardRow:
+      type: object
+      properties:
+        rank:
+          type: integer
+        user_id:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        points:
+          type: integer
+        exact_hits:
+          type: integer
+        pole_hits:
+          type: integer
+        exact_podiums:
+          type: integer
+        predictions:
+          type: integer
+      required:
+      - exact_hits
+      - exact_podiums
+      - name
+      - points
+      - pole_hits
+      - predictions
+      - rank
+      - user_id
+    LeagueCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+      required:
+      - name
+    LeagueDetail:
+      type: object
+      properties:
+        name:
+          type: string
+        invite_code:
+          type: string
+        owner_id:
+          type: integer
+          nullable: true
+        is_owner:
+          type: boolean
+        member_count:
+          type: integer
+        max_members:
+          type: integer
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeagueMember'
+      required:
+      - invite_code
+      - is_owner
+      - max_members
+      - member_count
+      - members
+      - name
+      - owner_id
+    LeagueJoin:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 16
+      required:
+      - code
+    LeagueMember:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        name:
+          type: string
+        joined_at:
+          type: string
+          format: date-time
+      required:
+      - joined_at
+      - name
+      - user_id
+    LeagueSummary:
+      type: object
+      properties:
+        name:
+          type: string
+        invite_code:
+          type: string
+        is_owner:
+          type: boolean
+        member_count:
+          type: integer
+      required:
+      - invite_code
+      - is_owner
+      - member_count
+      - name
+    Me:
+      type: object
+      properties:
+        is_authenticated:
+          type: boolean
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          nullable: true
+      required:
+      - is_authenticated
+      - user
+    MemberPick:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        pick:
+          $ref: '#/components/schemas/Pick'
+        points:
+          type: integer
+          nullable: true
+        breakdown:
+          type: object
+          additionalProperties: {}
+      required:
+      - breakdown
+      - name
+      - pick
+      - points
+      - user_id
+    MethodEnum:
+      enum:
+      - stop_duration
+      - lane_duration
+      type: string
+      description: |-
+        * `stop_duration` - stop_duration
+        * `lane_duration` - lane_duration
     MostWinsDriver:
       type: object
       properties:
@@ -1124,6 +2858,80 @@ components:
       - name
       - slug
       - wins
+    MyPick:
+      type: object
+      properties:
+        p1:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+        p2:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+        p3:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+        pole:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+        fastest_lap:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+        points:
+          type: integer
+          nullable: true
+        breakdown:
+          type: object
+          additionalProperties: {}
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - breakdown
+      - fastest_lap
+      - p1
+      - p2
+      - p3
+      - points
+      - pole
+      - updated_at
+    Neutralisation:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/NeutralisationKindEnum'
+        start_lap:
+          type: integer
+        end_lap:
+          type: integer
+          description: Inclusive.
+      required:
+      - end_lap
+      - kind
+      - start_lap
+    NeutralisationKindEnum:
+      enum:
+      - SC
+      - VSC
+      type: string
+      description: |-
+        * `SC` - SC
+        * `VSC` - VSC
+    NotFound:
+      type: object
+      properties:
+        detail:
+          type: string
+        analytics_available:
+          type: boolean
+          description: Whether detailed analytics exist for the season (2023 onwards).
+      required:
+      - analytics_available
+      - detail
     NullEnum:
       enum:
       - null
@@ -1219,6 +3027,290 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SeasonList'
+    PatchedSettingsUpdate:
+      type: object
+      properties:
+        display_name:
+          type: string
+        timezone:
+          type: string
+        theme:
+          $ref: '#/components/schemas/SettingsUpdateThemeEnum'
+        race_result_email:
+          type: boolean
+    Pick:
+      type: object
+      properties:
+        p1:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+        p2:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+        p3:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+        pole:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+        fastest_lap:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+      required:
+      - fastest_lap
+      - p1
+      - p2
+      - p3
+      - pole
+    PickDriver:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+          nullable: true
+      required:
+      - code
+      - id
+      - name
+    PickInput:
+      type: object
+      properties:
+        p1:
+          type: integer
+          minimum: 1
+          description: Driver id for P1
+        p2:
+          type: integer
+          minimum: 1
+          description: Driver id for P2
+        p3:
+          type: integer
+          minimum: 1
+          description: Driver id for P3
+        pole:
+          type: integer
+          minimum: 1
+          description: Driver id for pole position
+        fastest_lap:
+          type: integer
+          minimum: 1
+          description: Driver id for fastest lap
+      required:
+      - fastest_lap
+      - p1
+      - p2
+      - p3
+      - pole
+    PickStats:
+      type: object
+      properties:
+        round:
+          $ref: '#/components/schemas/PredictionRound'
+        total:
+          type: integer
+        slots:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/StatEntry'
+      required:
+      - round
+      - slots
+      - total
+    PitRanking:
+      type: object
+      properties:
+        rank:
+          type: integer
+        constructor_id:
+          type: integer
+        constructor_name:
+          type: string
+        color_hex:
+          type: string
+          nullable: true
+        driver_code:
+          type: string
+        lap:
+          type: integer
+          nullable: true
+        duration_ms:
+          type: integer
+          description: Value of the method used.
+      required:
+      - color_hex
+      - constructor_id
+      - constructor_name
+      - driver_code
+      - duration_ms
+      - lap
+      - rank
+    PitStop:
+      type: object
+      properties:
+        driver_id:
+          type: integer
+        driver_code:
+          type: string
+        constructor_id:
+          type: integer
+        constructor_name:
+          type: string
+        color_hex:
+          type: string
+          nullable: true
+        lap:
+          type: integer
+          nullable: true
+        stop_ms:
+          type: integer
+          nullable: true
+          description: Stationary time.
+        lane_ms:
+          type: integer
+          nullable: true
+          description: Pit lane time.
+        compound_from:
+          type: string
+          nullable: true
+          description: Compound before the stop.
+        compound_to:
+          type: string
+          nullable: true
+          description: Compound after the stop.
+      required:
+      - color_hex
+      - compound_from
+      - compound_to
+      - constructor_id
+      - constructor_name
+      - driver_code
+      - driver_id
+      - lane_ms
+      - lap
+      - stop_ms
+    PitStops:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/SessionHeader'
+        method:
+          allOf:
+          - $ref: '#/components/schemas/MethodEnum'
+          description: |-
+            Which duration ranks the teams.
+
+            * `stop_duration` - stop_duration
+            * `lane_duration` - lane_duration
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/PitStop'
+        ranking:
+          type: array
+          items:
+            $ref: '#/components/schemas/PitRanking'
+      required:
+      - method
+      - ranking
+      - session
+      - stops
+    Positions:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/SessionHeader'
+        laps:
+          type: array
+          items:
+            type: integer
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionsDriver'
+        neutralisations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Neutralisation'
+      required:
+      - drivers
+      - laps
+      - neutralisations
+      - session
+    PositionsDriver:
+      type: object
+      properties:
+        driver_id:
+          type: integer
+        code:
+          type: string
+        full_name:
+          type: string
+        constructor_id:
+          type: integer
+        constructor_name:
+          type: string
+        color_hex:
+          type: string
+          nullable: true
+          description: '#rrggbb, null = neutral colour.'
+        positions:
+          type: array
+          items:
+            type: integer
+            nullable: true
+          description: Position at the end of each lap, aligned to `laps`.
+        pit_laps:
+          type: array
+          items:
+            type: integer
+            nullable: true
+          description: Lap numbers with a pit stop.
+      required:
+      - code
+      - color_hex
+      - constructor_id
+      - constructor_name
+      - driver_id
+      - full_name
+      - pit_laps
+      - positions
+    PredictionError:
+      type: object
+      properties:
+        detail:
+          type: string
+        code:
+          type: string
+      required:
+      - code
+      - detail
+    PredictionRound:
+      type: object
+      properties:
+        id:
+          type: integer
+        year:
+          type: integer
+        round:
+          type: integer
+        name:
+          type: string
+      required:
+      - id
+      - name
+      - round
+      - year
     Progress:
       type: object
       properties:
@@ -1314,6 +3406,55 @@ components:
       - round
       - session
       - year
+    RaceControl:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/SessionHeader'
+        categories:
+          type: array
+          items:
+            type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/RaceControlMessage'
+      required:
+      - categories
+      - messages
+      - session
+    RaceControlMessage:
+      type: object
+      properties:
+        ts:
+          type: string
+          format: date-time
+        lap_number:
+          type: integer
+          nullable: true
+        category:
+          type: string
+        flag:
+          type: string
+        scope:
+          type: string
+        sector:
+          type: integer
+          nullable: true
+        driver_code:
+          type: string
+          nullable: true
+        message:
+          type: string
+      required:
+      - category
+      - driver_code
+      - flag
+      - lap_number
+      - message
+      - scope
+      - sector
+      - ts
     RaceResult:
       type: object
       properties:
@@ -1388,6 +3529,235 @@ components:
       - results
       - round
       - session
+      - year
+    Replay:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/ReplaySession'
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReplayDriver'
+        frames:
+          $ref: '#/components/schemas/ReplayFrames'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReplayEvent'
+      required:
+      - drivers
+      - events
+      - frames
+      - session
+    ReplayDriver:
+      type: object
+      properties:
+        driver_id:
+          type: integer
+        code:
+          type: string
+        full_name:
+          type: string
+        constructor_name:
+          type: string
+        color_hex:
+          type: string
+          nullable: true
+          description: '#rrggbb, null = neutral.'
+        retired_t:
+          type: number
+          format: double
+          nullable: true
+          description: Start (seconds) of the lap the driver did not complete; null
+            = classified.
+      required:
+      - code
+      - color_hex
+      - constructor_name
+      - driver_id
+      - full_name
+      - retired_t
+    ReplayDriverFrames:
+      type: object
+      properties:
+        pos:
+          type: array
+          items:
+            type: integer
+            nullable: true
+          description: Position per frame.
+        gap:
+          type: array
+          items:
+            nullable: true
+          description: 'Gap to the leader per frame: milliseconds, text such as ''+1
+            LAP'', or null.'
+        int:
+          type: array
+          items:
+            nullable: true
+          description: 'Interval to the car ahead per frame: milliseconds, text or
+            null.'
+        lap:
+          allOf:
+          - $ref: '#/components/schemas/Runs'
+          description: Current lap number, run encoded.
+        tyre:
+          allOf:
+          - $ref: '#/components/schemas/Runs'
+          description: Compound, run encoded (null without stint data).
+        age:
+          allOf:
+          - $ref: '#/components/schemas/Runs'
+          description: Tyre age in laps, run encoded.
+        pit:
+          allOf:
+          - $ref: '#/components/schemas/Runs'
+          description: 1 while inside the pit lane window, else 0; run encoded.
+      required:
+      - age
+      - gap
+      - int
+      - lap
+      - pit
+      - pos
+      - tyre
+    ReplayEvent:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/ReplayEventKindEnum'
+        t:
+          type: number
+          format: double
+        lap:
+          type: integer
+        label:
+          type: string
+        driver:
+          type: string
+          nullable: true
+          description: Driver code for pit stops.
+        end_t:
+          type: number
+          format: double
+          nullable: true
+          description: End of SC/VSC periods.
+        end_lap:
+          type: integer
+          nullable: true
+      required:
+      - driver
+      - end_lap
+      - end_t
+      - kind
+      - label
+      - lap
+      - t
+    ReplayEventKindEnum:
+      enum:
+      - start
+      - pit
+      - safety_car
+      - vsc
+      - red_flag
+      - chequered
+      type: string
+      description: |-
+        * `start` - start
+        * `pit` - pit
+        * `safety_car` - safety_car
+        * `vsc` - vsc
+        * `red_flag` - red_flag
+        * `chequered` - chequered
+    ReplayFrames:
+      type: object
+      properties:
+        step_s:
+          type: integer
+        count:
+          type: integer
+        t:
+          type: array
+          items:
+            type: integer
+          description: Seconds from the start, one per frame.
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReplayDriverFrames'
+          description: Aligned to `drivers`.
+      required:
+      - count
+      - drivers
+      - step_s
+      - t
+    ReplayLapOffset:
+      type: object
+      properties:
+        lap:
+          type: integer
+        t:
+          type: number
+          format: double
+          description: Seconds from the start to the leader's lap start.
+      required:
+      - lap
+      - t
+    ReplayLaps:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/SessionHeader'
+        total_laps:
+          type: integer
+        duration_s:
+          type: number
+          format: double
+        laps:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReplayLapOffset'
+      required:
+      - duration_s
+      - laps
+      - session
+      - total_laps
+    ReplaySession:
+      type: object
+      properties:
+        year:
+          type: integer
+        round:
+          type: integer
+        round_name:
+          type: string
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        status:
+          type: string
+        start:
+          type: string
+          format: date-time
+          description: Start of lap 1, t = 0.
+        end:
+          type: string
+          format: date-time
+        laps:
+          type: integer
+        duration_s:
+          type: number
+          format: double
+      required:
+      - duration_s
+      - end
+      - laps
+      - round
+      - round_name
+      - start
+      - status
+      - type
       - year
     ResultsSession:
       type: object
@@ -1496,6 +3866,26 @@ components:
       - start_utc
       - status
       - type
+    RoundState:
+      type: object
+      properties:
+        round:
+          $ref: '#/components/schemas/PredictionRound'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        closes_at:
+          type: string
+          format: date-time
+          nullable: true
+        my_pick:
+          allOf:
+          - $ref: '#/components/schemas/MyPick'
+          nullable: true
+      required:
+      - closes_at
+      - my_pick
+      - round
+      - status
     RoundWinner:
       type: object
       properties:
@@ -1506,6 +3896,22 @@ components:
       required:
       - driver
       - team
+    Runs:
+      type: object
+      properties:
+        at:
+          type: array
+          items:
+            type: integer
+          description: Frame indexes where the value changes.
+        v:
+          type: array
+          items:
+            nullable: true
+          description: Value from that frame index until the next entry.
+      required:
+      - at
+      - v
     Search:
       type: object
       properties:
@@ -1656,10 +4062,39 @@ components:
       - rounds_count
       - sprint_rounds
       - year
+    SessionHeader:
+      type: object
+      properties:
+        year:
+          type: integer
+        round:
+          type: integer
+        round_name:
+          type: string
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        status:
+          type: string
+      required:
+      - round
+      - round_name
+      - status
+      - type
+      - year
     SessionResults:
       oneOf:
       - $ref: '#/components/schemas/RaceSessionResults'
       - $ref: '#/components/schemas/QualifyingSessionResults'
+    SettingsUpdateThemeEnum:
+      enum:
+      - system
+      - light
+      - dark
+      type: string
+      description: |-
+        * `system` - system
+        * `light` - light
+        * `dark` - dark
     StandingRow:
       type: object
       properties:
@@ -1720,6 +4155,108 @@ components:
       - results
       - rounds
       - season
+    StatEntry:
+      type: object
+      properties:
+        driver:
+          allOf:
+          - $ref: '#/components/schemas/PickDriver'
+          nullable: true
+        count:
+          type: integer
+        percent:
+          type: number
+          format: double
+      required:
+      - count
+      - driver
+      - percent
+    StatusEnum:
+      enum:
+      - open
+      - closed
+      - unavailable
+      type: string
+      description: |-
+        * `open` - open
+        * `closed` - closed
+        * `unavailable` - unavailable
+    Stint:
+      type: object
+      properties:
+        stint_number:
+          type: integer
+        compound:
+          $ref: '#/components/schemas/CompoundEnum'
+        compound_letter:
+          $ref: '#/components/schemas/CompoundLetterEnum'
+        lap_start:
+          type: integer
+          nullable: true
+        lap_end:
+          type: integer
+          nullable: true
+        laps:
+          type: integer
+          nullable: true
+          description: Stint length in laps.
+        tyre_age_at_start:
+          type: integer
+          nullable: true
+      required:
+      - compound
+      - compound_letter
+      - lap_end
+      - lap_start
+      - laps
+      - stint_number
+      - tyre_age_at_start
+    Stints:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/SessionHeader'
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/StintsDriver'
+      required:
+      - drivers
+      - session
+    StintsDriver:
+      type: object
+      properties:
+        driver_id:
+          type: integer
+        code:
+          type: string
+        full_name:
+          type: string
+        constructor_id:
+          type: integer
+        constructor_name:
+          type: string
+        color_hex:
+          type: string
+          nullable: true
+          description: '#rrggbb, null = neutral colour.'
+        position:
+          type: integer
+          nullable: true
+          description: Final classification.
+        stints:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stint'
+      required:
+      - code
+      - color_hex
+      - constructor_id
+      - constructor_name
+      - driver_id
+      - full_name
+      - position
+      - stints
     TeamRef:
       type: object
       properties:
@@ -1735,6 +4272,194 @@ components:
       - color
       - name
       - slug
+    TitleRace:
+      type: object
+      properties:
+        season:
+          type: integer
+          nullable: true
+        after_round:
+          type: integer
+          nullable: true
+        rounds_remaining:
+          type: integer
+          nullable: true
+        sprints_remaining:
+          type: integer
+          nullable: true
+        max_points_available:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          description: Most a single driver can still score.
+        fastest_lap_point:
+          type: boolean
+          nullable: true
+        decided:
+          type: boolean
+        champion:
+          allOf:
+          - $ref: '#/components/schemas/Entity'
+          nullable: true
+        decided_in_round:
+          type: integer
+          nullable: true
+        message:
+          type: string
+          nullable: true
+          description: '"Champion decided in round N".'
+        contenders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contender'
+          description: Drivers who can still win the title.
+        eliminated:
+          type: integer
+          description: Drivers in the table without a chance.
+      required:
+      - after_round
+      - champion
+      - contenders
+      - decided
+      - decided_in_round
+      - eliminated
+      - fastest_lap_point
+      - max_points_available
+      - message
+      - rounds_remaining
+      - season
+      - sprints_remaining
+    TypeEnum:
+      enum:
+      - RACE
+      - SPRINT
+      - Q
+      type: string
+      description: |-
+        * `RACE` - RACE
+        * `SPRINT` - SPRINT
+        * `Q` - Q
+    UnsubscribeResult:
+      type: object
+      properties:
+        race_result_email:
+          type: boolean
+      required:
+      - race_result_email
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        display_name:
+          type: string
+          readOnly: true
+          nullable: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        email_verified:
+          type: boolean
+          readOnly: true
+        can_predict:
+          type: boolean
+          readOnly: true
+        timezone:
+          type: string
+          readOnly: true
+        theme:
+          allOf:
+          - $ref: '#/components/schemas/UserThemeEnum'
+          readOnly: true
+        is_demo:
+          type: boolean
+          readOnly: true
+        race_result_email:
+          type: boolean
+          readOnly: true
+      required:
+      - can_predict
+      - display_name
+      - email
+      - email_verified
+      - id
+      - is_demo
+      - race_result_email
+      - theme
+      - timezone
+    UserThemeEnum:
+      enum:
+      - system
+      - light
+      - dark
+      type: string
+      description: |-
+        * `system` - System
+        * `light` - Light
+        * `dark` - Dark
+    Weather:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/SessionHeader'
+        total_samples:
+          type: integer
+          description: Samples stored before downsampling.
+        samples:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeatherSample'
+      required:
+      - samples
+      - session
+      - total_samples
+    WeatherSample:
+      type: object
+      properties:
+        ts:
+          type: string
+          format: date-time
+        air_temperature:
+          type: number
+          format: double
+          nullable: true
+        track_temperature:
+          type: number
+          format: double
+          nullable: true
+        humidity:
+          type: number
+          format: double
+          nullable: true
+        pressure:
+          type: number
+          format: double
+          nullable: true
+        wind_speed:
+          type: number
+          format: double
+          nullable: true
+        wind_direction:
+          type: integer
+          nullable: true
+        rainfall:
+          type: boolean
+      required:
+      - air_temperature
+      - humidity
+      - pressure
+      - rainfall
+      - track_temperature
+      - ts
+      - wind_direction
+      - wind_speed
   securitySchemes:
     cookieAuth:
       type: apiKey
