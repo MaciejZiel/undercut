@@ -124,6 +124,9 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.AnonRateThrottle"],
     "DEFAULT_THROTTLE_RATES": {"anon": "60/min"},
+    # Behind nginx the peer is always 127.0.0.1; nginx puts the real client IP in
+    # X-Forwarded-For, so set DRF_NUM_PROXIES=1 there to throttle per visitor.
+    "NUM_PROXIES": env.int("DRF_NUM_PROXIES", default=None),
 }
 
 SPECTACULAR_SETTINGS = {

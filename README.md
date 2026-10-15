@@ -31,3 +31,11 @@ make test
 ## Data sources
 
 Jolpica-F1 and OpenF1 (both CC BY-NC-SA 4.0, non-commercial use, attribution required).
+
+## Self-hosting on Termux
+
+The production setup runs without Docker on a self-hosted home server: PostgreSQL, gunicorn (API on 127.0.0.1:8110),
+the outbox worker, the scheduler and the Next.js standalone server (127.0.0.1:3110) run as plain processes under
+restart loops, behind nginx and a Cloudflare Tunnel. Start scripts, an env example, nginx snippets, supervisor
+examples and a deploy/update/rollback runbook are in [deploy/termux/](deploy/termux/README.md).
+Termux on aarch64 is needed only for the setup: `psycopg[c]` replaces `psycopg[binary]` there (handled by `install.sh`).
