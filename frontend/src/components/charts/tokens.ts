@@ -10,16 +10,16 @@ export type ChartTokens = {
 };
 
 const FALLBACK: ChartTokens = {
-  fg: "#203149",
-  muted: "#5d6b7e",
-  line: "#dce3ed",
-  surface: "#f0f5fc",
-  accent: "#244d8e",
+  fg: "#1d1e1b",
+  muted: "#5a5851",
+  line: "#cbc7bc",
+  surface: "#e9e5d9",
+  accent: "#b8341a",
   palette: [],
 };
 
-const LIGHT_PALETTE = ["#244d8e", "#d55e00", "#0072b2", "#009e73", "#cc79a7", "#8a6d00", "#56b4e9", "#b3261e", "#5d6b7e", "#117733"];
-const DARK_PALETTE = ["#8fb4f0", "#ff9f4a", "#56b4e9", "#3ddc97", "#f28dc0", "#e6c84a", "#7fd0ff", "#ff8a80", "#9ba8c1", "#6fd08c"];
+const LIGHT_PALETTE = ["#b8341a", "#1f4e79", "#2a7f62", "#b07a00", "#7a4a8c", "#0b7285", "#8a5a3c", "#5a5851", "#d6603b", "#3d6b2e"];
+const DARK_PALETTE = ["#ff7a5c", "#7fb2e5", "#4fcf9f", "#e6b84a", "#c79be0", "#4fc3d6", "#d49a7a", "#a8a59c", "#ffa17f", "#8fd16f"];
 
 function isDark(root: HTMLElement): boolean {
   const explicit = root.getAttribute("data-theme");

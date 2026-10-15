@@ -12,16 +12,20 @@ import {
 import { formatLapTime } from "@/lib/format";
 
 const FADED = 0.12;
+const MONO = "IBM Plex Mono, ui-monospace, Menlo, monospace";
 
 function axisBits(tokens: ChartTokens) {
-  const axisText = { color: tokens.muted };
+  const axisText = { color: tokens.muted, fontFamily: MONO, fontSize: 11 };
   return {
     axisText,
     tooltip: {
       confine: true,
       backgroundColor: tokens.surface,
-      borderColor: tokens.line,
-      textStyle: { color: tokens.fg },
+      borderColor: tokens.fg,
+      borderWidth: 1,
+      padding: [6, 10],
+      extraCssText: "border-radius:0;box-shadow:none;",
+      textStyle: { color: tokens.fg, fontFamily: MONO, fontSize: 12 },
     },
     line: { lineStyle: { color: tokens.line } },
   };

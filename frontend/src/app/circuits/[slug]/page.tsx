@@ -79,7 +79,7 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
       >
         {c.locality && <p className="mt-3 text-muted">{c.locality}</p>}
       </EntityHeader>
-      <div className={`mb-12 grid gap-x-12 gap-y-8 ${c.outline ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]" : ""}`}>
+      <div className="mb-12 grid gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         {c.outline && (
           <figure className="m-0">
             <TrackOutline outline={c.outline} name={c.name} lapMs={c.lap_record_ms} className="mx-auto w-full max-h-[28rem]" />
@@ -93,6 +93,14 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
                 Current layout. Outline from the f1-circuits data set by Tomislav Bacinger (MIT licence).
               </figcaption>
             )}
+          </figure>
+        )}
+        {!c.outline && (
+          <figure className="m-0 flex min-h-56 flex-col items-center justify-center border border-dashed border-line-strong p-6 text-center">
+            <p className="display text-5xl text-ghost sm:text-7xl">{c.country}</p>
+            <figcaption className="eyebrow mt-3 normal-case tracking-normal">
+              No track outline for this circuit. Free map data exists only for the layouts used since 2023 and a few older ones.
+            </figcaption>
           </figure>
         )}
         <dl aria-label={`${c.name} facts`} className="self-center border-t border-line">
