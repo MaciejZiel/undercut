@@ -41,23 +41,45 @@ def process_batch(limit: int = 20) -> int:
     return handled
 
 
+def _handler_ids(event_type: str) -> list[tuple[str, registry.Handler]]:
+    """Stable ids for the handlers of an event type (a repeated name gets a #n suffix)."""
+    seen: dict[str, int] = {}
+    out = []
+    for handler in registry.handlers_for(event_type):
+        base = f"{handler.__module__}.{handler.__qualname__}"
+        seen[base] = seen.get(base, 0) + 1
+        out.append((base if seen[base] == 1 else f"{base}#{seen[base]}", handler))
+    return out
+
+
 def _deliver(event: OutboxEvent) -> bool:
-    try:
-        # Savepoint: a failing handler must not poison the claiming transaction.
-        with transaction.atomic():
-            for handler in registry.handlers_for(event.type):
+    """Run every handler that has not succeeded yet. One failing handler never re-runs the
+    others, and never stops them: they are independent consumers of the same fact."""
+    delivered = list(event.delivered)
+    errors: list[str] = []
+    for handler_id, handler in _handler_ids(event.type):
+        if handler_id in delivered:
+            continue
+        try:
+            # Savepoint: a failing handler must not poison the claiming transaction.
+            with transaction.atomic():
                 handler(event)
-    except Exception as exc:
+        except Exception as exc:
+            errors.append(f"{handler_id}: {type(exc).__name__}: {exc}")
+            logger.exception("Handler %s failed for %s", handler_id, event)
+        else:
+            delivered.append(handler_id)
+    event.delivered = delivered
+    if errors:
         event.attempts += 1
-        event.last_error = f"{type(exc).__name__}: {exc}"
+        event.last_error = "; ".join(errors)
         if event.attempts >= MAX_ATTEMPTS:
             event.status = OutboxEvent.Status.DEAD
         else:
             event.available_at = timezone.now() + backoff(event.attempts)
-        event.save(update_fields=["attempts", "last_error", "status", "available_at"])
-        logger.exception("Event %s failed (attempt %s)", event, event.attempts)
+        event.save(update_fields=["attempts", "last_error", "status", "available_at", "delivered"])
         return False
     event.status = OutboxEvent.Status.DONE
     event.processed_at = timezone.now()
-    event.save(update_fields=["status", "processed_at"])
+    event.save(update_fields=["status", "processed_at", "delivered"])
     return True

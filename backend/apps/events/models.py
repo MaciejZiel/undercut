@@ -16,6 +16,8 @@ class OutboxEvent(models.Model):
     payload = models.JSONField(default=dict)
     status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
     attempts = models.PositiveSmallIntegerField(default=0)
+    # Handlers that already succeeded for this event: a retry runs only the failed ones.
+    delivered = models.JSONField(default=list, blank=True)
     available_at = models.DateTimeField(db_default=models.functions.Now())
     created_at = models.DateTimeField(auto_now_add=True)
     processed_at = models.DateTimeField(null=True, blank=True)

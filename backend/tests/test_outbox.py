@@ -121,3 +121,59 @@ def test_future_events_are_not_delivered_early():
     registry.subscribe("Later")(lambda e: pytest.fail("delivered too early"))
     publish("Later", available_at=timezone.now() + timedelta(hours=1))
     assert process_batch() == 0
+
+
+@pytest.mark.django_db
+def test_retry_runs_only_the_handlers_that_failed():
+    calls = {"good": 0, "flaky": 0}
+
+    def good(_event):
+        calls["good"] += 1
+
+    def flaky(_event):
+        calls["flaky"] += 1
+        if calls["flaky"] == 1:
+            raise ValueError("first time fails")
+
+    registry.subscribe("Ping")(good)
+    registry.subscribe("Ping")(flaky)
+    event = publish("Ping")
+
+    process_batch()
+    event.refresh_from_db()
+    assert (calls, event.status, len(event.delivered)) == (
+        {"good": 1, "flaky": 1},
+        OutboxEvent.Status.PENDING,
+        1,
+    )
+
+    OutboxEvent.objects.filter(pk=event.pk).update(available_at=timezone.now())
+    process_batch()
+    event.refresh_from_db()
+
+    assert calls == {"good": 1, "flaky": 2}  # the good handler was NOT run again
+    assert event.status == OutboxEvent.Status.DONE
+
+
+@pytest.mark.django_db
+def test_a_failing_handler_does_not_stop_the_others():
+    seen = []
+    registry.subscribe("Ping")(lambda e: 1 / 0)
+    registry.subscribe("Ping")(lambda e: seen.append("second"))
+    publish("Ping")
+
+    process_batch()
+
+    assert seen == ["second"]
+
+
+@pytest.mark.django_db
+def test_two_lambdas_on_one_event_are_tracked_separately():
+    seen = []
+    registry.subscribe("Ping")(lambda e: seen.append("a"))
+    registry.subscribe("Ping")(lambda e: seen.append("b"))
+    publish("Ping")
+
+    process_batch()
+
+    assert sorted(seen) == ["a", "b"]
