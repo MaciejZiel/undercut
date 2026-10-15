@@ -1059,6 +1059,7 @@ dependencies = [
     { name = "drf-spectacular" },
     { name = "gunicorn" },
     { name = "psycopg", extra = ["binary"] },
+    { name = "tzdata" },
     { name = "whitenoise" },
 ]
 
@@ -1084,6 +1085,7 @@ requires-dist = [
     { name = "drf-spectacular", specifier = ">=0.30.0" },
     { name = "gunicorn", specifier = ">=26.2.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
+    { name = "tzdata", specifier = ">=2025.2" },
     { name = "whitenoise", specifier = ">=6.12.0" },
 ]
 

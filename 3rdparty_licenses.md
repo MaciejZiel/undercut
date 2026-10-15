@@ -22,3 +22,4 @@
 | https://github.com/eliben/pycparser | pycparser 3.11 (cffi, transitive) | BSD-3-Clause | https://github.com/eliben/pycparser/blob/main/LICENSE |
 | https://github.com/apache/echarts | echarts 6.1.0 | Apache-2.0 | https://github.com/apache/echarts/blob/master/LICENSE |
 | https://github.com/ecomfe/zrender | zrender (echarts, transitive) | BSD-3-Clause | https://github.com/ecomfe/zrender/blob/master/LICENSE |
+| https://github.com/python/tzdata | tzdata | Apache-2.0 | https://github.com/python/tzdata/blob/master/LICENSE |

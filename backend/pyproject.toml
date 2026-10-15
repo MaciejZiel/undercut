@@ -12,6 +12,7 @@ dependencies = [
     "drf-spectacular>=0.30.0",
     "gunicorn>=26.2.0",
     "psycopg[binary]>=3.2",
+    "tzdata>=2025.2",
     "whitenoise>=6.12.0",
 ]
 
