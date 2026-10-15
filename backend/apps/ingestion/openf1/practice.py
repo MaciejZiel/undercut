@@ -98,7 +98,11 @@ def import_practice_session(
     with transaction.atomic():
         resolution = matching.resolve_drivers(ms.year, drivers)
         rows, problems = build_rows(ms.year, results, drivers, resolution.mapping)
-        outcome.problems = problems + [str(item["error"]) for item in resolution.unmatched]
+        outcome.problems = problems + [
+            f"car {item.get('driver_number')} ({item.get('full_name') or item.get('name_acronym')}) "
+            f"is not in the catalog (practice-only driver)"
+            for item in resolution.unmatched
+        ]
         counts = catalog.upsert_practice_results(ms.session_id, rows)
         outcome.rows, outcome.created, outcome.updated = len(rows), counts.created, counts.updated
         ended = ms.end_utc is not None and ms.end_utc + FINAL_AFTER <= now
