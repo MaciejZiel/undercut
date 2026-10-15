@@ -19,7 +19,7 @@ export function PlaceholderPage({
       <EmptyState
         title={emptyTitle}
         description={emptyDescription}
-        action={{ label: "Back to dashboard", href: "/" }}
+        action={{ label: "Back to the home page", href: "/" }}
       />
     </>
   );

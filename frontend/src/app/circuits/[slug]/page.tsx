@@ -5,13 +5,14 @@ import { circuitHref } from "@/lib/routes";
 import { notFound } from "next/navigation";
 import { DetailPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
+import { TrackOutline } from "@/components/catalog/track-outline";
 import { EntityHeader } from "@/components/ui/entity-header";
 import { ConstructorLink, DriverLink, Nationality } from "@/components/ui/entity-links";
-import { StatTiles } from "@/components/ui/stat-tiles";
 import { CircuitWinnersTable, MostWinsList } from "@/components/catalog/circuit-tables";
 import { getCircuit } from "@/lib/api/queries";
 import { formatDate, formatInteger, formatLapTime, formatLength } from "@/lib/format";
 import { isSlug } from "@/lib/url";
+import { orDash } from "@/components/ui/value";
 
 export async function generateMetadata({ params }: PageProps<"/circuits/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -38,7 +39,7 @@ function OsmMap({ lat, lng, name }: { lat: number; lng: number; name: string }) 
   const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat.toFixed(5)}%2C${lng.toFixed(5)}`;
   return (
     <section aria-labelledby="map-h" className="mb-10">
-      <h2 id="map-h" className="mb-3 text-xl font-extrabold tracking-tight">
+      <h2 id="map-h" className="mb-3 heading text-3xl">
         Location
       </h2>
       <iframe
@@ -46,7 +47,7 @@ function OsmMap({ lat, lng, name }: { lat: number; lng: number; name: string }) 
         src={src}
         loading="lazy"
         referrerPolicy="no-referrer"
-        className="h-72 w-full rounded-sm border border-line bg-surface-2"
+        className="h-72 w-full rounded-xl bg-surface-2"
       />
       <p className="mt-2 text-sm text-muted">
         <a
@@ -78,30 +79,48 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
       >
         {c.locality && <p className="mt-3 text-muted">{c.locality}</p>}
       </EntityHeader>
-      <StatTiles
-        label={`${c.name} facts`}
-        stats={[
-          { label: "Grands Prix", value: formatInteger(c.gp_count) },
-          { label: "Last Grand Prix", value: formatDate(c.last_gp_date) },
-          { label: "Lap length", value: formatLength(c.length_m) },
-          {
-            label: "Lap record",
-            value: lapRecord ? (
-              <span>
-                {lapRecord}
-                {(c.lap_record_driver || c.lap_record_year) && (
-                  <span className="block text-sm font-normal text-muted">
-                    {[c.lap_record_driver, c.lap_record_year].filter(Boolean).join(", ")}
-                  </span>
-                )}
-              </span>
-            ) : null,
-          },
-        ]}
-      />
+      <div className={`mb-12 grid gap-x-12 gap-y-8 ${c.outline ? "lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]" : ""}`}>
+        {c.outline && <TrackOutline outline={c.outline} name={c.name} />}
+        <dl aria-label={`${c.name} facts`} className="self-center border-t border-line">
+          <div className="border-b border-line py-4">
+            <dt className="label">Lap record</dt>
+            <dd className="mt-1">
+              {lapRecord ? (
+                <>
+                  <span className="numeral block text-6xl">{lapRecord}</span>
+                  {(c.lap_record_driver || c.lap_record_year) && (
+                    <span className="mt-1 block text-muted">
+                      {[c.lap_record_driver, c.lap_record_year].filter(Boolean).join(", ")}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className="text-muted">No race lap recorded yet</span>
+              )}
+            </dd>
+          </div>
+          <div className="grid grid-cols-2 gap-x-8">
+            <div className="border-b border-line py-4">
+              <dt className="label">Lap length</dt>
+              <dd className="numeral mt-1 text-4xl">
+                {c.length_is_estimate && c.length_m ? "≈ " : ""}
+                {orDash(formatLength(c.length_m))}
+              </dd>
+            </div>
+            <div className="border-b border-line py-4">
+              <dt className="label">Grands Prix</dt>
+              <dd className="numeral mt-1 text-4xl">{orDash(formatInteger(c.gp_count))}</dd>
+            </div>
+          </div>
+          <div className="border-b border-line py-4">
+            <dt className="label">Last Grand Prix</dt>
+            <dd className="mt-1 text-xl font-semibold">{orDash(formatDate(c.last_gp_date))}</dd>
+          </div>
+        </dl>
+      </div>
       {c.lat != null && c.lng != null && <OsmMap lat={c.lat} lng={c.lng} name={c.name} />}
       <section aria-labelledby="records-h" className="mb-10">
-        <h2 id="records-h" className="mb-3 text-xl font-extrabold tracking-tight">
+        <h2 id="records-h" className="mb-3 heading text-3xl">
           Most wins
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -124,7 +143,7 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
         </div>
       </section>
       <section aria-labelledby="winners-h">
-        <h2 id="winners-h" className="mb-3 text-xl font-extrabold tracking-tight">
+        <h2 id="winners-h" className="mb-3 heading text-3xl">
           Winners
         </h2>
         {c.winners.length === 0 ? (

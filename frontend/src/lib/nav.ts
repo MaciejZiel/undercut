@@ -14,7 +14,7 @@ export const CATALOG_LINKS = [
 ] as const;
 
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Dashboard", match: [], icon: "dashboard" },
+  { href: "/", label: "Home", match: [], icon: "dashboard" },
   { href: "/calendar", label: "Calendar", match: ["/calendar"], icon: "calendar" },
   { href: "/standings/drivers", label: "Standings", match: ["/standings"], icon: "standings" },
   {

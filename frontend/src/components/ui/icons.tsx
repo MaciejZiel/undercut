@@ -88,6 +88,17 @@ export const InboxIcon = (p: IconProps) => (
   </Base>
 );
 
+export const DownloadIcon = (p: IconProps) => (
+  <Base width="18" height="18" {...p}>
+    <path d="M12 4v11m-4-4 4 4 4-4M5 16v4h14v-4" />
+  </Base>
+);
+export const ArrowRightIcon = (p: IconProps) => (
+  <Base width="18" height="18" {...p}>
+    <path d="M4 12h15m-6-6 6 6-6 6" />
+  </Base>
+);
+
 export const TAB_ICONS = {
   dashboard: DashboardIcon,
   calendar: CalendarIcon,

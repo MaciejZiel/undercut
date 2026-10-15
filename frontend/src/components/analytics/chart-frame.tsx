@@ -48,12 +48,12 @@ export function ChartFrame({
       className={
         full
           ? "fixed inset-0 z-50 flex flex-col overflow-auto bg-bg p-4"
-          : "rounded-sm border border-line bg-surface p-3"
+          : "rounded-xl bg-surface p-3"
       }
       aria-label={title}
     >
       <figcaption className="mb-3 flex flex-wrap items-center gap-2">
-        <h3 className="mr-auto text-base font-extrabold tracking-tight">{title}</h3>
+        <h3 className="mr-auto text-base font-bold">{title}</h3>
         {controls}
         <button type="button" aria-pressed={asTable} onClick={() => setAsTable((v) => !v)} className={btn}>
           {asTable ? "Show as chart" : "Show as table"}

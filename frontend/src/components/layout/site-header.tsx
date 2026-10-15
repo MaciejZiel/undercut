@@ -9,9 +9,9 @@ import { UnverifiedBanner } from "@/components/account/unverified-banner";
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-bg">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-2 px-4 md:gap-4">
+      <div className="mx-auto flex h-16 w-full max-w-[77.5rem] items-center gap-2 px-4 sm:px-6 md:h-[4.5rem] md:gap-4 lg:px-10">
         <Logo />
-        <div className="md:ml-4">
+        <div className="md:ml-6 lg:ml-10">
           <Suspense fallback={null}>
             <MainNav />
           </Suspense>

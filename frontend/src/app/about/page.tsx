@@ -22,7 +22,7 @@ const AVAILABILITY = [
 ] as const;
 
 const link = "font-semibold text-accent underline underline-offset-4 hover:no-underline";
-const h2 = "mb-3 text-xl font-extrabold tracking-tight";
+const h2 = "heading mb-3 text-2xl";
 
 export default function AboutPage() {
   return (
@@ -48,7 +48,7 @@ export default function AboutPage() {
           <h2 id="notice-h" className={h2}>
             Unofficial and non-commercial
           </h2>
-          <p className="rounded-sm border border-line bg-surface p-4">
+          <p className="rounded-xl bg-surface p-4">
             Undercut is an unofficial fan site. It is not affiliated with, endorsed by or connected to Formula One
             Group, Formula 1, the FIA or any team or driver. It is non-commercial: there are no ads, no payments and
             no sponsored content. It does not use official logos, trademarks or driver photos.
@@ -82,6 +82,34 @@ export default function AboutPage() {
             (dropped scores, shared drives, exclusions) cannot be reproduced from results alone. If you find a
             mistake, please report it, so it can be fixed at the source or corrected here.
           </p>
+        </section>
+
+        <section id="credits" aria-labelledby="credits-h">
+          <h2 id="credits-h" className={h2}>
+            Photograph and fonts
+          </h2>
+          <ul className="flex list-disc flex-col gap-3 pl-5">
+            <li>
+              Photograph on the home page:{" "}
+              <a className={link} href="https://commons.wikimedia.org/wiki/File:Crowds_at_Circuit_of_the_Americas.jpg" rel="noopener noreferrer">
+                Crowds at Circuit of the Americas
+              </a>
+              , 18 November 2012, by Earl McGehee, licensed under{" "}
+              <a className={link} href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener noreferrer">
+                CC BY-SA 3.0
+              </a>
+              . The image is only cropped by the page layout; colours are unchanged. It shows a grandstand at a real
+              circuit and is not a picture of the race it appears next to.
+            </li>
+            <li>
+              Type: DM Serif Display (Colophon Foundry, for Google Fonts) and Manrope (Mikhail Sharanda and
+              contributors), both under the{" "}
+              <a className={link} href="/licenses/OFL-1.1.txt">
+                SIL Open Font License 1.1
+              </a>
+              .
+            </li>
+          </ul>
         </section>
 
         <section aria-labelledby="how-h">

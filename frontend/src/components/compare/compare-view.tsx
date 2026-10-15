@@ -93,7 +93,7 @@ export function CompareView({ initial }: { initial: CompareState }) {
 
   return (
     <div className="flex flex-col gap-8">
-      <form onSubmit={submitSeason} className="grid grid-cols-1 gap-4 rounded-sm border border-line bg-surface p-4 sm:grid-cols-3">
+      <form onSubmit={submitSeason} className="grid grid-cols-1 gap-4 rounded-xl bg-surface p-4 sm:grid-cols-3">
         <DriverPicker
           label="First driver"
           value={state.a ? { slug: state.a, name: nameOf(state.a, query.data?.a.driver.name) } : null}
@@ -120,9 +120,9 @@ export function CompareView({ initial }: { initial: CompareState }) {
               onChange={(e) => setSeasonText(e.target.value)}
               aria-invalid={seasonError ? true : undefined}
               aria-describedby={seasonError ? "compare-season-err" : undefined}
-              className="w-full rounded-sm border border-line bg-surface px-3 py-2 text-sm"
+              className="w-full rounded-md border border-line-strong bg-bg px-3 py-2 text-sm"
             />
-            <button type="submit" className="t-fast rounded-sm bg-accent px-3 py-2 text-sm font-bold text-accent-fg hover:opacity-90">
+            <button type="submit" className="t-fast rounded-md bg-accent px-3 py-2 text-sm font-bold text-accent-fg hover:opacity-90">
               Apply
             </button>
           </div>
@@ -180,7 +180,7 @@ function Comparison({ data }: { data: Compare }) {
   return (
     <>
       <section aria-labelledby="cmp-stats-h">
-        <h2 id="cmp-stats-h" className="mb-3 text-xl font-extrabold tracking-tight">
+        <h2 id="cmp-stats-h" className="mb-3 heading text-2xl">
           Career statistics
         </h2>
         <DataTable caption={`Career statistics of ${a.driver.name} and ${b.driver.name}`} minWidth="0">
@@ -223,7 +223,7 @@ function Comparison({ data }: { data: Compare }) {
       </section>
 
       <section aria-labelledby="cmp-h2h-h">
-        <h2 id="cmp-h2h-h" className="mb-1 text-xl font-extrabold tracking-tight">
+        <h2 id="cmp-h2h-h" className="mb-1 heading text-2xl">
           Head to head
         </h2>
         <p className="mb-3 text-sm text-muted">
@@ -260,7 +260,7 @@ function Comparison({ data }: { data: Compare }) {
 
       {h2h.teammate_seasons.length > 0 && (
         <section aria-labelledby="cmp-lap-h">
-          <h2 id="cmp-lap-h" className="mb-3 text-xl font-extrabold tracking-tight">
+          <h2 id="cmp-lap-h" className="mb-3 heading text-2xl">
             Team mates: median race laps
           </h2>
           <div className="flex flex-col gap-6">
@@ -296,7 +296,7 @@ function Duel({
   const sum = aAhead + bAhead;
   const share = sum > 0 ? Math.round((aAhead / sum) * 100) : null;
   return (
-    <article className="rounded-sm border border-line bg-surface p-4">
+    <article className="rounded-xl bg-surface p-4">
       <h3 className="font-bold">{title}</h3>
       <p className="mb-3 text-xs text-muted">{note}</p>
       {total === 0 ? (

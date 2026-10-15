@@ -9,7 +9,7 @@ import {
   formatPoints,
   formatPosition,
   formatRaceTime,
-  formatResultTime,
+  formatRaceGap,
   initials,
 } from "./format";
 
@@ -32,10 +32,19 @@ describe("time formatting", () => {
     expect(formatGap(75000)).toBe("+1:15.000");
   });
 
-  it("picks total time for the winner and gap for the rest", () => {
-    expect(formatResultTime(1, 5527123)).toBe("1:32:07.123");
-    expect(formatResultTime(2, 5234)).toBe("+5.234");
-    expect(formatResultTime(null, 5234)).toBe("+5.234");
+  it("shows the winner's total time and the others' gap to it", () => {
+    const winner = { position: 1, time_ms: 5527123, laps: 57, status: "Finished" };
+    expect(formatRaceGap(winner, winner)).toBe("1:32:07.123");
+    expect(formatRaceGap({ position: 2, time_ms: 5527123 + 5234, laps: 57, status: "Finished" }, winner)).toBe("+5.234");
+    expect(formatRaceGap({ position: 3, time_ms: 5527123 + 75000, laps: 57, status: "Finished" }, winner)).toBe("+1:15.000");
+  });
+
+  it("shows laps down for lapped cars and nothing for retirements", () => {
+    const winner = { position: 1, time_ms: 5527123, laps: 57, status: "Finished" };
+    expect(formatRaceGap({ position: 12, time_ms: 5600000, laps: 56, status: "Lapped" }, winner)).toBe("+1 lap");
+    expect(formatRaceGap({ position: 14, time_ms: 5600000, laps: 55, status: "Lapped" }, winner)).toBe("+2 laps");
+    expect(formatRaceGap({ position: 18, time_ms: 5500000, laps: 40, status: "Retired" }, winner)).toBeNull();
+    expect(formatRaceGap({ position: 19, time_ms: null, laps: 20, status: "Retired" }, winner)).toBeNull();
   });
 
   it("returns null for missing or invalid values, never zero", () => {
@@ -44,7 +53,7 @@ describe("time formatting", () => {
     expect(formatLapTime(-1)).toBeNull();
     expect(formatRaceTime(null)).toBeNull();
     expect(formatGap(null)).toBeNull();
-    expect(formatResultTime(1, null)).toBeNull();
+    expect(formatRaceGap({ position: 1, time_ms: null, laps: 5, status: null }, undefined)).toBeNull();
   });
 
   it("keeps a real zero as a value", () => {

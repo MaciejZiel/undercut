@@ -19,27 +19,27 @@ export function ogCard({ eyebrow, title, subtitle }: { eyebrow: string; title: s
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "#0b0f19",
-          color: "#e8ecf5",
+          background: "#f0f5fc",
+          color: "#203149",
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", fontSize: 40, fontWeight: 800 }}>
-          <div style={{ width: 56, height: 12, background: "#b99cff", marginRight: 20, display: "flex" }} />
-          Undercut
+        <div style={{ display: "flex", alignItems: "center", fontSize: 44, fontWeight: 800, color: "#244d8e", letterSpacing: -2 }}>
+          <div style={{ width: 52, height: 52, background: "#244d8e", borderRadius: 12, marginRight: 16, display: "flex" }} />
+          undercut
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", fontSize: 32, color: "#b99cff", textTransform: "uppercase", letterSpacing: 4 }}>
+          <div style={{ display: "flex", fontSize: 32, fontWeight: 700, color: "#244d8e" }}>
             {eyebrow}
           </div>
-          <div style={{ display: "flex", fontSize: long ? 72 : 96, fontWeight: 800, lineHeight: 1.05, marginTop: 16 }}>
+          <div style={{ display: "flex", fontSize: long ? 72 : 96, fontWeight: 800, lineHeight: 1.05, marginTop: 16, letterSpacing: -2 }}>
             {title}
           </div>
           {subtitle ? (
-            <div style={{ display: "flex", fontSize: 36, color: "#9ba8c1", marginTop: 20 }}>{subtitle}</div>
+            <div style={{ display: "flex", fontSize: 36, color: "#5d6b7e", marginTop: 20 }}>{subtitle}</div>
           ) : null}
         </div>
-        <div style={{ display: "flex", fontSize: 26, color: "#9ba8c1" }}>
+        <div style={{ display: "flex", fontSize: 26, color: "#5d6b7e" }}>
           Unofficial fan site. Not affiliated with Formula One Group or the FIA.
         </div>
       </div>

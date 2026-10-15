@@ -30,7 +30,7 @@ describe("RaceResultsTable", () => {
         caption="2024 Test GP race results"
         results={[
           race({ slug: "a" }),
-          race({ slug: "b", position: 2, position_text: "2", time_ms: 5234, points: 18, position_change: 0, fastest_lap: true }),
+          race({ slug: "b", position: 2, position_text: "2", time_ms: 5527123 + 5234, points: 18, position_change: 0, fastest_lap: true }),
         ]}
       />,
     );
@@ -44,6 +44,19 @@ describe("RaceResultsTable", () => {
     const second = within(rows[2]);
     expect(second.getByText("+5.234")).toBeInTheDocument();
     expect(second.getByTitle("Fastest lap")).toBeInTheDocument();
+  });
+
+  it("shows laps down for a lapped car instead of a time", () => {
+    render(
+      <RaceResultsTable
+        caption="2024 Test GP race results"
+        results={[
+          race({ slug: "a" }),
+          race({ slug: "z", position: 15, position_text: "15", laps: 56, status: "Lapped", time_ms: 5530000, points: 0 }),
+        ]}
+      />,
+    );
+    expect(within(screen.getAllByRole("row")[2]).getByText("+1 lap")).toBeInTheDocument();
   });
 
   it("shows em dashes for nulls and the retirement code, never zeros", () => {

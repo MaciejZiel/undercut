@@ -6,7 +6,7 @@ import {
   formatLapTime,
   formatPoints,
   formatPosition,
-  formatResultTime,
+  formatRaceGap,
 } from "@/lib/format";
 import { ConstructorLink, DriverLink } from "@/components/ui/entity-links";
 import { DataTable, RowTh, Td, Th, Tr } from "@/components/ui/data-table";
@@ -18,7 +18,7 @@ type S = components["schemas"];
 export function PositionChange({ change }: { change: number | null }) {
   const d = describePositionChange(change);
   if (!d) return <Dash label="No grid position" />;
-  const color = d.direction === "up" ? "text-accent" : d.direction === "down" ? "text-danger" : "text-muted";
+  const color = d.direction === "up" ? "text-positive" : d.direction === "down" ? "text-danger" : "text-muted";
   return (
     <span title={d.label} className={`inline-flex items-center justify-end gap-1 ${color}`}>
       <span aria-hidden="true">{d.symbol}</span>
@@ -44,6 +44,7 @@ function FastestLapMark() {
 }
 
 export function RaceResultsTable({ results, caption }: { results: S["RaceResult"][]; caption: string }) {
+  const winner = results.find((r) => r.position === 1);
   return (
     <DataTable caption={caption} minWidth="52rem">
       <thead>
@@ -65,16 +66,16 @@ export function RaceResultsTable({ results, caption }: { results: S["RaceResult"
             <Td align="right" className="timing font-bold">
               {orDash(formatPosition(r.position, r.position_text), "Not classified")}
             </Td>
-            <RowTh>
+            <RowTh color={r.team.color}>
               <DriverLink slug={r.driver.slug} name={r.driver.name} />
               {r.fastest_lap === true && <FastestLapMark />}
             </RowTh>
             <Td>
-              <ConstructorLink {...r.team} />
+              <ConstructorLink {...r.team} dot={false} />
             </Td>
             <Td align="right">{orDash(formatInteger(r.laps))}</Td>
             <Td align="right" className="timing whitespace-nowrap">
-              {orDash(formatResultTime(r.position, r.time_ms))}
+              {orDash(formatRaceGap(r, winner))}
             </Td>
             <Td>{orDash(r.status)}</Td>
             <Td align="right">{orDash(r.grid === 0 ? "Pit lane" : r.grid)}</Td>
@@ -123,7 +124,7 @@ export function QualifyingResultsTable({
             <Td align="right" className="timing font-bold">
               {orDash(r.position)}
             </Td>
-            <RowTh>
+            <RowTh color={r.team.color}>
               <DriverLink slug={r.driver.slug} name={r.driver.name} />
               {r.eliminated_in && (
                 <span title={`Eliminated in ${r.eliminated_in}`} className="ml-2 text-xs font-bold text-muted">
@@ -132,7 +133,7 @@ export function QualifyingResultsTable({
               )}
             </RowTh>
             <Td>
-              <ConstructorLink {...r.team} />
+              <ConstructorLink {...r.team} dot={false} />
             </Td>
             <Td align="right" className="timing">
               {orDash(formatLapTime(r.q1_ms))}
@@ -175,11 +176,11 @@ export function PracticeResultsTable({ results, caption }: { results: S["Practic
             <Td align="right" className="timing font-bold">
               {orDash(r.position, "No time set")}
             </Td>
-            <RowTh>
+            <RowTh color={r.team.color}>
               <DriverLink slug={r.driver.slug} name={r.driver.name} />
             </RowTh>
             <Td>
-              <ConstructorLink {...r.team} />
+              <ConstructorLink {...r.team} dot={false} />
             </Td>
             <Td align="right" className="mono">
               {orDash(formatLapTime(r.best_lap_ms), "No time set")}

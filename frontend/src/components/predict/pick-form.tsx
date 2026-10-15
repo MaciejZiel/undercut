@@ -104,7 +104,7 @@ export function PickForm({
         save.mutate();
       }}
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-2 rounded-sm border border-line bg-surface p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl bg-surface p-4">
         <span className="text-sm text-muted">Predictions close in</span>
         <Countdown closesAt={state.closes_at} skewMs={skewMs} onExpire={onExpire} />
       </div>
@@ -139,16 +139,16 @@ function ReadOnlyPick({ state }: { state: RoundState; drivers: PickableDriver[] 
   const pick = state.my_pick;
   if (!pick) return null;
   return (
-    <dl className="grid gap-3 rounded-sm border border-line bg-surface p-4 sm:grid-cols-2">
+    <dl className="grid gap-3 rounded-xl bg-surface p-4 sm:grid-cols-2">
       {SLOTS.map((s) => (
         <div key={s.key}>
-          <dt className="text-xs font-bold uppercase tracking-wide text-muted">{s.label}</dt>
+          <dt className="text-xs font-bold text-muted">{s.label}</dt>
           <dd className="font-semibold">{pick[s.key]?.name ?? "—"}</dd>
         </div>
       ))}
       {pick.points != null && (
         <div>
-          <dt className="text-xs font-bold uppercase tracking-wide text-muted">Points</dt>
+          <dt className="text-xs font-bold text-muted">Points</dt>
           <dd className="timing font-semibold">{pick.points}</dd>
         </div>
       )}

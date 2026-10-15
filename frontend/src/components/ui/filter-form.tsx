@@ -21,7 +21,7 @@ export type FilterField =
     };
 
 const control =
-  "t-fast h-10 w-full rounded-sm border border-line bg-surface px-3 text-sm placeholder:text-muted hover:border-muted";
+  "t-fast h-11 w-full rounded-md border border-line-strong bg-bg px-3 text-sm placeholder:text-muted hover:border-accent";
 
 /**
  * Filters as a plain GET form: state lives in the URL, it works without
@@ -53,7 +53,7 @@ export function FilterForm({
         const id = `filter-${f.name}`;
         return (
           <div key={f.name} className="flex min-w-0 flex-col gap-1">
-            <label htmlFor={id} className="text-xs font-bold uppercase tracking-wide text-muted">
+            <label htmlFor={id} className="text-xs font-bold text-muted">
               {f.label}
             </label>
             {f.kind === "select" ? (
@@ -95,12 +95,12 @@ export function FilterForm({
       <div className="flex items-center gap-2">
         <button
           type="submit"
-          className="t-fast h-10 rounded-sm bg-accent px-4 text-sm font-bold text-accent-fg hover:opacity-90"
+          className="t-fast h-11 rounded-md bg-accent px-5 text-sm font-bold text-accent-fg hover:bg-accent-hover"
         >
           Apply
         </button>
         {active && (
-          <Link href={resetHref} className="t-fast h-10 content-center px-2 text-sm font-semibold text-muted hover:text-fg">
+          <Link href={resetHref} className="t-fast h-11 content-center px-2 text-sm font-bold text-accent underline underline-offset-4 hover:no-underline">
             Reset
           </Link>
         )}

@@ -9,7 +9,7 @@ import { MobileTabBar } from "./mobile-tab-bar";
 import { SiteFooter } from "./site-footer";
 import { resetFooterCounts } from "@/components/dashboard/footer-counts";
 
-const LABELS = ["Dashboard", "Calendar", "Standings", "Catalog", "Predict"];
+const LABELS = ["Home", "Calendar", "Standings", "Catalog", "Predict"];
 
 describe("main navigation", () => {
   it("renders the 5 items, Catalog as a dropdown button", () => {
@@ -20,7 +20,7 @@ describe("main navigation", () => {
       expect(within(nav).getByText(label)).toBeInTheDocument();
     }
     expect(within(nav).getByRole("button", { name: "Catalog" })).toHaveAttribute("aria-expanded", "false");
-    expect(within(nav).getByRole("link", { name: "Dashboard" })).toHaveAttribute("aria-current", "page");
+    expect(within(nav).getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "page");
   });
 
   it("opens the catalog dropdown by click and closes it with Escape", () => {

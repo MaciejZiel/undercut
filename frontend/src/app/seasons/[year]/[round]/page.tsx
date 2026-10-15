@@ -8,6 +8,8 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { DetailPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
 import { Badge, CircuitLink, Nationality } from "@/components/ui/entity-links";
+import { RaceSummary } from "@/components/round/race-summary";
+import { BiggestMovers } from "@/components/round/biggest-movers";
 import { PracticeResultsTable, QualifyingResultsTable, RaceResultsTable } from "@/components/round/results-tables";
 import { getRound, getRoundResults, type PracticeResults, type QualifyingResults, type RaceResults } from "@/lib/api/queries";
 import { formatDate, formatLength } from "@/lib/format";
@@ -88,10 +90,10 @@ async function RoundDetail({ params, searchParams }: Props) {
             { label: round.name },
           ]}
         />
-        <h1 className="display text-5xl sm:text-7xl">
+        <h1 className="display text-4xl sm:text-6xl">
           {round.year} {round.name}
         </h1>
-        <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted">
+        <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted">
           <span>Round {round.round}</span>
           <span>{formatDate(round.date)}</span>
           <CircuitLink slug={round.circuit.slug} name={round.circuit.name} />
@@ -100,15 +102,15 @@ async function RoundDetail({ params, searchParams }: Props) {
           {round.scheduled_laps != null && <span className="timing">{round.scheduled_laps} laps</span>}
           {round.is_cancelled && <Badge tone="danger">Cancelled</Badge>}
         </p>
-        <nav aria-label="Rounds" className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm font-semibold">
+        <nav aria-label="Rounds" className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm font-bold">
           {round.previous_round && (
-            <Link href={roundHref(round.previous_round.year, round.previous_round.round)} className="text-muted hover:text-fg">
+            <Link href={roundHref(round.previous_round.year, round.previous_round.round)} className="text-accent underline-offset-4 hover:underline">
               <span aria-hidden="true">&larr; </span>
               Previous: {round.previous_round.name}
             </Link>
           )}
           {round.next_round && (
-            <Link href={roundHref(round.next_round.year, round.next_round.round)} className="text-muted hover:text-fg">
+            <Link href={roundHref(round.next_round.year, round.next_round.round)} className="text-accent underline-offset-4 hover:underline">
               Next: {round.next_round.name}
               <span aria-hidden="true"> &rarr;</span>
             </Link>
@@ -116,8 +118,12 @@ async function RoundDetail({ params, searchParams }: Props) {
         </nav>
       </div>
 
+      {view === "results" && active && (active.type === "RACE" || active.type === "SPRINT") && results && results.results.length > 0 && (
+        <RaceSummary results={(results as RaceResults).results} label={active.label} />
+      )}
+
       {tabs.length > 0 && (
-        <nav aria-label="Sessions" className="mb-5 flex flex-wrap gap-1 border-b border-line">
+        <nav aria-label="Sessions" className="mb-6 flex gap-1 overflow-x-auto border-b border-line">
           {tabs.map((t) => {
             const current = t.key === active?.key;
             return (
@@ -125,8 +131,8 @@ async function RoundDetail({ params, searchParams }: Props) {
                 key={t.key}
                 href={viewHref(base, { session: t.key === defaultTab?.key ? null : t.key, view })}
                 aria-current={current ? "page" : undefined}
-                className={`t-fast -mb-px border-b-4 px-4 py-3 text-[0.9375rem] font-bold ${
-                  current ? "border-flag text-fg" : "border-transparent text-muted hover:text-fg"
+                className={`t-fast -mb-px whitespace-nowrap border-b-[3px] px-4 py-3 text-[0.9375rem] font-bold ${
+                  current ? "border-accent text-accent" : "border-transparent text-muted hover:text-accent"
                 }`}
               >
                 {t.label}
@@ -142,8 +148,8 @@ async function RoundDetail({ params, searchParams }: Props) {
               key={v.key}
               href={viewHref(base, { session: active && active.key !== defaultTab?.key ? active.key : null, view: v.key })}
               aria-current={v.key === view ? "page" : undefined}
-              className={`t-fast rounded-sm border px-3.5 py-2 text-sm font-semibold ${
-                v.key === view ? "border-fg bg-fg text-bg" : "border-line text-muted hover:border-fg hover:text-fg"
+              className={`t-fast rounded-md border px-3.5 py-2 text-sm font-bold ${
+                v.key === view ? "border-accent bg-accent text-accent-fg" : "border-line-strong text-accent hover:border-accent hover:bg-surface"
               }`}
             >
               {v.label}
@@ -172,7 +178,7 @@ async function RoundDetail({ params, searchParams }: Props) {
       ) : (
         <section aria-labelledby="results-h">
           <div className="mb-3 flex flex-wrap items-center gap-3">
-            <h2 id="results-h" className="text-2xl font-bold tracking-tight">
+            <h2 id="results-h" className="heading text-3xl">
               {active.label} results
             </h2>
             {sessionInfo && sessionInfo.status !== "results_final" && <Badge tone="accent">Preliminary</Badge>}
@@ -189,10 +195,13 @@ async function RoundDetail({ params, searchParams }: Props) {
               caption={`${round.year} ${round.name} ${active.label.toLowerCase()} results`}
             />
           ) : (
-            <RaceResultsTable
-              results={(results as RaceResults).results}
-              caption={`${round.year} ${round.name} ${active.label.toLowerCase()} results`}
-            />
+            <>
+              <RaceResultsTable
+                results={(results as RaceResults).results}
+                caption={`${round.year} ${round.name} ${active.label.toLowerCase()} results`}
+              />
+              <BiggestMovers results={(results as RaceResults).results} />
+            </>
           )}
         </section>
       )}

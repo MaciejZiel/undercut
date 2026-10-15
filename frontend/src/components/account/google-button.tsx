@@ -21,7 +21,7 @@ export function GoogleButton({ next }: { next?: string | null }) {
   if (!status.data?.enabled) return null;
   return (
     <>
-      <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-muted" role="separator">
+      <div className="flex items-center gap-3 text-xs text-muted" role="separator">
         <span className="h-px flex-1 bg-line" />
         or
         <span className="h-px flex-1 bg-line" />

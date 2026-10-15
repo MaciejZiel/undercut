@@ -97,7 +97,7 @@ function ChartPanel({ data, kind, season }: { data: Progress; kind: StandingsKin
       </div>
 
       <fieldset className="mb-4">
-        <legend className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">
+        <legend className="mb-2 text-xs font-bold text-muted">
           Lines ({selected.length} of {data.series.length})
         </legend>
         <ul className="flex flex-wrap gap-2">
@@ -139,7 +139,7 @@ function ChartPanel({ data, kind, season }: { data: Progress; kind: StandingsKin
       ) : asTable ? (
         <ProgressTable data={data} selected={selected} metric={metric} caption={label} />
       ) : (
-        <div className="rounded-sm border border-line bg-surface p-3">
+        <div className="rounded-xl bg-surface p-3">
           <EChart option={option} label={label} height={360} />
         </div>
       )}

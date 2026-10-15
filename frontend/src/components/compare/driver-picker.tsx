@@ -158,7 +158,7 @@ export function DriverPicker({
           setOpen(true);
         }}
         onKeyDown={onKeyDown}
-        className="w-full rounded-sm border border-line bg-surface px-3 py-2 text-sm"
+        className="w-full rounded-md border border-line-strong bg-bg px-3 py-2 text-sm"
       />
       {open && (
         <ul
@@ -166,7 +166,7 @@ export function DriverPicker({
           role="listbox"
           aria-label={label}
           onMouseDown={(e) => e.preventDefault()}
-          className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-sm border border-line bg-surface py-1 shadow-lg"
+          className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-line bg-bg py-1 shadow-lg"
         >
           {status && (
             <li role="presentation" className="px-3 py-2 text-sm text-muted">

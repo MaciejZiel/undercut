@@ -20,7 +20,7 @@ export function Pagination({
   const from = (page - 1) * pageSize + 1;
   const to = Math.min(count, page * pageSize);
   const href = (p: number) => buildHref(path, { ...params, page: p > 1 ? p : undefined });
-  const btn = "t-fast rounded-sm border border-line bg-surface px-3 py-1.5 text-sm font-semibold hover:border-muted";
+  const btn = "t-fast rounded-md border border-line-strong bg-bg text-accent px-3 py-1.5 text-sm font-semibold hover:border-accent";
   const off = "rounded-sm border border-line px-3 py-1.5 text-sm font-semibold text-muted opacity-50";
   return (
     <nav aria-label="Pagination" className="mt-4 flex flex-wrap items-center justify-between gap-3">

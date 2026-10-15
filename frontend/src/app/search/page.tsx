@@ -65,10 +65,10 @@ async function SearchResults({ searchParams }: { searchParams: PageProps<"/searc
         <div className="space-y-8">
           {groups.map((g) => (
             <section key={g.key} aria-labelledby={`g-${g.key}`}>
-              <h2 id={`g-${g.key}`} className="mb-2 text-xl font-extrabold tracking-tight">
+              <h2 id={`g-${g.key}`} className="mb-2 heading text-2xl">
                 {g.label}
               </h2>
-              <ul className="divide-y divide-line rounded-sm border border-line bg-surface">
+              <ul className="divide-y divide-line rounded-xl bg-surface">
                 {g.items.map((item) => (
                   <li key={item.id}>
                     <Link

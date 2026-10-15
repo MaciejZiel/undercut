@@ -123,13 +123,17 @@ const base: Dashboard = {
 describe("dashboard sections", () => {
   it("shows empty states when there is no data", async () => {
     getDashboard.mockResolvedValue(base);
-    const { RaceSections, TopFiveSection, ThisDaySection } = await import("./sections");
-    render(await RaceSections());
-    expect(screen.getByText("No season data yet")).toBeInTheDocument();
+    const { NextRaceSection, LastRaceSection, ChampionshipSection, PredictionInvite, ThisDaySection } = await import("./sections");
+    render(await NextRaceSection());
+    expect(screen.getByText("No upcoming race")).toBeInTheDocument();
     cleanup();
-    render(await TopFiveSection({ kind: "drivers" }));
-    expect(screen.getByText("No drivers standings yet")).toBeInTheDocument();
+    render(await LastRaceSection());
+    expect(screen.getByText("No race results yet")).toBeInTheDocument();
     cleanup();
+    render(await ChampionshipSection());
+    expect(screen.getByText("No standings yet")).toBeInTheDocument();
+    cleanup();
+    expect(await PredictionInvite()).toBeNull();
     expect(await ThisDaySection()).toBeNull();
   });
   it("shows the next race and the podium", async () => {
@@ -151,10 +155,14 @@ describe("dashboard sections", () => {
       },
     });
     mockFetch({ "GET /api/v1/auth/me/": { body: ME_ANON } });
-    const { RaceSections } = await import("./sections");
-    renderWithProviders((await RaceSections()) as ReactElement);
+    const { NextRaceSection, LastRaceSection } = await import("./sections");
+    renderWithProviders((await NextRaceSection()) as ReactElement);
     expect(screen.getByRole("link", { name: "Next GP" })).toHaveAttribute("href", "/seasons/2025/4");
+    cleanup();
+    renderWithProviders((await LastRaceSection()) as ReactElement);
     expect(screen.getByRole("link", { name: "N a" })).toBeInTheDocument();
+    cleanup();
+    renderWithProviders((await NextRaceSection()) as ReactElement);
     expect(screen.getByRole("link", { name: "Add the weekend to my calendar" })).toHaveAttribute(
       "href",
       "/api/v1/calendar/ics/?year=2025&round=4",
@@ -162,8 +170,8 @@ describe("dashboard sections", () => {
   });
   it("keeps the error inside the section", async () => {
     getDashboard.mockRejectedValue(new Error("down"));
-    const { TopFiveSection } = await import("./sections");
-    render(await TopFiveSection({ kind: "constructors" }));
-    expect(screen.getByRole("alert")).toHaveTextContent("Could not load the constructors standings");
+    const { ChampionshipSection } = await import("./sections");
+    render(await ChampionshipSection());
+    expect(screen.getByRole("alert")).toHaveTextContent("Could not load the standings");
   });
 });

@@ -64,8 +64,8 @@ function ProfileForm({ user }: { user: User }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5 rounded-sm border border-line bg-surface p-5" noValidate aria-labelledby="profile-h">
-      <h2 id="profile-h" className="text-xl font-extrabold tracking-tight">
+    <form onSubmit={submit} className="space-y-5 rounded-xl bg-surface p-5" noValidate aria-labelledby="profile-h">
+      <h2 id="profile-h" className="heading text-2xl">
         Profile and preferences
       </h2>
       {locked && <Notice tone="info">This is the shared demo account. Its settings cannot be changed.</Notice>}
@@ -147,8 +147,8 @@ function ExportSection() {
   }
 
   return (
-    <section aria-labelledby="export-h" className="rounded-sm border border-line bg-surface p-5">
-      <h2 id="export-h" className="mb-1 text-xl font-extrabold tracking-tight">
+    <section aria-labelledby="export-h" className="rounded-xl bg-surface p-5">
+      <h2 id="export-h" className="mb-1 heading text-2xl">
         Your data
       </h2>
       <p className="mb-3 text-sm text-muted">Download everything we store about you (profile, favourites, predictions) as a JSON file.</p>
@@ -188,7 +188,7 @@ function DeleteSection({ user }: { user: User }) {
 
   return (
     <section aria-labelledby="delete-h" className="rounded-sm border border-danger bg-surface p-5">
-      <h2 id="delete-h" className="mb-1 text-xl font-extrabold tracking-tight text-danger">
+      <h2 id="delete-h" className="mb-1 heading text-2xl text-danger">
         Delete account
       </h2>
       <p className="mb-3 text-sm text-muted">Permanently removes your profile, favourites and predictions. This cannot be undone.</p>
@@ -228,8 +228,8 @@ function GoogleSection() {
   const justLinked = params.get("google") === "linked" && linked;
 
   return (
-    <section aria-labelledby="google-h" className="rounded-sm border border-line bg-surface p-5">
-      <h2 id="google-h" className="mb-1 text-xl font-extrabold tracking-tight">
+    <section aria-labelledby="google-h" className="rounded-xl bg-surface p-5">
+      <h2 id="google-h" className="mb-1 heading text-2xl">
         Google login
       </h2>
       {failure && <Notice className="mb-3">{failure}</Notice>}

@@ -33,13 +33,22 @@ export function formatGap(ms: number | null | undefined): string | null {
   return t === null ? null : `+${t}`;
 }
 
+type Timed = { position: number | null; time_ms: number | null; laps: number | null; status: string | null };
+
 /**
- * Time column of a race result. The API stores the winner's total time and, for
- * the other finishers, the gap to the winner (both in milliseconds).
+ * Gap behind the winner. The API sends every finisher's total race time, so the gap is the difference to
+ * the winner's time. A driver who finished laps down has no meaningful time gap and shows the laps instead;
+ * a driver who retired has none at all.
  */
-export function formatResultTime(position: number | null, timeMs: number | null): string | null {
-  if (timeMs == null) return null;
-  return position === 1 ? formatRaceTime(timeMs) : formatGap(timeMs);
+export function formatRaceGap(result: Timed, winner: Timed | undefined): string | null {
+  if (result.time_ms == null) return null;
+  if (result.position === 1 || winner == null) return formatRaceTime(result.time_ms);
+  if (winner.laps != null && result.laps != null && result.laps < winner.laps) {
+    const down = winner.laps - result.laps;
+    return result.status === "Lapped" ? `+${down} ${down === 1 ? "lap" : "laps"}` : null;
+  }
+  if (winner.time_ms == null || result.time_ms < winner.time_ms) return null;
+  return formatGap(result.time_ms - winner.time_ms);
 }
 
 export type PositionChange = {

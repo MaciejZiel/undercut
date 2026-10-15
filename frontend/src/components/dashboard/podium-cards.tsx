@@ -1,100 +1,69 @@
 import Link from "next/link";
 import type { components } from "@/lib/api/client";
-import { formatLapTime } from "@/lib/format";
+import { formatDate, formatLapTime } from "@/lib/format";
 import { roundHref } from "@/lib/routes";
 import { DriverLink } from "@/components/ui/entity-links";
+import { ArrowRightIcon } from "@/components/ui/icons";
 import { Dash } from "@/components/ui/value";
 
 type S = components["schemas"];
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
-function Swatch({ color }: { color: string | null | undefined }) {
-  const valid = color && HEX.test(color) ? color : null;
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-block size-3.5 shrink-0 rounded-[1px]"
-      style={{ backgroundColor: valid ?? "var(--fg-muted)", opacity: valid ? 1 : 0.5 }}
-    />
-  );
-}
-
-/** Winner large, the other two beside it as plain rows (a podium is not three equal boxes). */
+/** The last race as a short classification: the order is the information, so it is a numbered list. */
 export function PodiumCards({
   year,
   round,
   name,
+  date,
   podium,
   fastestLap,
 }: {
   year: number;
   round: number | null;
   name: string;
+  date?: string;
   podium: S["PodiumEntry"][];
   fastestLap: S["FastestLap"] | null;
 }) {
   const sorted = [...podium].sort((a, b) => a.position - b.position).slice(0, 3);
-  const [winner, ...others] = sorted;
   const lap = fastestLap ? formatLapTime(fastestLap.time_ms) : null;
   return (
     <section aria-labelledby="podium-h">
-      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="podium-h" className="text-2xl font-bold tracking-tight">
-          Last race: {name}
+      <p className="text-sm font-bold text-accent">Last race</p>
+      <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+        <h2 id="podium-h" className="heading text-3xl sm:text-4xl">
+          {name}
         </h2>
-        {round != null && (
-          <Link href={roundHref(year, round)} className="text-sm font-semibold text-muted hover:text-fg">
-            Full results and analysis &rarr;
-          </Link>
-        )}
+        {date && <span className="text-sm text-muted">{formatDate(date)}</span>}
       </div>
-      <ol className="grid grid-cols-1 border-t-2 border-fg md:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] md:grid-rows-2">
-        <li className="border-b border-line py-6 md:row-span-2 md:border-b-0 md:border-r md:pr-8">
-          <p className="numeral text-[7rem] leading-[0.8] sm:text-[9rem]">
-            <span className="sr-only">Position </span>
-            {winner?.position}
-          </p>
-          {winner && (
-            <>
-              <p className="mt-4 text-3xl font-bold leading-tight tracking-tight">
-                <DriverLink slug={winner.driver.slug} name={winner.driver.name} />
-              </p>
-              <p className="mt-1 inline-flex items-center gap-2 text-muted">
-                <Swatch color={winner.team.color} />
-                {winner.team.name}
-              </p>
-            </>
-          )}
-        </li>
-        {others.map((r, i) => (
-          <li
-            key={r.driver.slug}
-            className={`grid grid-cols-[3.5rem_1fr] items-center gap-4 border-b border-line py-5 md:col-start-2 md:pl-8 ${
-              i === 0 ? "md:row-start-1" : "md:row-start-2 md:border-b-0"
-            }`}
-          >
-            <p className="numeral text-6xl">
-              <span className="sr-only">Position </span>
-              {r.position}
-            </p>
-            <div>
-              <p className="text-xl font-bold leading-tight">
-                <DriverLink slug={r.driver.slug} name={r.driver.name} />
-              </p>
-              <p className="mt-0.5 inline-flex items-center gap-2 text-sm text-muted">
-                <Swatch color={r.team.color} />
-                {r.team.name}
-              </p>
-            </div>
-          </li>
-        ))}
+      <ol className="mt-5 border-t border-line">
+        {sorted.map((r) => {
+          const color = r.team.color && HEX.test(r.team.color) ? r.team.color : null;
+          const first = r.position === 1;
+          return (
+            <li key={r.driver.slug} className="grid grid-cols-[2.75rem_minmax(0,1fr)] items-center gap-3 border-b border-line py-4">
+              <span
+                className={`numeral grid size-10 place-items-center rounded-full text-2xl ${first ? "bg-surface text-accent" : "text-muted"}`}
+              >
+                <span className="sr-only">Position </span>
+                {r.position}
+              </span>
+              <div className="border-l-[3px] pl-3" style={{ borderColor: color ?? "var(--line-strong)" }}>
+                <p className={`leading-tight ${first ? "text-lg font-extrabold" : "font-bold"}`}>
+                  <DriverLink slug={r.driver.slug} name={r.driver.name} />
+                </p>
+                <p className="text-sm text-muted">{r.team.name}</p>
+              </div>
+            </li>
+          );
+        })}
       </ol>
-      <p className="mt-4 flex flex-wrap items-baseline gap-x-3 text-[0.9375rem] text-muted">
+      <p className="mt-4 flex flex-wrap items-baseline gap-x-3 text-sm text-muted">
         Fastest lap:{" "}
         {fastestLap ? (
           <>
-            <span className="rounded-sm bg-fg px-1.5 py-0.5 text-[0.6875rem] font-bold uppercase tracking-wider text-bg">Fastest</span>
+            <span className="rounded-sm bg-accent-soft px-1.5 py-0.5 text-xs font-bold text-accent">Fastest</span>
             <DriverLink slug={fastestLap.driver.slug} name={fastestLap.driver.name} />
             <span className="mono text-fg">{lap ?? <Dash />}</span>
           </>
@@ -102,6 +71,15 @@ export function PodiumCards({
           <Dash label="Not available" />
         )}
       </p>
+      {round != null && (
+        <Link
+          href={roundHref(year, round)}
+          className="t-fast mt-6 inline-flex min-h-11 items-center gap-3 rounded-md bg-accent px-5 py-2.5 text-sm font-bold text-accent-fg hover:bg-accent-hover"
+        >
+          Full results and analysis
+          <ArrowRightIcon />
+        </Link>
+      )}
     </section>
   );
 }

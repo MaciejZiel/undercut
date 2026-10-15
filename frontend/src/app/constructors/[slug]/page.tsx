@@ -68,10 +68,10 @@ async function ConstructorDetail({ params }: { params: PageProps<"/constructors/
       />
       {team.current_drivers.length > 0 && (
         <section aria-labelledby="line-up-h" className="mb-10">
-          <h2 id="line-up-h" className="mb-3 text-xl font-extrabold tracking-tight">
+          <h2 id="line-up-h" className="mb-3 heading text-2xl">
             {team.current_season ? `${team.current_season} line-up` : "Line-up"}
           </h2>
-          <ul className="flex flex-wrap gap-x-6 gap-y-2 rounded-sm border border-line bg-surface p-4">
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 rounded-xl bg-surface p-4">
             {team.current_drivers.map((d) => (
               <li key={d.slug}>
                 <DriverLink slug={d.slug} name={d.name} />
@@ -82,7 +82,7 @@ async function ConstructorDetail({ params }: { params: PageProps<"/constructors/
         </section>
       )}
       <section aria-labelledby="seasons-h">
-        <h2 id="seasons-h" className="mb-3 text-xl font-extrabold tracking-tight">
+        <h2 id="seasons-h" className="mb-3 heading text-2xl">
           Seasons
         </h2>
         {seasons.length === 0 ? (

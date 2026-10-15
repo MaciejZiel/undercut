@@ -41,7 +41,7 @@ export function FooterCounts() {
   const drivers = formatInteger(counts?.drivers);
   if (seasons === null || races === null || drivers === null) return null;
   return (
-    <p className="mx-auto max-w-7xl px-4 pb-6 text-sm text-muted">
+    <p className="mt-1 text-[0.8125rem] text-muted">
       {seasons} seasons · {races} races · {drivers} drivers
     </p>
   );

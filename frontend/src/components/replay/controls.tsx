@@ -6,7 +6,7 @@ import type { PlaybackController } from "@/lib/replay/controller";
 import { usePlayback } from "./use-playback";
 
 const btn =
-  "t-fast rounded-sm border border-line bg-surface px-3 py-1.5 text-sm font-bold hover:bg-surface-2 aria-pressed:border-accent aria-pressed:bg-accent-soft aria-pressed:text-accent";
+  "t-fast rounded-md border border-line-strong bg-bg text-accent px-3 py-1.5 text-sm font-bold hover:bg-surface aria-pressed:border-accent aria-pressed:bg-accent-soft aria-pressed:text-accent";
 
 export const SEEK_STEP_S = 10;
 
@@ -58,7 +58,7 @@ export function Controls({
       <label className="flex items-center gap-2 text-sm font-semibold">
         Jump to lap
         <select
-          className="rounded-sm border border-line bg-surface px-2 py-1.5 text-sm"
+          className="rounded-md border border-line-strong bg-bg text-accent px-2 py-1.5 text-sm"
           value={currentLap || ""}
           onChange={(e) => {
             const target = laps.find((l) => l.lap === Number(e.target.value));

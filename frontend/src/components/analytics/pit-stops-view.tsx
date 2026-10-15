@@ -30,7 +30,7 @@ function PitStopsPanel({ data }: { data: PitStops }) {
   return (
     <div className="space-y-6">
       <section aria-labelledby="pit-rank-h">
-        <h3 id="pit-rank-h" className="text-base font-extrabold tracking-tight">
+        <h3 id="pit-rank-h" className="text-base font-bold">
           Fastest pit stops by team
         </h3>
         <p className="mb-2 text-sm text-muted">Ranked by {method}, each team&apos;s best stop.</p>
@@ -58,7 +58,7 @@ function PitStopsPanel({ data }: { data: PitStops }) {
         </DataTable>
       </section>
       <section aria-labelledby="pit-all-h">
-        <h3 id="pit-all-h" className="mb-2 text-base font-extrabold tracking-tight">
+        <h3 id="pit-all-h" className="mb-2 text-base font-bold">
           All pit stops
         </h3>
         <DataTable caption="All pit stops" minWidth="38rem">

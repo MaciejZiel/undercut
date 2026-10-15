@@ -11,12 +11,12 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
   const parent = [...items].reverse().find((c) => c.href);
   return (
     <>
-      <nav aria-label="Breadcrumb" className="mb-3 hidden text-sm text-muted md:block">
+      <nav aria-label="Breadcrumb" className="mb-4 hidden text-sm text-muted md:block">
         <ol className="flex flex-wrap items-center gap-x-2">
           {items.map((c, i) => (
             <li key={`${c.label}-${i}`} className="flex items-center gap-2">
               {c.href && i < items.length - 1 ? (
-                <Link href={c.href} className="hover:text-fg hover:underline">
+                <Link href={c.href} className="text-accent underline-offset-4 hover:underline">
                   {c.label}
                 </Link>
               ) : (
@@ -30,7 +30,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
         </ol>
       </nav>
       {parent && (
-        <Link href={parent.href!} className="mb-3 inline-block text-sm text-muted hover:text-fg md:hidden">
+        <Link href={parent.href!} className="mb-4 inline-block text-sm font-semibold text-accent underline-offset-4 hover:underline md:hidden">
           <span aria-hidden="true">&larr; </span>
           Back to {parent.label}
         </Link>

@@ -7,11 +7,9 @@ import { CatalogMenu } from "./catalog-menu";
 
 function linkClass(active: boolean) {
   return [
-    "t-fast relative inline-flex h-16 items-center px-3 text-[0.9375rem] font-semibold",
-    active ? "text-fg" : "text-muted hover:text-fg",
-    active
-      ? "after:slant-bar after:absolute after:inset-x-3 after:bottom-0 after:h-[4px] after:bg-flag"
-      : "",
+    "t-fast relative inline-flex h-[4.5rem] items-center px-3.5 text-sm font-bold",
+    active ? "text-accent" : "text-fg hover:text-accent",
+    active ? "after:absolute after:inset-x-3.5 after:bottom-0 after:h-[3px] after:rounded-t-sm after:bg-accent" : "",
   ].join(" ");
 }
 

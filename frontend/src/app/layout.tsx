@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import { DM_Serif_Display, Manrope } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -9,9 +9,9 @@ import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import { Suspense } from "react";
 import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/seo";
 
-// Archivo's width axis gives the condensed display style (see .display in globals.css).
-const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], axes: ["wdth"], display: "swap" });
-const plexMono = IBM_Plex_Mono({ variable: "--font-plex-mono", subsets: ["latin"], weight: ["400", "500"], display: "swap" });
+// DM Serif Display sets titles and big figures (.display, .heading, .numeral); Manrope does everything else.
+const dmSerif = DM_Serif_Display({ variable: "--font-dm-serif", subsets: ["latin", "latin-ext"], weight: "400", display: "swap" });
+const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "latin-ext"], display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
@@ -24,20 +24,20 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // suppressHydrationWarning: the inline script sets data-theme before hydration.
-    <html lang="en" className={`${archivo.variable} ${plexMono.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${dmSerif.variable} ${manrope.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body className="flex min-h-full flex-col">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-sm focus:bg-flag focus:px-4 focus:py-2 focus:font-bold focus:text-on-flag"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:font-bold focus:text-accent-fg"
         >
           Skip to main content
         </a>
         <Providers>
           <SiteHeader />
-          <main id="main" tabIndex={-1} className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 outline-none">
+          <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[77.5rem] flex-1 px-4 py-8 outline-none sm:px-6 lg:px-10 lg:py-10">
             {/* Breadcrumb-ready: pages render <PageHeader breadcrumbs={...} /> at the top. */}
             <Suspense fallback={null}>{children}</Suspense>
           </main>

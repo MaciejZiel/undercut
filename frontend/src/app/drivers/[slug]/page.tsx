@@ -77,7 +77,7 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
         <FavoriteButton kind="driver" slug={driver.slug} name={name} />
         <Link
           href={buildHref("/compare", { a: driver.slug })}
-          className="t-fast inline-block rounded-sm border border-line px-3.5 py-2 text-sm font-semibold hover:border-fg"
+          className="t-fast inline-block rounded-sm border border-line px-3.5 py-2 text-sm font-semibold hover:border-accent"
         >
           Compare with&hellip;
         </Link>
@@ -99,7 +99,7 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
         ]}
       />
       <section aria-labelledby="seasons-h" className="mb-10">
-        <h2 id="seasons-h" className="mb-3 text-xl font-extrabold tracking-tight">
+        <h2 id="seasons-h" className="mb-3 heading text-2xl">
           Seasons
         </h2>
         {seasons.length === 0 ? (
@@ -109,7 +109,7 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
         )}
       </section>
       <section aria-labelledby="last-h">
-        <h2 id="last-h" className="mb-3 text-xl font-extrabold tracking-tight">
+        <h2 id="last-h" className="mb-3 heading text-2xl">
           Last results
         </h2>
         {driver.last_results.length === 0 ? (

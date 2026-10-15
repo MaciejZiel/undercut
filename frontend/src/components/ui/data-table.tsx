@@ -16,7 +16,7 @@ export function DataTable({
   minWidth?: string;
 }) {
   return (
-    <div className="overflow-x-auto border-t-2 border-fg">
+    <div className="overflow-x-auto">
       <table className="w-full border-collapse text-left text-sm" style={{ minWidth }}>
         <caption className="sr-only">{caption}</caption>
         {children}
@@ -25,7 +25,7 @@ export function DataTable({
   );
 }
 
-const headClass = "whitespace-nowrap border-b border-line px-3 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-muted";
+const headClass = "whitespace-nowrap border-b border-line bg-surface px-3 py-3 text-xs font-bold text-muted first:rounded-tl-md last:rounded-tr-md";
 
 export function Th({
   children,
@@ -92,7 +92,7 @@ export function SortTh({
 
 export function Tr({ children, muted = false }: { children: ReactNode; muted?: boolean }) {
   return (
-    <tr className={`border-b border-line hover:bg-surface ${muted ? "text-muted" : ""}`}>
+    <tr className={`border-b border-line hover:bg-surface/70 ${muted ? "text-muted" : ""}`}>
       {children}
     </tr>
   );
@@ -111,10 +111,17 @@ export function Td({
   return <td className={`px-3 py-3 align-middle ${a} ${className}`}>{children}</td>;
 }
 
-/** First cell of a row: the row header. */
-export function RowTh({ children, className = "" }: { children: ReactNode; className?: string }) {
+const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+/** First cell of a row: the row header. `color` draws the team colour as a bar on its left edge. */
+export function RowTh({ children, className = "", color }: { children: ReactNode; className?: string; color?: string | null }) {
+  const bar = color && HEX.test(color) ? color : null;
   return (
-    <th scope="row" className={`px-3 py-3 text-left align-middle font-normal ${className}`}>
+    <th
+      scope="row"
+      className={`px-3 py-3 text-left align-middle font-normal ${bar ? "border-l-[3px]" : ""} ${className}`}
+      style={bar ? { borderLeftColor: bar } : undefined}
+    >
       {children}
     </th>
   );

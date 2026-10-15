@@ -88,7 +88,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
           Did not take part
         </li>
       </ul>
-      <div className="overflow-x-auto rounded-sm border border-line bg-surface" tabIndex={0} role="region" aria-label={`${matrix.year} results matrix, scrolls horizontally`}>
+      <div className="overflow-x-auto rounded-lg border border-line bg-bg" tabIndex={0} role="region" aria-label={`${matrix.year} results matrix, scrolls horizontally`}>
         <table className="border-collapse text-sm">
           <caption className="sr-only">
             {matrix.year} race results by driver and round. Each cell shows the finishing position and a symbol for the category.
@@ -97,7 +97,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
             <tr>
               <th
                 scope="col"
-                className="sticky left-0 z-10 min-w-44 border-b border-r border-line bg-surface-2 px-3 py-2 text-left text-xs font-bold uppercase tracking-wide text-muted"
+                className="sticky left-0 z-10 min-w-44 border-b border-r border-line bg-surface-2 px-3 py-2 text-left text-xs font-bold text-muted"
               >
                 Driver
               </th>
@@ -114,7 +114,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
                   </span>
                 </th>
               ))}
-              <th scope="col" className="border-b border-l border-line bg-surface-2 px-3 py-2 text-right text-xs font-bold uppercase tracking-wide text-muted">
+              <th scope="col" className="border-b border-l border-line bg-surface-2 px-3 py-2 text-right text-xs font-bold text-muted">
                 Points
               </th>
             </tr>

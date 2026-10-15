@@ -22,7 +22,7 @@ const DATA = [
 ] as const;
 
 const link = "font-semibold text-accent underline underline-offset-4 hover:no-underline";
-const h2 = "mb-3 text-xl font-extrabold tracking-tight";
+const h2 = "heading mb-3 text-2xl";
 
 export default function PrivacyPage() {
   return (

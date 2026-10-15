@@ -50,7 +50,7 @@ function LapsPanel({ refs, positions }: { refs: AnalyticsRef; positions: Positio
   return (
     <div className="space-y-4">
       <fieldset>
-        <legend className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">
+        <legend className="mb-2 text-xs font-bold text-muted">
           Drivers ({codes.length} of {positions.drivers.length})
         </legend>
         <ul className="flex flex-wrap gap-1.5">

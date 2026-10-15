@@ -26,7 +26,13 @@ export function relativeLabel(startMs: number, endMs: number | null, now: number
   return `in ${Math.max(1, Math.floor(diff / 60_000))} min`;
 }
 
-/** The sessions of one weekend in the viewer's time zone, with the race picked out in flag yellow. */
+function clock(date: Date, zone: string): { time: string; zone: string } {
+  const parts = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZoneName: "short", timeZone: zone }).formatToParts(date);
+  const pick = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return { time: `${pick("hour")}:${pick("minute")}`, zone: pick("timeZoneName") };
+}
+
+/** The sessions of one weekend in the viewer's time zone; the race is set in blue and bold. */
 export function WeekendSchedule({ sessions }: { sessions: Session[] }) {
   const zone = useViewerZone();
   const now = useNow(30_000);
@@ -38,32 +44,42 @@ export function WeekendSchedule({ sessions }: { sessions: Session[] }) {
   if (rows.length === 0) return null;
   return (
     <section aria-labelledby="schedule-h">
-      <h3 id="schedule-h" className="label mb-1.5">
-        Weekend schedule
-      </h3>
+      <h4 id="schedule-h" className="sr-only">
+        Sessions
+      </h4>
       <table className="w-full border-collapse text-left">
         <caption className="sr-only">Session times in your time zone ({zone})</caption>
         <tbody>
           {rows.map((s) => {
             const date = new Date(s.startMs);
             const race = s.type === "RACE";
-            const live = relativeLabel(s.startMs, s.endMs, now) === "on now";
+            const label = relativeLabel(s.startMs, s.endMs, now);
+            const time = clock(date, zone);
             return (
-              <tr key={s.type} className={race ? "bg-flag text-on-flag" : "border-t border-line"}>
-                <th scope="row" className="w-[3.4rem] py-3 pl-2.5 pr-2 text-left text-sm font-normal text-muted">
-                  <span className={race ? "text-on-flag" : ""}>{part(date, zone, { weekday: "short" })}</span>
+              <tr key={s.type} className="border-b border-line last:border-b-0">
+                <th scope="row" className="w-14 py-3 pr-3 text-left align-middle font-normal text-muted">
+                  <span className="block text-xs leading-tight">{part(date, zone, { weekday: "short" })}</span>
+                  <span className="block text-lg font-semibold leading-tight text-fg">{part(date, zone, { day: "numeric" })}</span>
                 </th>
-                <td className="mono w-[4.6rem] py-3 text-[0.9375rem]">{part(date, zone, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" })}</td>
-                <td className="py-3 font-semibold">{sessionLabel(s.type)}</td>
-                <td className={`py-3 pr-2.5 text-right text-sm ${race ? "text-on-flag" : "text-muted"} ${live ? "font-bold" : ""}`}>
-                  {relativeLabel(s.startMs, s.endMs, now)}
+                <td className={`py-3 pr-3 align-middle text-sm font-semibold ${race ? "text-accent" : ""}`}>
+                  {sessionLabel(s.type)}
+                  {label === "on now" && (
+                    <span className="ml-2 rounded-sm bg-flag px-1.5 py-0.5 align-middle text-xs font-bold text-on-flag">On now</span>
+                  )}
+                </td>
+                <td className="py-3 text-right align-middle">
+                  <span className={`block text-base font-extrabold leading-tight tabular-nums ${race ? "text-accent" : ""}`}>{time.time}</span>
+                  <span className="block text-xs leading-tight text-muted">
+                    {time.zone}
+                    {label && label !== "on now" ? ` · ${label}` : ""}
+                  </span>
                 </td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <p className="mt-3 text-sm text-muted">Times in your time zone ({zone.replace("_", " ")}).</p>
+      <p className="mt-3 text-xs text-muted">Times in your time zone ({zone.replace("_", " ")}).</p>
     </section>
   );
 }

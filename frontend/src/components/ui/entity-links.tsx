@@ -84,12 +84,12 @@ export function Nationality({ value }: { value: string | null | undefined }) {
 
 export function Badge({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "danger" | "accent" }) {
   const tones = {
-    neutral: "bg-surface-2 text-muted",
+    neutral: "bg-surface text-muted",
     danger: "bg-surface-2 text-danger",
     accent: "bg-flag text-on-flag",
   };
   return (
-    <span className={`inline-block rounded-sm px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide ${tones[tone]}`}>
+    <span className={`inline-block rounded-sm px-1.5 py-0.5 text-xs font-bold ${tones[tone]}`}>
       {children}
     </span>
   );

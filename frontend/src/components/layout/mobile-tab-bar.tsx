@@ -12,7 +12,7 @@ export function MobileTabBar() {
     <nav
       aria-label="Main (mobile)"
       data-testid="mobile-tab-bar"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       <ul className="grid grid-cols-5">
@@ -24,14 +24,14 @@ export function MobileTabBar() {
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`t-fast relative flex h-[4.25rem] flex-col items-center justify-center gap-1 text-[0.6875rem] font-semibold ${
-                  active ? "text-fg" : "text-muted"
+                className={`t-fast relative flex h-[4.25rem] flex-col items-center justify-center gap-1 text-xs font-bold ${
+                  active ? "text-accent" : "text-muted"
                 }`}
               >
                 {active && (
                   <span
                     aria-hidden="true"
-                    className="slant-bar absolute inset-x-4 top-0 h-[3px] bg-accent"
+                    className="absolute inset-x-5 top-0 h-[3px] rounded-b-sm bg-accent"
                   />
                 )}
                 <Icon />

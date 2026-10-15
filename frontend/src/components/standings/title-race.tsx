@@ -37,7 +37,7 @@ export function TitleRacePanel({ race }: { race: TitleRace }) {
   const heading = `Title race ${race.season}`;
   return (
     <section aria-labelledby="title-race-h" className="mt-10">
-      <h2 id="title-race-h" className="mb-1 text-xl font-extrabold tracking-tight">
+      <h2 id="title-race-h" className="mb-1 heading text-2xl">
         {heading}
       </h2>
       {race.decided && race.champion ? (

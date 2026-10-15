@@ -70,7 +70,7 @@ function LeaguesBody() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <section aria-labelledby="my-leagues-h">
-        <h2 id="my-leagues-h" className="mb-3 text-xl font-extrabold tracking-tight">
+        <h2 id="my-leagues-h" className="mb-3 heading text-2xl">
           My leagues
         </h2>
         <QueryState
@@ -84,7 +84,7 @@ function LeaguesBody() {
             <ul className="grid gap-3 sm:grid-cols-2">
               {list.map((l) => (
                 <li key={l.invite_code}>
-                  <Link href={leagueHref(l.invite_code)} className="t-fast block rounded-sm border border-line bg-surface p-4 hover:bg-surface-2">
+                  <Link href={leagueHref(l.invite_code)} className="t-fast block rounded-xl bg-surface p-4 hover:bg-surface-2">
                     <span className="block font-bold">{l.name}</span>
                     <span className="text-sm text-muted">
                       {l.member_count} {l.member_count === 1 ? "member" : "members"}
@@ -100,14 +100,14 @@ function LeaguesBody() {
       <div className="space-y-6">
         <form
           noValidate
-          className="space-y-3 rounded-sm border border-line bg-surface p-4"
+          className="space-y-3 rounded-xl bg-surface p-4"
           onSubmit={(e: FormEvent) => {
             e.preventDefault();
             setCreateError(null);
             if (name.trim()) create.mutate(name.trim());
           }}
         >
-          <h2 className="text-lg font-extrabold">Create a league</h2>
+          <h2 className="heading text-xl">Create a league</h2>
           {createError && <Notice>{createError}</Notice>}
           <Field label="League name" maxLength={60} value={name} onChange={(e) => setName(e.target.value)} />
           <button type="submit" disabled={create.isPending || !name.trim()} className={primaryButton}>
@@ -116,7 +116,7 @@ function LeaguesBody() {
         </form>
         <form
           noValidate
-          className="space-y-3 rounded-sm border border-line bg-surface p-4"
+          className="space-y-3 rounded-xl bg-surface p-4"
           onSubmit={(e: FormEvent) => {
             e.preventDefault();
             setJoinError(null);
@@ -124,7 +124,7 @@ function LeaguesBody() {
             if (c) join.mutate(c);
           }}
         >
-          <h2 className="text-lg font-extrabold">Join a league</h2>
+          <h2 className="heading text-xl">Join a league</h2>
           {joinError && <Notice>{joinError}</Notice>}
           <Field label="Invite code or link" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" />
           <button type="submit" disabled={join.isPending || !code.trim()} className={secondaryButton}>
@@ -158,7 +158,7 @@ function JoinBody({ code }: { code: string }) {
     onError: (e) => setError({ message: describeError(e, "Could not join this league."), already: (e as { code?: string }).code === "already_member" }),
   });
   return (
-    <div className="mx-auto max-w-md space-y-4 rounded-sm border border-line bg-surface p-5">
+    <div className="mx-auto max-w-md space-y-4 rounded-xl bg-surface p-5">
       <p>
         You were invited to a league with code <strong className="timing">{code}</strong>.
       </p>
@@ -255,7 +255,7 @@ function LeagueView({ league }: { league: LeagueDetail }) {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-extrabold tracking-tight">{league.name}</h2>
+        <h2 className="heading text-3xl">{league.name}</h2>
         <p className="mt-1 text-sm text-muted">
           {league.member_count} of {league.max_members} members
         </p>
@@ -282,17 +282,17 @@ function LeagueView({ league }: { league: LeagueDetail }) {
       </div>
 
       <section aria-labelledby="lg-board-h">
-        <h3 id="lg-board-h" className="mb-3 text-xl font-extrabold tracking-tight">
+        <h3 id="lg-board-h" className="mb-3 heading text-2xl">
           Leaderboard
         </h3>
         <LeaderboardPanel league={code} />
       </section>
 
       <section aria-labelledby="lg-members-h">
-        <h3 id="lg-members-h" className="mb-3 text-xl font-extrabold tracking-tight">
+        <h3 id="lg-members-h" className="mb-3 heading text-2xl">
           Members
         </h3>
-        <ul className="divide-y divide-line rounded-sm border border-line bg-surface">
+        <ul className="divide-y divide-line rounded-xl bg-surface">
           {league.members.map((m) => (
             <li key={m.user_id} className="flex items-center justify-between gap-3 px-4 py-2.5">
               <span>
@@ -375,7 +375,7 @@ function LeaguePicks({ code }: { code: string }) {
   });
   return (
     <section aria-labelledby="lg-picks-h">
-      <h3 id="lg-picks-h" className="mb-3 text-xl font-extrabold tracking-tight">
+      <h3 id="lg-picks-h" className="mb-3 heading text-2xl">
         Picks by round
       </h3>
       <div className="mb-3">

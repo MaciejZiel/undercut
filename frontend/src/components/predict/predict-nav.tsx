@@ -22,7 +22,7 @@ export function PredictNav() {
               <Link
                 href={t.href}
                 aria-current={active ? "page" : undefined}
-                className={`t-fast block whitespace-nowrap border-b-2 px-3 py-2 text-sm font-semibold ${active ? "border-accent text-fg" : "border-transparent text-muted hover:text-fg"}`}
+                className={`t-fast block whitespace-nowrap border-b-[3px] px-3.5 py-2.5 text-sm font-bold ${active ? "border-accent text-accent" : "border-transparent text-muted hover:text-accent"}`}
               >
                 {t.label}
               </Link>

@@ -98,7 +98,7 @@ export function FavoriteButton({ kind, slug, name, className = "" }: { kind: Fav
         aria-pressed={signedIn ? active : false}
         aria-label={active ? `Unfollow ${name}` : `Follow ${name}`}
         disabled={auth.status === "loading" || (signedIn && favorites.isPending)}
-        className={`t-fast inline-flex items-center gap-2 rounded-sm border px-3.5 py-2 text-sm font-semibold active:translate-y-px disabled:opacity-60 ${active ? "border-flag bg-flag text-on-flag" : "border-fg bg-transparent text-fg hover:bg-fg hover:text-bg"}`}
+        className={`t-fast inline-flex items-center gap-2 rounded-md border px-3.5 py-2 text-sm font-bold active:translate-y-px disabled:opacity-60 ${active ? "border-accent bg-accent text-accent-fg" : "border-line-strong bg-bg text-accent hover:border-accent hover:bg-surface"}`}
       >
         <StarIcon filled={active} />
         <span>{active ? "Following" : "Follow"}</span>

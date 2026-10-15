@@ -1,59 +1,73 @@
 @import "tailwindcss";
+/* theme: bright photographic (v2) */
 
 /*
- * Look: a timing tower, not a card grid. The interface is concrete grey and ink; colour belongs to
- * the teams (their rows are recognisable before you read them). The one accent is the yellow flag,
- * used as a fill for "this is happening / this is the one" and never as text colour.
- * `--accent` is ink on purpose: links, primary buttons and highlights read as ink, the flag is separate.
+ * Look: a bright, photographic race-weekend companion. White and cool cloud-blue surfaces, navy ink,
+ * one racing blue for actions and links. Team colours are data (a bar beside a name), never a panel
+ * colour. The warm yellow is reserved for the one invitation that asks the visitor to do something
+ * (the prediction game) and for "preliminary" flags.
  */
 :root {
   color-scheme: light;
-  --bg: #e9ecee;
-  --surface: #f5f6f7;
-  --surface-2: #dfe3e6;
-  --line: #c5ccd1;
-  --fg: #0d1215;
-  --fg-muted: #46525a;
-  --accent: #0d1215;
-  --accent-fg: #f5f6f7;
-  --accent-soft: #d6dce0;
-  --flag: #ffd21f;
-  --on-flag: #0d1215;
-  --danger: #b3261e;
-  --focus: #0d1215;
+  --bg: #ffffff;
+  --surface: #f0f5fc;
+  --surface-2: #e4ecf8;
+  --line: #dce3ed;
+  --line-strong: #b5c6df;
+  --fg: #203149;
+  --fg-muted: #5d6b7e;
+  --accent: #244d8e;
+  --accent-hover: #193b72;
+  --accent-fg: #ffffff;
+  --accent-soft: #e4ecf8;
+  --flag: #f6dc89;
+  --on-flag: #3b3010;
+  --positive: #1f6b52;
+  --danger: #a8322a;
+  --focus: #416bb2;
 }
 
 /* Dark palette: follows the system unless the visitor picked light. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0e1316;
-    --surface: #151b1f;
-    --surface-2: #1d252a;
-    --line: #2a343b;
-    --fg: #e9edef;
-    --fg-muted: #97a3aa;
-    --accent: #e9edef;
-    --accent-fg: #0e1316;
-    --accent-soft: #263037;
+    --bg: #0f1826;
+    --surface: #162235;
+    --surface-2: #1e2d45;
+    --line: #2a3a52;
+    --line-strong: #3d5173;
+    --fg: #e8eef8;
+    --fg-muted: #9fb0c6;
+    --accent: #8fb4f0;
+    --accent-hover: #b4cdf6;
+    --accent-fg: #0f1826;
+    --accent-soft: #1e2d45;
+    --flag: #e9cf7a;
+    --on-flag: #2b2410;
+    --positive: #5fd0a3;
     --danger: #ff8a80;
-    --focus: #e9edef;
+    --focus: #8fb4f0;
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0e1316;
-  --surface: #151b1f;
-  --surface-2: #1d252a;
-  --line: #2a343b;
-  --fg: #e9edef;
-  --fg-muted: #97a3aa;
-  --accent: #e9edef;
-  --accent-fg: #0e1316;
-  --accent-soft: #263037;
+  --bg: #0f1826;
+  --surface: #162235;
+  --surface-2: #1e2d45;
+  --line: #2a3a52;
+  --line-strong: #3d5173;
+  --fg: #e8eef8;
+  --fg-muted: #9fb0c6;
+  --accent: #8fb4f0;
+  --accent-hover: #b4cdf6;
+  --accent-fg: #0f1826;
+  --accent-soft: #1e2d45;
+  --flag: #e9cf7a;
+  --on-flag: #2b2410;
+  --positive: #5fd0a3;
   --danger: #ff8a80;
-  --focus: #e9edef;
+  --focus: #8fb4f0;
 }
 
 @theme inline {
@@ -69,20 +83,31 @@
   --color-flag: var(--flag);
   --color-on-flag: var(--on-flag);
   --color-danger: var(--danger);
-  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --color-positive: var(--positive);
+  --color-line-strong: var(--line-strong);
+  --color-accent-hover: var(--accent-hover);
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-dm-serif), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 1.125rem;
   --breakpoint-xs: 22.5rem;
 }
 
 html {
   background: var(--bg);
   -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 5rem;
 }
 
 body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.6;
   overflow-wrap: anywhere;
   /* room for the fixed tab bar on mobile */
   padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
@@ -94,38 +119,44 @@ body {
   }
 }
 
-/* Condensed Archivo for race names, page titles and big numerals (the width axis does the work). */
+/* Race names and page titles: DM Serif Display, set tight, in sentence case. */
 .display {
-  font-variation-settings: "wdth" 68;
-  font-weight: 800;
-  letter-spacing: -0.005em;
-  line-height: 0.92;
-  text-transform: uppercase;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
   text-wrap: balance;
 }
 
-/* Big figures: the condensed face without capitals, so words and numbers both work. */
+/* Large figures (position, points, countdown): the serif face keeps them in the same voice as the titles. */
 .numeral {
-  font-variation-settings: "wdth" 70;
-  font-weight: 800;
-  letter-spacing: -0.005em;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
   line-height: 1;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
-/* Lap times, gaps and clocks: monospaced so the digits stay in line. */
+/* Lap times, gaps and clocks: tabular figures so the digits stay in line. */
 .mono {
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
-/* Small label above a value. Sentence case would be quieter, capitals keep the timing-sheet voice. */
+/* Small caption above a value. Sentence case, a touch of weight. */
 .label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.8125rem;
+  font-weight: 700;
   color: var(--fg-muted);
+}
+
+/* Section titles inside a page (h2). */
+.heading {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  text-wrap: balance;
 }
 
 /* Timing tables and any figure that must line up. */
@@ -135,8 +166,8 @@ table {
 }
 
 :focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
   border-radius: 4px;
 }
 
@@ -163,11 +194,6 @@ table {
 }
 :root[data-theme="dark"] .show-in-dark {
   display: block;
-}
-
-/* Slanted indicator used for the active nav item: a pit-wall timing bar. */
-.slant-bar {
-  clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
 }
 
 .skeleton {

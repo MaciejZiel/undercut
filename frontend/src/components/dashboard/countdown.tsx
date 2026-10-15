@@ -14,7 +14,7 @@ export function Countdown({ target }: { target: string }) {
     return <p className="text-sm text-muted">Countdown loading</p>;
   }
   const parts = countdownParts(targetMs, now);
-  if (!parts) return <p className="display text-4xl">Lights out</p>;
+  if (!parts) return <p className="display text-3xl">Lights out</p>;
   const cells: [string, number][] = [
     ["days", parts.days],
     ["hours", parts.hours],
@@ -23,11 +23,11 @@ export function Countdown({ target }: { target: string }) {
   ];
   return (
     <div role="timer" aria-label={`${parts.days} days, ${parts.hours} hours and ${parts.minutes} minutes to go`}>
-      <dl aria-hidden="true" className="flex flex-wrap items-baseline gap-x-6 gap-y-1">
+      <dl aria-hidden="true" className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
         {cells.map(([label, value]) => (
           <div key={label} className="flex items-baseline gap-1.5">
-            <dd className="numeral text-5xl sm:text-6xl">{String(value).padStart(2, "0")}</dd>
-            <dt className="label">{label}</dt>
+            <dd className="numeral text-4xl">{String(value).padStart(2, "0")}</dd>
+            <dt className="text-xs font-semibold text-muted">{label}</dt>
           </div>
         ))}
       </dl>

@@ -42,7 +42,7 @@ async function SeasonList({ searchParams }: { searchParams: PageProps<"/seasons"
       <EmptyState
         title="No seasons yet"
         description="The season history has not been imported."
-        action={{ label: "Back to dashboard", href: "/" }}
+        action={{ label: "Back to the home page", href: "/" }}
       />
     );
   }
