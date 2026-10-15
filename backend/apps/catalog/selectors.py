@@ -699,3 +699,116 @@ def search(query: str) -> dict:
         "circuits": circuits,
         "rounds": rounds,
     }
+
+
+# --- Public functions for the predictions module (it may not import catalog models) ----------
+
+
+def find_round(year: int, number: int) -> dict | None:
+    """Identify a round by season year and round number: id, year, round, name, is_cancelled."""
+    row = (
+        Round.objects.filter(season__year=year, round=number)
+        .values("id", "season__year", "round", "name", "is_cancelled")
+        .first()
+    )
+    if row is None:
+        return None
+    return {
+        "id": row["id"],
+        "year": row["season__year"],
+        "round": row["round"],
+        "name": row["name"],
+        "is_cancelled": row["is_cancelled"],
+    }
+
+
+def round_refs(round_ids) -> dict[int, dict]:
+    """Map round id to {id, year, round, name} for the given ids (one query)."""
+    rows = Round.objects.filter(id__in=list(round_ids)).values(
+        "id", "season__year", "round", "name"
+    )
+    return {
+        row["id"]: {
+            "id": row["id"],
+            "year": row["season__year"],
+            "round": row["round"],
+            "name": row["name"],
+        }
+        for row in rows
+    }
+
+
+def session_info(session_id: int) -> dict | None:
+    """Return {id, type, round_id} of a session, or None when it does not exist."""
+    row = Session.objects.filter(id=session_id).values("id", "type", "round_id").first()
+    return dict(row) if row else None
+
+
+def qualifying_start(round_id: int):
+    """Start (UTC datetime) of the qualifying session of a round, or None when unknown."""
+    return (
+        Session.objects.filter(round_id=round_id, type=QUALIFYING)
+        .values_list("start_utc", flat=True)
+        .first()
+    )
+
+
+def existing_driver_ids(driver_ids) -> set[int]:
+    """Subset of the given ids that are real drivers."""
+    return set(Driver.objects.filter(id__in=list(driver_ids)).values_list("id", flat=True))
+
+
+def driver_labels(driver_ids) -> dict[int, dict]:
+    """Map driver id to {id, name, code} (one query)."""
+    rows = Driver.objects.filter(id__in=list(driver_ids)).values(
+        "id", "given_name", "family_name", "code"
+    )
+    return {
+        row["id"]: {
+            "id": row["id"],
+            "name": f"{row['given_name']} {row['family_name']}".strip(),
+            "code": row["code"] or None,
+        }
+        for row in rows
+    }
+
+
+def race_outcomes(round_ids) -> dict[int, dict]:
+    """What the predictions game scores against, per round id, with None for missing pieces.
+
+    Each value is {"podium": [p1, p2, p3], "pole": id, "fastest_lap": id} of driver ids.
+    Disqualified drivers (position_text "D") do not count. Pole comes from the qualifying
+    classification and falls back to grid == 1 of the race when there is none. Two queries.
+    """
+    ids = list(round_ids)
+    outcomes = {
+        round_id: {"podium": [None, None, None], "pole": None, "fastest_lap": None}
+        for round_id in ids
+    }
+    grid_pole: dict[int, int] = {}
+    race = (
+        Result.objects.filter(session__round_id__in=ids, session__type=RACE)
+        .exclude(position_text="D")
+        .values_list("session__round_id", "driver_id", "position", "grid", "fastest_lap_rank")
+    )
+    for round_id, driver_id, position, grid, rank in race:
+        outcome = outcomes[round_id]
+        if position in (1, 2, 3):
+            outcome["podium"][position - 1] = driver_id
+        if rank == 1:
+            outcome["fastest_lap"] = driver_id
+        if grid == 1:
+            grid_pole[round_id] = driver_id
+    qualifying = dict(
+        QualifyingResult.objects.filter(
+            session__round_id__in=ids, session__type=QUALIFYING, position=1
+        ).values_list("session__round_id", "driver_id")
+    )
+    for round_id, outcome in outcomes.items():
+        outcome["pole"] = qualifying.get(round_id) or grid_pole.get(round_id)
+    return outcomes
+
+
+def race_outcome(round_id: int) -> dict:
+    """Single-round form of `race_outcomes`."""
+    return race_outcomes([round_id])[round_id]
