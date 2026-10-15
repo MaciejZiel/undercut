@@ -120,9 +120,9 @@ export function CompareView({ initial }: { initial: CompareState }) {
               onChange={(e) => setSeasonText(e.target.value)}
               aria-invalid={seasonError ? true : undefined}
               aria-describedby={seasonError ? "compare-season-err" : undefined}
-              className="w-full rounded-md border border-line-strong bg-bg px-3 py-2 text-sm"
+              className="w-full min-w-0 rounded-md border border-line-strong bg-bg px-3 py-2 text-sm"
             />
-            <button type="submit" className="t-fast rounded-md bg-accent px-3 py-2 text-sm font-bold text-accent-fg hover:opacity-90">
+            <button type="submit" className="t-fast shrink-0 whitespace-nowrap rounded-md bg-accent px-3 py-2 text-sm font-bold text-accent-fg hover:opacity-90">
               Apply
             </button>
           </div>

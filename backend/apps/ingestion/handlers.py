@@ -140,6 +140,8 @@ def on_session_results_due(event) -> None:
     # Standings follow the race. Retry through the outbox if the source lags behind.
     if result.available and ref and ref.type == "RACE" and ref.round is not None:
         sync.sync_standings(shared_client(), ref.year, ref.round)
+        if result.changed:
+            sync.resync_later_standings(shared_client(), ref.year, ref.round)
 
 
 def on_calendar_sync_due(event) -> None:

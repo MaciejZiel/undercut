@@ -107,7 +107,7 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
                   )}
                 </>
               ) : (
-                <span className="text-muted">No race lap recorded yet</span>
+                <span className="text-muted">No lap record in our data</span>
               )}
             </dd>
           </div>

@@ -191,6 +191,18 @@ def test_neutralisations_from_messages():
     ]
 
 
+def test_a_virtual_safety_car_that_becomes_a_safety_car_ends_there():
+    session, *_ = hand_built_race()
+    add_rcm(session, at(10), "VIRTUAL SAFETY CAR DEPLOYED", lap=1)
+    add_rcm(session, at(100), "SAFETY CAR DEPLOYED", lap=2)
+    add_rcm(session, at(170), "SAFETY CAR IN THIS LAP", lap=3)
+    header = lookups.get_session_header(2024, 1, "RACE")
+    assert selectors.positions(header)["neutralisations"] == [
+        {"kind": "VSC", "start_lap": 1, "end_lap": 2},
+        {"kind": "SC", "start_lap": 2, "end_lap": 3},
+    ]
+
+
 def test_unclosed_period_lasts_until_last_lap():
     session, *_ = hand_built_race()
     add_rcm(session, at(100), "SAFETY CAR DEPLOYED", lap=2)

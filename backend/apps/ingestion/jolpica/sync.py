@@ -19,6 +19,7 @@ from apps.catalog import references, scheduling
 from apps.catalog import services as catalog
 from apps.events.publisher import publish
 from apps.ingestion.models import SyncRun
+from apps.standings import selectors as standings_read
 from apps.standings import services as standings
 
 from . import api_mapper
@@ -234,6 +235,20 @@ def sync_standings(client: JolpicaClient, year: int, number: int) -> SyncRun:
         _fail(run, exc)
         raise
     return _close(run, totals, errors)
+
+
+def later_standings_rounds(year: int, number: int) -> list[int]:
+    """Rounds after `number` that already have a standings table (they count podiums up to then)."""
+    season_id = references.season_ids_by_year().get(year)
+    if season_id is None:
+        return []
+    return [r for r in standings_read.available_rounds("drivers", season_id) if r > number]
+
+
+def resync_later_standings(client: JolpicaClient, year: int, number: int) -> None:
+    """A round's results arrived late: the podium counts of every later table must include them."""
+    for later in later_standings_rounds(year, number):
+        sync_standings(client, year, later)
 
 
 def sync_round_after_race(client: JolpicaClient, year: int, number: int) -> None:

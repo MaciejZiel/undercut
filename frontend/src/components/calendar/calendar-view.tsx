@@ -28,6 +28,8 @@ export function CalendarView({ year, rounds }: { year: number; rounds: Entry[] }
   const firstOpen = rounds.findIndex((r) => r.status !== "completed" && r.status !== "cancelled");
   const done = firstOpen > 0 ? rounds.slice(0, firstOpen) : [];
   const open = firstOpen > 0 ? rounds.slice(firstOpen) : rounds;
+  const doneCount = done.filter((r) => r.status === "completed").length;
+  const cancelledCount = done.filter((r) => r.status === "cancelled").length;
 
   return (
     <div>
@@ -52,7 +54,8 @@ export function CalendarView({ year, rounds }: { year: number; rounds: Entry[] }
         <details className="group mb-8 border-y border-fg">
           <summary className="t-fast flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 py-2 text-sm font-bold hover:text-accent">
             <span>
-              {done.length} completed {done.length === 1 ? "round" : "rounds"}
+              {doneCount} completed {doneCount === 1 ? "round" : "rounds"}
+              {cancelledCount > 0 ? `, ${cancelledCount} cancelled` : ""}
             </span>
             <span aria-hidden="true" className="group-open:rotate-180">▾</span>
           </summary>
@@ -118,7 +121,7 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
         } ${cancelled ? "text-muted" : ""}`}
       >
         <p className="timing leading-tight text-muted">
-          <span className="block text-sm">{entry.round != null ? `Round ${entry.round}` : "Round"}</span>
+          {entry.round != null && <span className="block text-sm">Round {entry.round}</span>}
           <span className="mt-1 block text-sm font-bold text-fg">{formatDayMonth(entry.date) ?? <Dash />}</span>
         </p>
         <div className="min-w-0">

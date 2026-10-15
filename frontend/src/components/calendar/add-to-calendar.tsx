@@ -1,3 +1,4 @@
+import { DetailsDismiss } from "@/components/ui/details-dismiss";
 import { siteUrl } from "@/lib/seo";
 import { icsHref } from "./time";
 
@@ -29,6 +30,7 @@ export function AddToCalendar({
   const item = "t-fast block px-3 py-2 text-sm font-bold hover:bg-surface-2 hover:text-accent";
   return (
     <details className="group relative">
+      <DetailsDismiss />
       <summary
         className={`t-fast flex cursor-pointer list-none items-baseline justify-between gap-3 text-sm font-bold hover:text-accent [&::-webkit-details-marker]:hidden ${className}`}
       >

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ChampionshipSection, LastRaceSection, NextRaceSection } from "@/components/dashboard/sections";
 
 export const metadata: Metadata = {
-  title: "Weekend",
+  title: { absolute: "Undercut: F1 stats, race analysis and predictions" },
   description: "The next Formula 1 race weekend, the latest podium and the championship top five.",
 };
 

@@ -78,6 +78,28 @@ def test_worker_turns_a_due_event_into_results_and_standings(season, monkeypatch
     assert ("driver_standings", 2024, 1) in client.calls
 
 
+def test_late_results_refresh_the_standings_of_later_rounds(season, monkeypatch):
+    client = d.FakeClient(
+        results=d.results(d.result_row(1, "1", d.VER, d.RED_BULL, 26)),
+        driver_standings=d.driver_standings((1, "26", 1, d.VER)),
+        constructor_standings=d.constructor_standings((1, "26", 1, d.RED_BULL)),
+    )
+    monkeypatch.setattr(handlers, "shared_client", lambda: client)
+    monkeypatch.setattr(handlers.sync, "later_standings_rounds", lambda year, number: [2, 3])
+    refreshed = []
+    real = handlers.sync.sync_standings
+    monkeypatch.setattr(
+        handlers.sync,
+        "sync_standings",
+        lambda c, year, number: refreshed.append(number) or real(c, year, 1),
+    )
+    publish("SessionResultsDue", key=f"session:{season.id}", payload={"session_id": season.id})
+
+    process_batch()
+
+    assert refreshed == [1, 2, 3]
+
+
 def test_failing_source_is_retried_through_the_outbox(season, monkeypatch):
     class Down(d.FakeClient):
         def results(self, year, number):

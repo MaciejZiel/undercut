@@ -166,6 +166,10 @@ def _neutralisations(
         kind = "VSC" if ("VIRTUAL" in text or "VSC" in text) else "SC"
         lap = lap_number or lap_for(ts)
         if "DEPLOYED" in text:
+            if kind == "SC" and "VSC" in opened:
+                # A virtual safety car turned into a safety car: no "ending" message comes.
+                start = opened.pop("VSC")
+                periods.append({"kind": "VSC", "start_lap": start, "end_lap": max(start, lap)})
             opened.setdefault(kind, lap)
         elif "IN THIS LAP" in text or "ENDING" in text:
             start = opened.pop(kind, None)
