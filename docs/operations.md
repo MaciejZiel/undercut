@@ -92,7 +92,7 @@ Restore test log (fill in after each run):
 
 | Date | Dump | Result | Duration |
 |---|---|---|---|
-| not yet run on the server | | | |
+| 2026-10-15: PASSED (dump 904 KB restored in 1 s; 77 seasons, 881 drivers, 28,711 results) | | | |
 
 ## Rotating secrets
 

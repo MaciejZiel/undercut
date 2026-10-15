@@ -102,7 +102,7 @@ If the build complains about the Android API level, `export ANDROID_API_LEVEL=36
 11. **Create the admin user** [PRODUCTION]: load the env (`set -a; . ~/.config/undercut/env; set +a`) and run
     `backend/.venv/bin/python backend/manage.py createsuperuser` from `~/undercut/backend`.
 12. **Verify**: `curl -s http://127.0.0.1:8110/api/health/` and `/api/ready/` (loopback on the server; `127.0.0.1` must be in
-    `DJANGO_ALLOWED_HOSTS`, as in `env.example`), `sh deploy/termux/check-pipeline.sh`, then
+    `DJANGO_ALLOWED_HOSTS`, as in `env.example`), `bash deploy/termux/check-pipeline.sh`, then
     `curl -sI -H 'Host: undercut.maciejzielinski.dev' http://127.0.0.1:8080/` and the public URL. Check the logs for errors.
 
 ## Update checklist
@@ -148,6 +148,10 @@ Scripts (all in `deploy/termux/`, none print secrets, none run on their own unti
 | `backup.sh` | `pg_dump -Fc undercut` to `~/backups/undercut-<UTC timestamp>.dump` (mode 600), refuses below 2 GB free, keeps 7 daily and 4 weekly dumps, deletes only files named `undercut-YYYYMMDDTHHMMSSZ.dump` |
 | `restore-test.sh` | restores the newest dump into the scratch database `undercut_restore_test`, prints row counts, drops the scratch database, prints PASSED or FAILED. Run on request only |
 | `check-pipeline.sh` | loads the env file and runs `manage.py check_pipeline` (exit 1 = needs attention) |
+
+If `crond` is not installed (it is not on the current host), use the supervisor
+`services/run-undercut-maintenance.sh` instead: it runs `check_pipeline` every 5 minutes and the nightly backup
+after 02:30 UTC, and is started from `~/.termux/boot/start-services` like the other services.
 
 Suggested cron setup [PRODUCTION] (`pkg install cronie`, then `crond` from `~/.termux/boot/start-services`, see step 8;
 `crontab -e`; cron uses the device time zone, the times below assume UTC, adjust if not):
