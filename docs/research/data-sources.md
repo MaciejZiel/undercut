@@ -243,3 +243,15 @@ match Jolpica `millis` 5504742 and `points` 26.
 15. Jolpica API: the standings endpoint needs a year; ids are strings; all numbers are strings; optional keys are omitted; responses are cached 10 min by Cloudflare, which matters for the "results every 1 h" job (fine).
 16. `Circuit`: API has lat/long as strings, no timezone/country code/length; the dump adds `altitude` and `country_code`. Timezone computed via timezonefinder is still needed.
 17. `Driver.headshot_url` and `team_colour` come only from OpenF1 `/drivers` (per session, 2023+); Jolpica has none (dump `team.primary_color` coverage UNVERIFIED).
+
+
+## OpenF1: practice results, laps and car positions (verified 2026-10-15)
+
+| Endpoint | Finding |
+|---|---|
+| `session_result?session_key=K` | one row per driver for any session type, including Practice (`position`, `driver_number`, `number_of_laps`, `duration` = best lap in seconds, `gap_to_leader`, `dns`, `dnf`, `dsq`). Qualifying and sprint qualifying return `duration` and `gap_to_leader` as three-element lists (Q1, Q2, Q3). Practice classification is available minutes after the session ends |
+| `laps?session_key=K&driver_number=N` | `lap_number`, `date_start` (ISO, UTC), `lap_duration`, `is_pit_out_lap`; one request returns the driver's whole race |
+| `location?session_key=K&driver_number=N&date>=..&date<=..` | `x`, `y`, `z` about 3.7 samples per second; one race lap is about 370 rows. Units are decimetres: the sum of segment lengths of one Singapore 2026 lap came to 4,851 m against the official 4.9 km (the racing line is a little shorter than the centre line) |
+
+Used by `apps/ingestion/openf1/practice.py` (practice results, 2023 on) and `outline.py` (track outlines).
+Jolpica has no practice endpoint in its API; its dump contains FP sessions from 2025.

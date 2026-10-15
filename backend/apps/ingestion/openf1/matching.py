@@ -134,8 +134,13 @@ def match_year(
     sessions: list[s.Session],
     *,
     meeting_keys: set[int] | None = None,
+    create_practice: bool = False,
 ) -> YearMatch:
-    """Match a year's OpenF1 meetings and sessions to the catalog and store the keys."""
+    """Match a year's OpenF1 meetings and sessions to the catalog and store the keys.
+
+    With `create_practice`, practice sessions the catalog does not have yet (Jolpica lists them
+    only from 2025) are created from OpenF1's times, so their results can be stored.
+    """
     result = YearMatch()
     rounds = catalog.season_rounds(year)
     by_meeting: dict[int, list[s.Session]] = {}
@@ -179,7 +184,9 @@ def match_year(
                 }
             )
             continue
-        _match_sessions(year, meeting, rnd, by_meeting.get(key, []), result)
+        _match_sessions(
+            year, meeting, rnd, by_meeting.get(key, []), result, create_practice=create_practice
+        )
     return result
 
 
@@ -189,6 +196,8 @@ def _match_sessions(
     rnd: catalog.RoundRef,
     of1_sessions: list[s.Session],
     result: YearMatch,
+    *,
+    create_practice: bool = False,
 ) -> None:
     ours = {ref.type: ref for ref in catalog.round_sessions(rnd.id)}
     seen: dict[str, s.Session] = {}
@@ -212,6 +221,18 @@ def _match_sessions(
             continue
         seen[kind] = sess
         ref = ours.get(kind)
+        if ref is None and create_practice and kind in OPTIONAL_TYPES:
+            catalog.upsert_session(
+                rnd.id,
+                catalog.SessionData(
+                    type=kind,
+                    start_utc=parse_ts(sess.date_start),
+                    end_utc=parse_ts(sess.date_end),
+                ),
+            )
+            ref = {r.type: r for r in catalog.round_sessions(rnd.id)}.get(kind)
+            if ref is not None:
+                ours[kind] = ref
         if ref is None:
             if kind in OPTIONAL_TYPES:
                 result.notes.append(f"{where}: no catalog session, skipped")

@@ -203,3 +203,39 @@ def test_handler_ignores_old_seasons(weekend, monkeypatch):
 
     monkeypatch.setattr(handlers, "OpenF1Client", Boom)
     handlers.on_practice_results_due(type("E", (), {"payload": {"session_id": old.id}})())
+
+
+def _openf1_practice():
+    from apps.ingestion.openf1 import schemas as s
+
+    meeting = s.Meeting(meeting_key=1, meeting_name="Singapore Grand Prix")
+    sessions = [
+        s.Session(
+            session_key=77,
+            session_name="Practice 1",
+            date_start="2024-09-20T09:30:00+00:00",
+            date_end="2024-09-20T10:30:00+00:00",
+        ),
+        s.Session(session_key=78, session_name="Race", date_start="2024-09-22T12:00:00+00:00"),
+    ]
+    return meeting, sessions
+
+
+def test_missing_practice_sessions_are_created_only_on_request():
+    rnd = f.RoundFactory(season=f.SeasonFactory(year=2024), round=18)
+    f.SessionFactory(round=rnd, type=Session.Type.RACE)
+    meeting, sessions = _openf1_practice()
+    ref = catalog.season_rounds(2024)[0]
+
+    plain = matching.YearMatch()
+    matching._match_sessions(2024, meeting, ref, sessions, plain)
+    assert not Session.objects.filter(round=rnd, type=Session.Type.FP1).exists()
+    assert any("no catalog session" in note for note in plain.notes)
+
+    created = matching.YearMatch()
+    matching._match_sessions(2024, meeting, ref, sessions, created, create_practice=True)
+    fp1 = Session.objects.get(round=rnd, type=Session.Type.FP1)
+    assert fp1.start_utc == dt.datetime(2024, 9, 20, 9, 30, tzinfo=dt.UTC)
+    assert fp1.end_utc == dt.datetime(2024, 9, 20, 10, 30, tzinfo=dt.UTC)
+    assert {m.type for m in created.sessions} == {"FP1", "RACE"}
+    assert Session.objects.get(pk=fp1.pk).openf1_session_key == 77

@@ -133,7 +133,7 @@ def import_practice(
         if not meetings or not sessions:
             continue
         with transaction.atomic():
-            match = matching.match_year(year, meetings, sessions)
+            match = matching.match_year(year, meetings, sessions, create_practice=True)
         for ms in match.sessions:
             if ms.type not in PRACTICE_TYPES or ms.end_utc is None or ms.end_utc > now:
                 continue
