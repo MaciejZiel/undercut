@@ -23,3 +23,4 @@ version, never copies of data. Delivery is at-least-once, so every handler must 
 gone when handlers run, so they only get the id: they must be idempotent and must not look the user
 up. Rows with a database-level cascade are removed by the deletion itself; the event exists for data
 that must outlive the user in anonymised form (e.g. predictions kept in rankings as "Deleted user").
+| `RaceResultEmailRetry` | `round:<id>` | `round_id`, `user_ids`, `attempt` | notifications | notifications (retries only the recipients whose e-mail failed: 5, 10, 20, 40 and 80 minutes) |

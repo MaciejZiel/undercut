@@ -133,6 +133,10 @@ def leaderboard(
             queryset = queryset.filter(round__round=round_number)
     if league is not None:
         queryset = queryset.filter(user__league_memberships__league_id=league.pk)
+    else:
+        # The demo account and its bots only exist to fill the demo league, never the global table.
+        # (exclude keeps rows of deleted users, whose user is NULL.)
+        queryset = queryset.exclude(user__is_demo=True)
 
     grouped = (
         queryset.annotate(player=Coalesce(F("user_id"), -F("id")))

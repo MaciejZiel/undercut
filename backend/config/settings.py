@@ -219,3 +219,9 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 # frontend's REVALIDATE_SECRET; empty disables purging (local development without the frontend).
 REVALIDATE_URL = env("REVALIDATE_URL", default="http://127.0.0.1:3000/_internal/revalidate")
 REVALIDATE_SECRET = env("REVALIDATE_SECRET", default="")
+
+# --- Post-race e-mail (FR-505) -----------------------------------------------------------------
+# Public address of the site, used for links in e-mails (no trailing slash).
+SITE_URL = env("SITE_URL", default="https://undercut.maciejzielinski.dev").rstrip("/")
+# Public base of the API, for the one-click unsubscribe link (defaults to the site itself).
+API_PUBLIC_URL = env("API_PUBLIC_URL", default=SITE_URL).rstrip("/")

@@ -24,3 +24,24 @@ class NotificationPref(models.Model):
 
     def __str__(self) -> str:
         return f"prefs of user {self.user_id}"
+
+
+class SentEmail(models.Model):
+    """Marker that one e-mail went out: (user, kind, ref) is unique, which makes sending
+    exactly-once under at-least-once event delivery. Deleted together with the account."""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_emails"
+    )
+    kind = models.CharField(max_length=40)
+    # What the e-mail was about, e.g. "round:12".
+    ref = models.CharField(max_length=100)
+    sent_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "kind", "ref"], name="notifications_sent_uniq")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.kind} {self.ref} -> user {self.user_id}"
