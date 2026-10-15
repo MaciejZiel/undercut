@@ -63,8 +63,6 @@ describe("analytics views", () => {
     renderPanel("positions");
     expect(screen.getByRole("status")).toBeInTheDocument();
     expect(await screen.findByRole("img", { name: /position by lap/ })).toBeInTheDocument();
-    expect(screen.getByText("Data: OpenF1")).toBeInTheDocument();
-    expect(screen.getByText(/Rotate your phone to see more/)).toBeInTheDocument();
     const ver = screen.getByRole("button", { name: /VER/ });
     fireEvent.click(ver);
     expect(ver).toHaveAttribute("aria-pressed", "true");
@@ -87,8 +85,8 @@ describe("analytics views", () => {
 
   it("names the pit stop ranking method", async () => {
     renderPanel("pits");
-    expect(await screen.findByText(/Ranked by pit lane duration/)).toBeInTheDocument();
-    expect(screen.getByText("S → H")).toBeInTheDocument();
+    expect(await screen.findByText("S → H")).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: /by pit lane duration/ })).toBeInTheDocument();
   });
 
   it("renders stint bars with compound letters", async () => {

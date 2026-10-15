@@ -7,7 +7,7 @@ import { NavMenu } from "./nav-menu";
 
 function linkClass(active: boolean) {
   return [
-    "t-fast relative inline-flex h-[4.25rem] items-center px-3.5 text-[0.8125rem] font-bold",
+    "t-fast relative inline-flex h-[4.25rem] items-center px-3.5 text-sm font-bold",
     active ? "text-accent" : "text-fg hover:text-accent",
     active ? "after:absolute after:inset-x-3.5 after:bottom-0 after:h-[3px] after:bg-accent" : "",
   ].join(" ");

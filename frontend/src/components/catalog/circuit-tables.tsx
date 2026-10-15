@@ -98,7 +98,7 @@ export function MostWinsList({
 }) {
   return (
     <section aria-label={title} className="border-t border-line pt-3">
-      <h3 className="mb-2 text-[0.8125rem] font-bold text-muted">{title}</h3>
+      <h3 className="mb-2 text-sm font-bold text-muted">{title}</h3>
       {items.length === 0 ? (
         <p className="text-muted">{orDash(null)}</p>
       ) : (

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { FOOTER_TEXT } from "@/lib/nav";
-import { FooterCounts } from "@/components/dashboard/footer-counts";
 import { Logo } from "./logo";
 
 const REPO = "https://github.com/MaciejZiel/undercut";
@@ -45,8 +44,7 @@ export function SiteFooter() {
           </nav>
         </div>
         <div className="mt-8 flex flex-col gap-3 border-t border-line pt-4 md:flex-row md:items-baseline md:justify-between">
-          <p className="eyebrow max-w-3xl normal-case tracking-normal">{FOOTER_TEXT}</p>
-          <FooterCounts />
+          <p className="text-sm text-muted max-w-3xl">{FOOTER_TEXT}</p>
         </div>
       </div>
     </footer>

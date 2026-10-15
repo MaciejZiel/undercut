@@ -119,7 +119,7 @@ export function ReplayView({ doc, caption }: { doc: ReplayDoc; caption: string }
       <Timeline controller={controller} duration={duration} events={doc.events} laps={laps} />
       <LapAnnouncer controller={controller} laps={laps} totalLaps={doc.session.laps || null} />
       <TimingTable doc={doc} controller={controller} caption={caption} />
-      <p className="text-xs text-muted">
+      <p className="text-sm text-muted">
         Keyboard (focus this area): Space play or pause, Left and Right arrows jump 10 s (Shift 60 s), + and - change the speed.
         Positions, gaps and tyres are shown as recorded every {doc.frames.step_s} s.
       </p>

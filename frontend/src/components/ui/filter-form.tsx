@@ -55,7 +55,7 @@ export function FilterForm({
         const id = `filter-${f.name}`;
         return (
           <div key={f.name} className="flex min-w-0 flex-col gap-1">
-            <label htmlFor={id} className="text-xs font-bold text-muted">
+            <label htmlFor={id} className="text-sm font-bold text-muted">
               {f.label}
             </label>
             {f.kind === "select" ? (

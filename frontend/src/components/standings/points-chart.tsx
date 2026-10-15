@@ -98,7 +98,7 @@ function ChartPanel({ data, kind, season }: { data: Progress; kind: StandingsKin
       </div>
 
       <fieldset className="mb-4">
-        <legend className="mb-2 text-xs font-bold text-muted">
+        <legend className="mb-2 text-sm font-bold text-muted">
           Showing {selected.length} of {data.series.length}
         </legend>
         <ul className="flex flex-wrap gap-2">

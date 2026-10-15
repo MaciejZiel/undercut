@@ -85,8 +85,7 @@ describe("CalendarView", () => {
   it("uses the account time zone and toggles to circuit local time", async () => {
     mockFetch({ "GET /api/v1/auth/me/": { body: ME_USER } }); // timezone Europe/Warsaw
     renderWithProviders(<CalendarView year={2099} rounds={[entry({})]} />);
-    expect(await screen.findByText("Times shown in Europe/Warsaw.")).toBeInTheDocument();
-    expect(screen.getAllByText(/16:00/).length).toBeGreaterThan(0); // 15:00Z in Warsaw (CET, DST starts later in March)
+    expect((await screen.findAllByText(/16:00/)).length).toBeGreaterThan(0); // 15:00Z in Warsaw (CET, DST starts later in March)
     fireEvent.click(screen.getByRole("button", { name: "Circuit local time" }));
     expect(screen.getByRole("button", { name: "Circuit local time" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getAllByText(/00:00/).length).toBeGreaterThan(0); // Tokyo is UTC+9

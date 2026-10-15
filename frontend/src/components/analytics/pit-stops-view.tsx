@@ -33,7 +33,6 @@ function PitStopsPanel({ data }: { data: PitStops }) {
         <h3 id="pit-rank-h" className="text-base font-bold">
           Fastest pit stops by team
         </h3>
-        <p className="mb-2 text-sm text-muted">Ranked by {method}, each team&apos;s best stop.</p>
         <DataTable caption={`Team ranking of the fastest pit stops by ${method}`} minWidth="30rem">
           <thead>
             <tr>
@@ -85,7 +84,6 @@ function PitStopsPanel({ data }: { data: PitStops }) {
             ))}
           </tbody>
         </DataTable>
-        <p className="mt-2 text-xs text-muted">Data: OpenF1</p>
       </section>
     </div>
   );

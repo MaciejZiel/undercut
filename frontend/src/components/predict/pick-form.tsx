@@ -196,13 +196,13 @@ function ReadOnlyPick({ state }: { state: RoundState; drivers: PickableDriver[] 
     <dl className="grid gap-3 border-y border-line py-4 sm:grid-cols-2">
       {SLOTS.map((s) => (
         <div key={s.key}>
-          <dt className="text-xs font-bold text-muted">{s.label}</dt>
+          <dt className="text-sm font-bold text-muted">{s.label}</dt>
           <dd className="font-semibold">{pick[s.key]?.name ?? "—"}</dd>
         </div>
       ))}
       {pick.points != null && (
         <div>
-          <dt className="text-xs font-bold text-muted">Points</dt>
+          <dt className="text-sm font-bold text-muted">Points</dt>
           <dd className="timing font-semibold">{pick.points}</dd>
         </div>
       )}

@@ -60,20 +60,19 @@ export function WeekendSchedule({ sessions }: { sessions: Session[] }) {
                 <th scope="row" className="eyebrow w-[4.25rem] py-2.5 pr-2 text-left align-baseline font-medium">
                   {part(date, zone, { weekday: "short" })} {part(date, zone, { day: "numeric" })}
                 </th>
-                <td className={`py-2.5 pr-2 align-baseline text-[0.8125rem] font-bold ${race ? "text-accent" : ""}`}>
+                <td className={`py-2.5 pr-2 align-baseline text-sm font-bold ${race ? "text-accent" : ""}`}>
                   {sessionLabel(s.type)}
-                  {label === "on now" && <span className="ml-2 bg-flag px-1.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-wider text-on-flag">On now</span>}
+                  {label === "on now" && <span className="ml-2 bg-flag px-1.5 py-0.5 text-sm font-bold uppercase tracking-wider text-on-flag">On now</span>}
                 </td>
                 <td className={`py-2.5 text-right align-baseline text-[0.9375rem] font-extrabold tabular-nums ${race ? "text-accent" : ""}`}>
                   {time.time}
-                  <span className="ml-1.5 text-[0.6875rem] font-normal text-muted">{time.zone}</span>
+                  <span className="ml-1.5 text-sm font-normal text-muted">{time.zone}</span>
                 </td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <p className="eyebrow mt-3 normal-case tracking-normal">Times in your time zone ({zone.replace("_", " ")}).</p>
     </section>
   );
 }

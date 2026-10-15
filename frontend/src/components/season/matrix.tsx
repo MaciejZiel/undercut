@@ -73,7 +73,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
           <li key={c} className="flex items-center gap-1.5">
             <span
               aria-hidden="true"
-              className="timing grid size-6 place-items-center rounded border border-line text-xs"
+              className="timing grid size-6 place-items-center rounded border border-line text-sm"
               style={CATEGORY[c].style}
             >
               {CATEGORY[c].symbol}
@@ -82,7 +82,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
           </li>
         ))}
         <li className="flex items-center gap-1.5">
-          <span aria-hidden="true" className="grid size-6 place-items-center rounded border border-line text-xs text-muted">
+          <span aria-hidden="true" className="grid size-6 place-items-center rounded border border-line text-sm text-muted">
             &mdash;
           </span>
           Did not take part
@@ -97,7 +97,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
             <tr>
               <th
                 scope="col"
-                className="sticky left-0 z-10 min-w-44 border-b border-r border-line bg-surface-2 px-3 py-2 text-left text-xs font-bold text-muted"
+                className="sticky left-0 z-10 min-w-44 border-b border-r border-line bg-surface-2 px-3 py-2 text-left text-sm font-bold text-muted"
               >
                 Driver
               </th>
@@ -106,7 +106,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
                   key={r.round}
                   scope="col"
                   title={r.name}
-                  className="timing border-b border-line bg-surface-2 px-1 py-2 text-center text-xs font-bold text-muted"
+                  className="timing border-b border-line bg-surface-2 px-1 py-2 text-center text-sm font-bold text-muted"
                 >
                   <span aria-hidden="true">R{r.round}</span>
                   <span className="sr-only">
@@ -114,7 +114,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
                   </span>
                 </th>
               ))}
-              <th scope="col" className="border-b border-l border-line bg-surface-2 px-3 py-2 text-right text-xs font-bold text-muted">
+              <th scope="col" className="border-b border-l border-line bg-surface-2 px-3 py-2 text-right text-sm font-bold text-muted">
                 Points
               </th>
             </tr>
@@ -127,7 +127,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
                   className="sticky left-0 z-10 whitespace-nowrap border-r border-line bg-surface px-3 py-1.5 text-left font-normal"
                 >
                   <span className="flex items-center gap-2">
-                    <span className="timing w-5 text-right text-xs text-muted">{d.position ?? <Dash />}</span>
+                    <span className="timing w-5 text-right text-sm text-muted">{d.position ?? <Dash />}</span>
                     <TeamBar color={d.team.color} />
                     <DriverLink slug={d.slug} name={d.name} />
                   </span>

@@ -34,7 +34,7 @@ export async function DriverFormRow({ slug, year }: { slug: string; year: number
                 <span aria-hidden="true">{cell ? text : ""}</span>
                 <span className="sr-only">{full}</span>
               </span>
-              <span aria-hidden="true" className="mt-1 block text-[0.6875rem] text-muted">
+              <span aria-hidden="true" className="mt-1 block text-sm text-muted">
                 R{r.round}
               </span>
             </li>

@@ -43,7 +43,7 @@ describe("WeekendSchedule", () => {
     expect(rows).toHaveLength(2);
     expect(rows[0]).toHaveTextContent("Practice 1");
     expect(rows[1]).toHaveTextContent("Race");
-    expect(await screen.findByText(/Europe\/Warsaw/, { selector: "p" })).toBeInTheDocument();
+    expect(await screen.findByRole("table", { name: /Europe\/Warsaw/ })).toBeInTheDocument();
     expect(rows[1]).toHaveTextContent("21:00"); // 20:00 UTC; Warsaw is back on UTC+1 from 25 October
   });
 

@@ -145,14 +145,12 @@ body {
   font-weight: 600;
 }
 
-/* Small caption above a value or a section: monospaced capitals, the voice of a timing sheet. */
+/* Caption of a value or a column: plain sentence case at reading size, in the muted colour. */
 .label,
 .eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  line-height: 1.4;
   color: var(--fg-muted);
 }
 
@@ -396,3 +394,59 @@ a.rowlink::after {
 /* v18 */
 
 /* v-audit */
+
+/* Anything that can be clicked says so, in every browser. */
+a[href],
+button:not(:disabled),
+summary,
+select:not(:disabled),
+label[for],
+[role="button"],
+[role="option"],
+[role="tab"],
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+input[type="submit"]:not(:disabled),
+input[type="range"]:not(:disabled) {
+  cursor: pointer;
+}
+:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* The same rendering everywhere. In the base layer, so utilities still win. */
+@layer base {
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+button,
+select,
+input:not([type="checkbox"]):not([type="radio"]),
+textarea {
+  -webkit-appearance: none;
+  appearance: none;
+}
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+}
+/* v-cursor */

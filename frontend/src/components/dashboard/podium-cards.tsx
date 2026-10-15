@@ -70,13 +70,13 @@ export function PodiumCards({
                   <DriverLink slug={r.driver.slug} name={r.driver.name} stretch />
                 </p>
                 {first ? (
-                  <p className="eyebrow mt-1.5 flex items-center normal-case tracking-normal">
+                  <p className="eyebrow mt-1.5 flex items-center">
                     <span aria-hidden="true" className="mr-2 inline-block h-[3px] w-4" style={{ backgroundColor: color ?? "var(--line-strong)" }} />
                     {r.team.name}
                   </p>
                 ) : null}
               </div>
-              <p className={`text-[0.8125rem] leading-relaxed ${first ? "col-start-2 mt-2 sm:col-start-auto sm:mt-0 sm:text-right" : "text-right"}`}>
+              <p className={`text-sm leading-relaxed ${first ? "col-start-2 mt-2 sm:col-start-auto sm:mt-0 sm:text-right" : "text-right"}`}>
                 {time && <b className="block tabular-nums">{time}</b>}
                 <span className="eyebrow">
                   {[first ? null : r.team.name, laps ? `${laps} laps` : null, points ? `${points} pts` : null].filter(Boolean).join(" / ")}
@@ -86,7 +86,7 @@ export function PodiumCards({
           );
         })}
       </ol>
-      <p className="mt-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-[0.8125rem] text-muted">
+      <p className="mt-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm text-muted">
         <span className="flex flex-wrap items-baseline gap-x-3">
           Fastest lap:{" "}
           {fastestLap ? (

@@ -303,7 +303,7 @@ function LeagueView({ league }: { league: LeagueDetail }) {
             <li key={m.user_id} className="flex items-center justify-between gap-3 px-4 py-2.5">
               <span>
                 {m.name}
-                {m.user_id === league.owner_id && <span className="ml-2 text-xs text-muted">owner</span>}
+                {m.user_id === league.owner_id && <span className="ml-2 text-sm text-muted">owner</span>}
               </span>
               {league.is_owner && m.user_id !== league.owner_id &&
                 (removing === m.user_id ? (

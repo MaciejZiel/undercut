@@ -182,9 +182,9 @@ export function DriverCombobox({
               >
                 <span>
                   {d.name}
-                  {d.code && <span className="timing ml-2 text-xs text-muted">{d.code}</span>}
+                  {d.code && <span className="timing ml-2 text-sm text-muted">{d.code}</span>}
                 </span>
-                {off && <span className="text-xs">already on the podium</span>}
+                {off && <span className="text-sm">already on the podium</span>}
                 {!off && d.id === value && <span aria-hidden="true">✓</span>}
               </li>
             );

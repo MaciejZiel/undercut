@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 let mockPath = "/";
@@ -7,7 +7,6 @@ vi.mock("next/navigation", () => ({ usePathname: () => mockPath }));
 import { MainNav } from "./main-nav";
 import { MobileTabBar } from "./mobile-tab-bar";
 import { SiteFooter } from "./site-footer";
-import { resetFooterCounts } from "@/components/dashboard/footer-counts";
 
 const LABELS = ["Weekend", "Calendar", "Standings", "Archive", "Predict"];
 
@@ -81,18 +80,5 @@ describe("footer", () => {
         "Unofficial fan site. Not affiliated with Formula One Group or the FIA. Data: Jolpica-F1, OpenF1.",
       ),
     ).toBeInTheDocument();
-  });
-
-  it("shows the counts from the dashboard endpoint, and nothing when it fails", async () => {
-    resetFooterCounts();
-    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ counts: { seasons: 76, races: 1130, drivers: 870 } })));
-    render(<SiteFooter />);
-    expect(await screen.findByText("76 seasons · 1,130 races · 870 drivers")).toBeInTheDocument();
-    cleanup();
-    resetFooterCounts();
-    vi.stubGlobal("fetch", vi.fn(async () => new Response("{}", { status: 500 })));
-    render(<SiteFooter />);
-    await waitFor(() => expect(fetch).toHaveBeenCalled());
-    expect(screen.queryByText(/seasons ·/)).not.toBeInTheDocument();
   });
 });

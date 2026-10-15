@@ -187,7 +187,7 @@ export function DriverPicker({
                 className={`flex cursor-pointer items-center justify-between gap-2 px-3 py-2 text-sm ${i === active ? "bg-accent-soft" : ""} ${off ? "cursor-not-allowed text-muted" : ""}`}
               >
                 <span>{d.name}</span>
-                {off && <span className="text-xs">already selected</span>}
+                {off && <span className="text-sm">already selected</span>}
               </li>
             );
           })}

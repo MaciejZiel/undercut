@@ -187,7 +187,7 @@ function Row({ row, mine, rowRef }: { row: LeaderboardRow; mine: boolean; rowRef
       <td className="timing px-3 py-2.5 text-right font-bold">{row.rank}</td>
       <td className="px-3 py-2.5 font-semibold">
         {row.name}
-        {mine && <span className="ml-2 text-xs text-muted">(you)</span>}
+        {mine && <span className="ml-2 text-sm text-muted">(you)</span>}
       </td>
       <td className="timing px-3 py-2.5 text-right font-bold">{row.points}</td>
       <td className="timing px-3 py-2.5 text-right">{row.exact_hits}</td>

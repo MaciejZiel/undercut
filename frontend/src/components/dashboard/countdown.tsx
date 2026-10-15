@@ -46,7 +46,7 @@ export function Countdown({ target, clock = false }: { target: string; clock?: b
         {cells.map(([unit, value]) => (
           <div key={unit} className="flex items-baseline gap-1.5">
             <dd className="numeral text-[1.75rem] sm:text-3xl">{String(value).padStart(2, "0")}</dd>
-            <dt className="text-xs font-semibold text-muted">{unit}</dt>
+            <dt className="text-sm font-semibold text-muted">{unit}</dt>
           </div>
         ))}
       </dl>

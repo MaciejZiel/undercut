@@ -81,7 +81,7 @@ function HistoryTr({ row }: { row: HistoryRow }) {
         {result ? (
           <>
             {slotText(result)}
-            <span className="block text-xs text-muted">
+            <span className="block text-sm text-muted">
               {SLOTS.slice(3).map((s) => `${s.label}: ${label(result[s.key])}`).join(", ")}
             </span>
           </>

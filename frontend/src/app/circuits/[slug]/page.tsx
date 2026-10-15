@@ -5,7 +5,7 @@ import { circuitHref } from "@/lib/routes";
 import { notFound } from "next/navigation";
 import { DetailPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
-import { RACER_SPEED, TrackOutline } from "@/components/catalog/track-outline";
+import { TrackOutline } from "@/components/catalog/track-outline";
 import { EntityHeader } from "@/components/ui/entity-header";
 import { ConstructorLink, DriverLink, Nationality } from "@/components/ui/entity-links";
 import { CircuitWinnersTable, MostWinsList } from "@/components/catalog/circuit-tables";
@@ -83,21 +83,12 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
         {c.outline && (
           <figure className="m-0">
             <TrackOutline outline={c.outline} name={c.name} lapMs={c.lap_record_ms} seed={c.slug} className="mx-auto w-full max-h-[28rem]" />
-            <figcaption className="eyebrow mt-3 normal-case tracking-normal">
-              The cars are an illustration: every circuit has its own field, running at about {RACER_SPEED}× the lap
-              record pace.
-            </figcaption>
-            {c.outline.origin === "geojson" && (
-              <figcaption className="eyebrow mt-3 normal-case tracking-normal">
-                Current layout. Outline from the f1-circuits data set by Tomislav Bacinger (MIT licence).
-              </figcaption>
-            )}
           </figure>
         )}
         {!c.outline && (
           <figure className="m-0 flex min-h-56 flex-col items-center justify-center border border-dashed border-line-strong p-6 text-center">
             <p className="display text-5xl text-ghost sm:text-7xl">{c.country}</p>
-            <figcaption className="eyebrow mt-3 normal-case tracking-normal">
+            <figcaption className="eyebrow mt-3">
               No track outline for this circuit. Free map data exists only for the layouts used since 2023 and a few older ones.
             </figcaption>
           </figure>

@@ -33,7 +33,7 @@ export function Field({
         className={`${inputClass} ${error ? "border-danger" : ""}`}
       />
       {hint && (
-        <p id={hintId} className="mt-1 text-xs text-muted">
+        <p id={hintId} className="mt-1 text-sm text-muted">
           {hint}
         </p>
       )}

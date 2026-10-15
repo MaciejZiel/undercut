@@ -298,7 +298,7 @@ function Duel({
   return (
     <article className="border-t border-line pt-4">
       <h3 className="font-bold">{title}</h3>
-      <p className="mb-3 text-xs text-muted">{note}</p>
+      <p className="mb-3 text-sm text-muted">{note}</p>
       {total === 0 ? (
         <p className="text-sm text-muted">
           <Dash label="Nothing to compare" /> Nothing to compare.
@@ -318,7 +318,7 @@ function Duel({
           <div aria-hidden="true" className="mt-2 flex h-2 overflow-hidden rounded-full bg-surface-2">
             {share !== null && <div className="h-full bg-accent" style={{ width: `${share}%` }} />}
           </div>
-          <p className="mt-2 text-xs text-muted">
+          <p className="mt-2 text-sm text-muted">
             <span className="timing">{total}</span> {totalLabel}
           </p>
           <p className="sr-only">
@@ -380,7 +380,7 @@ function TeammateSeason({
           ))}
         </tbody>
       </DataTable>
-      <p className="mt-1 text-xs text-muted">Difference is {aName} minus {bName}; a negative value means {aName} was faster.</p>
+      <p className="mt-1 text-sm text-muted">Difference is {aName} minus {bName}; a negative value means {aName} was faster.</p>
     </div>
   );
 }

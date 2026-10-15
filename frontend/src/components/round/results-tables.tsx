@@ -37,7 +37,7 @@ function FastestLapMark() {
   return (
     <span
       title="Fastest lap"
-      className="ml-2 inline-block rounded bg-accent-soft px-1 text-xs font-bold text-accent"
+      className="ml-2 inline-block rounded bg-accent-soft px-1 text-sm font-bold text-accent"
     >
       FL<span className="sr-only"> fastest lap</span>
     </span>
@@ -174,7 +174,7 @@ export function QualifyingResultsTable({
                 <RowTh color={r.team.color}>
                   <DriverLink slug={r.driver.slug} name={r.driver.name} stretch />
                   {r.eliminated_in && (
-                    <span title={`Eliminated in ${r.eliminated_in}`} className="ml-2 text-xs font-bold text-muted">
+                    <span title={`Eliminated in ${r.eliminated_in}`} className="ml-2 text-sm font-bold text-muted">
                       out in {r.eliminated_in}
                     </span>
                   )}
@@ -198,7 +198,7 @@ export function QualifyingResultsTable({
               </Tr>
               {cutDigit && (
                 <tr aria-hidden="true">
-                  <td colSpan={single ? 4 : 6} className="border-b-[3px] border-fg p-0 pb-0.5 text-right text-xs font-bold text-muted">
+                  <td colSpan={single ? 4 : 6} className="border-b-[3px] border-fg p-0 pb-0.5 text-right text-sm font-bold text-muted">
                     {prefix}
                     {Number(cutDigit) + 1} cut
                   </td>

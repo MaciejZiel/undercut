@@ -68,10 +68,9 @@ export function NavMenu({ item, linkClass }: { item: NavItem; linkClass: (active
           <li key={l.href}>
             <Link
               href={l.href}
-              className="t-fast flex flex-col px-3 py-2.5 hover:bg-surface"
+              className="t-fast block px-3 py-2.5 hover:bg-surface"
             >
               <span className="font-semibold">{l.label}</span>
-              <span className="text-xs text-muted">{l.hint}</span>
             </Link>
           </li>
         ))}

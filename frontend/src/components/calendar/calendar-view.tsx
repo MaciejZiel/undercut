@@ -47,9 +47,6 @@ export function CalendarView({ year, rounds }: { year: number; rounds: Entry[] }
             </button>
           ))}
         </div>
-        <p className="text-sm text-muted" aria-live="polite">
-          {mode === "viewer" ? `Times shown in ${viewerZone}.` : "Times shown in each circuit's local time."}
-        </p>
       </div>
       {done.length > 0 && (
         <details className="group mb-8 border-y border-fg">
@@ -57,8 +54,7 @@ export function CalendarView({ year, rounds }: { year: number; rounds: Entry[] }
             <span>
               {done.length} completed {done.length === 1 ? "round" : "rounds"}
             </span>
-            <span className="eyebrow group-open:hidden">Show</span>
-            <span className="eyebrow hidden group-open:inline">Hide</span>
+            <span aria-hidden="true" className="group-open:rotate-180">▾</span>
           </summary>
           <Months year={year} rounds={done} mode={mode} viewerZone={viewerZone} />
         </details>
@@ -122,7 +118,7 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
         } ${cancelled ? "text-muted" : ""}`}
       >
         <p className="timing leading-tight text-muted">
-          <span className="block text-xs">{entry.round != null ? `Round ${entry.round}` : "Round"}</span>
+          <span className="block text-sm">{entry.round != null ? `Round ${entry.round}` : "Round"}</span>
           <span className="mt-1 block text-sm font-bold text-fg">{formatDayMonth(entry.date) ?? <Dash />}</span>
         </p>
         <div className="min-w-0">
@@ -175,7 +171,7 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
                       );
                     })}
                   </ul>
-                  {fallback && <p className="mt-1 text-xs text-muted">Circuit time zone unknown, showing your time zone.</p>}
+                  {fallback && <p className="mt-1 text-sm text-muted">Circuit time zone unknown, showing your time zone.</p>}
                 </>
               )}
             </div>

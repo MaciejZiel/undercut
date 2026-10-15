@@ -48,12 +48,12 @@ export function StandingsTable({
               {kind === "drivers" ? (
                 <span className="inline-flex flex-wrap items-baseline gap-x-2">
                   <DriverLink slug={row.entity.slug} name={row.entity.name} stretch />
-                  {row.entity.code && <span className="text-xs font-bold text-muted">{row.entity.code}</span>}
+                  {row.entity.code && <span className="text-sm font-bold text-muted">{row.entity.code}</span>}
                 </span>
               ) : (
                 <ConstructorLink slug={row.entity.slug} name={row.entity.name} stretch />
               )}
-              <span className="mt-0.5 block text-[0.8125rem] font-normal text-muted sm:hidden">
+              <span className="mt-0.5 block text-sm font-normal text-muted sm:hidden">
                 {formatInteger(row.wins) ?? "0"} wins · {formatInteger(row.podiums) ?? "0"} podiums
               </span>
             </Td>

@@ -39,7 +39,7 @@ function CompoundLegend() {
           <li key={c} className="inline-flex items-center gap-2 text-sm font-semibold">
             <span
               aria-hidden="true"
-              className="grid size-6 place-items-center rounded border border-line text-xs font-extrabold"
+              className="grid size-6 place-items-center rounded border border-line text-sm font-extrabold"
               style={{ backgroundColor: s.bg, color: s.fg }}
             >
               {c === "INTERMEDIATE" ? "I" : c[0]}
@@ -81,7 +81,7 @@ export function StintBars({ data }: { data: Stints }) {
                 <span
                   key={s.stint}
                   title={`${st.label}, laps ${s.lapStart} to ${s.lapEnd} (${s.laps})`}
-                  className="absolute inset-y-0 flex items-center justify-center overflow-hidden whitespace-nowrap rounded-sm border border-bg text-xs font-extrabold"
+                  className="absolute inset-y-0 flex items-center justify-center overflow-hidden whitespace-nowrap rounded-sm border border-bg text-sm font-extrabold"
                   style={{ left: `${s.left}%`, width: `${s.width}%`, backgroundColor: st.bg, color: st.fg }}
                 >
                   {s.letter}
@@ -95,7 +95,7 @@ export function StintBars({ data }: { data: Stints }) {
           </div>
         </div>
       ))}
-      <div className="ml-14 flex justify-between text-xs text-muted" aria-hidden="true">
+      <div className="ml-14 flex justify-between text-sm text-muted" aria-hidden="true">
         <span>Lap 1</span>
         <span>Lap {total}</span>
       </div>

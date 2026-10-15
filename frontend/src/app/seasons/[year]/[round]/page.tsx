@@ -167,9 +167,6 @@ async function RoundDetail({ params, searchParams }: Props) {
           ))}
         </nav>
       )}
-      {analytic && round.year < 2023 && (
-        <p className="mb-4 text-sm text-muted">Detailed analytics are available from the 2023 season.</p>
-      )}
 
       {analytic && view !== "results" && view !== "replay" ? (
         <AnalyticsPanel key={`${view}-${analytic}`} view={view as AnalyticsViewKey} year={round.year} round={round.round} session={analytic} />

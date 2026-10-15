@@ -47,12 +47,9 @@ export function NextRaceCard({
   return (
     <article aria-labelledby="next-race-h" className="grid grid-cols-1 border-b border-fg lg:grid-cols-[minmax(0,1fr)_23.5rem]">
       <div className="relative flex flex-col overflow-hidden py-7 lg:pr-9">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="bg-accent px-2 py-1 text-xs font-bold tracking-[0.08em] text-accent-fg">UP NEXT</span>
-          <span className="eyebrow">
-            Round {round} / {year}
-          </span>
-        </div>
+        <p className="eyebrow">
+          Next race, round {round}
+        </p>
         {circuitDetail?.outline && (
           <TrackOutline
             outline={circuitDetail.outline}
@@ -76,7 +73,7 @@ export function NextRaceCard({
               <p className="numeral text-[1.75rem]">{dayMonth(date)}</p>
             </div>
           )}
-          <p className="text-[0.8125rem] leading-relaxed">
+          <p className="text-sm leading-relaxed">
             <Link href={circuitHref(circuit.slug)} className="font-semibold underline-offset-4 hover:text-accent hover:underline">
               {circuit.name}
             </Link>
@@ -86,7 +83,7 @@ export function NextRaceCard({
         </div>
         <Link
           href={roundHref(year, round)}
-          className="t-fast mt-6 inline-flex min-h-11 w-fit items-center gap-3 border-2 border-fg px-5 text-[0.8125rem] font-bold hover:bg-fg hover:text-bg"
+          className="t-fast mt-6 inline-flex min-h-11 w-fit items-center gap-3 border-2 border-fg px-5 text-sm font-bold hover:bg-fg hover:text-bg"
         >
           Weekend details
           <span aria-hidden="true">→</span>
@@ -113,14 +110,14 @@ export function NextRaceCard({
           <div className="border-b border-line py-2.5">
             <AddToCalendar year={year} round={round} label="Add the weekend to my calendar" />
           </div>
-          <Link href="/calendar" className="t-fast flex min-h-11 items-center justify-between gap-3 border-b border-line py-2.5 text-[0.8125rem] font-bold hover:text-accent">
+          <Link href="/calendar" className="t-fast flex min-h-11 items-center justify-between gap-3 border-b border-line py-2.5 text-sm font-bold hover:text-accent">
             Full calendar
             <span aria-hidden="true">→</span>
           </Link>
         </div>
         <Link
           href="/predict"
-          className="t-fast mt-5 flex items-center justify-between bg-fg px-4 py-3.5 text-[0.8125rem] font-bold text-bg hover:-translate-y-px hover:bg-accent hover:text-accent-fg"
+          className="t-fast mt-5 flex items-center justify-between bg-fg px-4 py-3.5 text-sm font-bold text-bg hover:-translate-y-px hover:bg-accent hover:text-accent-fg"
         >
           Predict the podium
           <span aria-hidden="true">→</span>

@@ -47,12 +47,11 @@ function MessageList({ data }: { data: RaceControl }) {
         {shown.map((m, i) => (
           <li key={`${m.ts}-${i}`} className="flex flex-wrap gap-x-3 py-2">
             <span className="timing w-14 shrink-0 font-bold text-muted">{m.lap_number != null ? `Lap ${m.lap_number}` : new Date(m.ts).toISOString().slice(11, 16)}</span>
-            {m.category && <span className="rounded bg-surface-2 px-1.5 text-xs font-bold">{m.category}{m.flag ? ` · ${m.flag}` : ""}</span>}
+            {m.category && <span className="rounded bg-surface-2 px-1.5 text-sm font-bold">{m.category}{m.flag ? ` · ${m.flag}` : ""}</span>}
             <span className="min-w-0 flex-1">{m.message}</span>
           </li>
         ))}
       </ol>
-      <p className="mt-2 text-xs text-muted">Data: OpenF1</p>
     </section>
   );
 }

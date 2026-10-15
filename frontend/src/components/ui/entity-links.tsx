@@ -93,7 +93,7 @@ export function Badge({ children, tone = "neutral" }: { children: ReactNode; ton
     accent: "bg-flag text-on-flag",
   };
   return (
-    <span className={`inline-block rounded-sm px-1.5 py-0.5 text-xs font-bold ${tones[tone]}`}>
+    <span className={`inline-block rounded-sm px-1.5 py-0.5 text-sm font-bold ${tones[tone]}`}>
       {children}
     </span>
   );

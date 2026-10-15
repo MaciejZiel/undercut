@@ -3,7 +3,7 @@
 import { useId, useState, type ReactNode } from "react";
 
 /** Drivers / Constructors switch for the championship panel. Both tables are rendered by the server; this only picks one. */
-export function StandingsSwitch({ drivers, constructors, season, afterRound }: { drivers: ReactNode; constructors: ReactNode; season?: number | null; afterRound?: number | null }) {
+export function StandingsSwitch({ drivers, constructors, season }: { drivers: ReactNode; constructors: ReactNode; season?: number | null }) {
   const [kind, setKind] = useState<"drivers" | "constructors">("drivers");
   const id = useId();
   return (
@@ -17,7 +17,7 @@ export function StandingsSwitch({ drivers, constructors, season, afterRound }: {
               aria-pressed={kind === k}
               aria-controls={`${id}-panel`}
               onClick={() => setKind(k)}
-              className={`t-fast min-h-9 border-b-2 text-[0.8125rem] font-bold ${
+              className={`t-fast min-h-9 border-b-2 text-sm font-bold ${
                 kind === k ? "border-accent text-fg" : "border-transparent text-muted hover:text-fg"
               }`}
             >
@@ -25,7 +25,6 @@ export function StandingsSwitch({ drivers, constructors, season, afterRound }: {
             </button>
           ))}
         </div>
-        {afterRound ? <span className="eyebrow pb-2">After round {afterRound}</span> : null}
       </div>
       <div id={`${id}-panel`} key={kind} className="fade-in">
         {kind === "drivers" ? drivers : constructors}

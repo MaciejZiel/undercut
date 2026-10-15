@@ -103,7 +103,6 @@ export async function ChampionshipSection() {
         </div>
         <StandingsSwitch
           season={drivers.season}
-          afterRound={drivers.after_round}
           drivers={
             drivers.entries.length > 0 ? (
               <TopFive kind="drivers" standings={drivers} />
@@ -122,24 +121,6 @@ export async function ChampionshipSection() {
       </section>
     );
   });
-}
-
-/** A thin strip above the weekend: the season and today's date. The wordmark lives in the header. */
-export async function Masthead() {
-  await connection();
-  let season: number | null = null;
-  try {
-    season = (await getDashboard()).driver_standings.season ?? null;
-  } catch {
-    season = null;
-  }
-  const today = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date());
-  return (
-    <div className="flex items-baseline justify-between gap-4 border-b-4 border-fg pb-2 pt-1">
-      <p className="eyebrow">{season ? `Season ${season}` : "Season"}</p>
-      <p className="eyebrow">{today}</p>
-    </div>
-  );
 }
 
 /** "On this day": the winner of a race held on today's date in an earlier year. Lives in the archive. */

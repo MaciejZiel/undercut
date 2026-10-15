@@ -145,7 +145,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
         />
         <kbd
           aria-hidden="true"
-          className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded border border-line px-1.5 text-xs text-muted md:block"
+          className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded border border-line px-1.5 text-sm text-muted md:block"
         >
           /
         </kbd>
@@ -176,7 +176,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
               <div
                 id={`${id}-g-${g.key}`}
                 role="presentation"
-                className="px-3 pb-1 pt-2 text-xs font-bold text-muted"
+                className="px-3 pb-1 pt-2 text-sm font-bold text-muted"
               >
                 {g.label}
               </div>
@@ -198,7 +198,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
                     }`}
                   >
                     <span className="font-semibold">{item.label}</span>
-                    {item.detail && <span className="shrink-0 text-xs text-muted">{item.detail}</span>}
+                    {item.detail && <span className="shrink-0 text-sm text-muted">{item.detail}</span>}
                   </div>
                 );
               })}
@@ -207,7 +207,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
           {searchable && groups.length > 0 && (
             <div
               role="presentation"
-              className="border-t border-line px-3 py-2 text-xs text-muted"
+              className="border-t border-line px-3 py-2 text-sm text-muted"
             >
               Press Enter for all results
             </div>

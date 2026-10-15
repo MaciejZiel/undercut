@@ -42,18 +42,18 @@ export function TopFive({ kind, standings }: { kind: StandingsKind; standings: T
                 {row.position != null ? String(row.position).padStart(2, "0") : <Dash />}
               </span>
               <span className="min-w-0 border-l-[3px] pl-2.5 leading-tight" style={{ borderColor: color ?? "var(--line-strong)" }}>
-                <span className="block truncate text-[0.8125rem] font-bold">
+                <span className="block truncate text-sm font-bold">
                   {kind === "drivers" ? (
                     <DriverLink slug={row.slug} name={row.name} stretch />
                   ) : (
                     <ConstructorLink slug={row.slug} name={row.name} dot={false} stretch />
                   )}
                 </span>
-                {kind === "drivers" && row.team_name && <span className="mt-0.5 block truncate text-xs text-muted">{row.team_name}</span>}
+                {kind === "drivers" && row.team_name && <span className="mt-0.5 block truncate text-sm text-muted">{row.team_name}</span>}
               </span>
               <span className="text-right leading-tight">
                 <span className="block text-[1.1875rem] font-extrabold tabular-nums tracking-[-0.03em]">{formatPoints(row.points) ?? <Dash />}</span>
-                {behind > 0 && <span className="block text-xs tabular-nums text-muted">−{formatPoints(behind)}</span>}
+                {behind > 0 && <span className="block text-sm tabular-nums text-muted">−{formatPoints(behind)}</span>}
               </span>
             </li>
           );

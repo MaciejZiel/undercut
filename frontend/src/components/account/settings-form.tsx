@@ -118,7 +118,6 @@ function ProfileForm({ user }: { user: User }) {
           <input type="checkbox" checked={emailPref} onChange={(e) => setEmailPref(e.target.checked)} disabled={locked} className="mt-1" />
           <span>
             Send me a message after each race with my points.
-            <span className="block text-xs text-muted">Every message has a one-click unsubscribe link.</span>
           </span>
         </label>
       </fieldset>

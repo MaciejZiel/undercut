@@ -96,7 +96,7 @@ export function AccountButton() {
           aria-label="Account"
           className="absolute right-0 top-12 z-40 w-56 border border-fg bg-bg p-1"
         >
-          <p className="truncate px-3 py-2 text-xs text-muted">{name}</p>
+          <p className="truncate px-3 py-2 text-sm text-muted">{name}</p>
           {ITEMS.map((item) => (
             <Link key={item.href + item.label} href={item.href} role="menuitem" onClick={() => setOpen(false)} className={itemClass}>
               {item.label}

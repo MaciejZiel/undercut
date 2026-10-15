@@ -85,7 +85,7 @@ export function TitleRacePanel({ race }: { race: TitleRace }) {
                         <Badge tone="accent">Champion</Badge>
                       </span>
                     )}
-                    {!champion && c.tie_break_needed && <span className="ml-2 text-xs text-muted">Only on countback</span>}
+                    {!champion && c.tie_break_needed && <span className="ml-2 text-sm text-muted">Only on countback</span>}
                   </Td>
                   <Td align="right" className="timing font-bold">
                     {formatPoints(c.points) ?? <Dash />}

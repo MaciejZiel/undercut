@@ -38,7 +38,7 @@ export function PredictHome() {
         const open = state.status === "open";
         return (
           <section aria-labelledby="next-h" className="border-t border-line pt-6">
-            <p className="text-xs font-bold text-muted">
+            <p className="text-sm font-bold text-muted">
               {state.round.year} round {state.round.round}
             </p>
             <h2 id="next-h" className="mt-1 heading text-xl sm:text-[1.375rem]">

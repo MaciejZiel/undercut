@@ -87,7 +87,7 @@ export function Timeline({
         aria-valuetext={`${formatClock(value)}${lapNow ? `, lap ${lapNow}` : ""}`}
         className="h-5 w-full cursor-pointer accent-[var(--accent)]"
       />
-      <p className="mt-1 text-xs text-muted">
+      <p className="mt-1 text-sm text-muted">
         Markers: S start, P pit stop (small ticks), SC safety car, VSC virtual safety car, R red flag, F chequered flag.
       </p>
       <details className="mt-2 text-sm">

@@ -19,9 +19,7 @@ export function ChartFrame({
   chart,
   table,
   legend,
-  source = "OpenF1",
   controls,
-  zoomable = true,
 }: {
   title: string;
   chart: ReactNode;
@@ -70,15 +68,6 @@ export function ChartFrame({
           {legend && <div className="lg:w-56 lg:shrink-0 lg:overflow-y-auto">{legend}</div>}
         </div>
       )}
-      <p className="mt-2 flex flex-wrap gap-x-4 text-xs text-muted">
-        <span>Data: {source}</span>
-        {!asTable && zoomable && (
-          <>
-            <span className="md:hidden">Pinch to zoom. Rotate your phone to see more.</span>
-            <span className="hidden md:inline">Scroll or pinch to zoom.</span>
-          </>
-        )}
-      </p>
     </figure>
   );
 }

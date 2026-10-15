@@ -26,11 +26,11 @@ export function AddToCalendar({
   const host = siteUrl().replace(/^https?:\/\//, "");
   const webcal = `webcal://${host}${path}`;
   const google = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}`;
-  const item = "t-fast block px-3 py-2 text-[0.8125rem] font-bold hover:bg-surface-2 hover:text-accent";
+  const item = "t-fast block px-3 py-2 text-sm font-bold hover:bg-surface-2 hover:text-accent";
   return (
     <details className="group relative">
       <summary
-        className={`t-fast flex cursor-pointer list-none items-baseline justify-between gap-3 text-[0.8125rem] font-bold hover:text-accent [&::-webkit-details-marker]:hidden ${className}`}
+        className={`t-fast flex cursor-pointer list-none items-baseline justify-between gap-3 text-sm font-bold hover:text-accent [&::-webkit-details-marker]:hidden ${className}`}
       >
         <span>
           {label}
@@ -46,13 +46,11 @@ export function AddToCalendar({
         <li>
           <a href={google} target="_blank" rel="noopener noreferrer" className={item}>
             Google Calendar
-            <span className="block text-[0.6875rem] font-normal text-muted">Subscribes, so changes follow</span>
           </a>
         </li>
         <li className="border-t border-line">
           <a href={webcal} className={item}>
             Apple Calendar, Outlook and others
-            <span className="block text-[0.6875rem] font-normal text-muted">Opens your calendar app</span>
           </a>
         </li>
         <li className="border-t border-line">
