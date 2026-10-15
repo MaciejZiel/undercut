@@ -1,6 +1,7 @@
 """Read helpers for scheduling and syncing: which sessions need results, round lookups."""
 
 import datetime as dt
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 from django.db.models import Count, Q
@@ -138,3 +139,17 @@ def qualifying_started(now: dt.datetime, *, within: dt.timedelta) -> list[tuple[
         round__is_cancelled=False,
     ).values_list("round_id", "start_utc")
     return list(sessions)
+
+
+def sessions_ended_between(
+    now: dt.datetime, *, after: dt.timedelta, until: dt.timedelta, types: Sequence[str]
+) -> list[SessionRef]:
+    """Sessions of the given types that ended between `until` and `after` ago."""
+    sessions = m.Session.objects.select_related("round__season").filter(
+        type__in=types,
+        end_utc__lte=now - after,
+        end_utc__gte=now - until,
+        round__is_cancelled=False,
+        round__round__isnull=False,
+    )
+    return [_ref(s) for s in sessions]

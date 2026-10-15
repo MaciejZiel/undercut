@@ -51,9 +51,13 @@ def test_results_stop_being_due_after_twelve_hours_or_once_final(season):
 
 def test_scheduler_fires_one_results_event_per_hour(season):
     at = season.end_utc + dt.timedelta(hours=2, minutes=10)
-    assert run_due(at, schedule=[]) == 1
-    assert run_due(at + dt.timedelta(minutes=5), schedule=[]) == 0  # same hour
-    assert run_due(at + dt.timedelta(hours=1), schedule=[]) == 1  # next hourly poll
+    assert run_due(at, schedule=[], providers=[handlers.results_due]) == 1
+    assert (
+        run_due(at + dt.timedelta(minutes=5), schedule=[], providers=[handlers.results_due]) == 0
+    )  # same hour
+    assert (
+        run_due(at + dt.timedelta(hours=1), schedule=[], providers=[handlers.results_due]) == 1
+    )  # next hourly poll
     assert OutboxEvent.objects.filter(type="SessionResultsDue").count() == 2
 
 

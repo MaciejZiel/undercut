@@ -13,12 +13,20 @@ from apps.events.scheduler import DueEvent, register_provider
 
 from .jolpica import sync
 from .jolpica.client import shared_client
+from .openf1.client import OpenF1Client
+from .openf1.importer import run_import
 
 log = logging.getLogger(__name__)
 
 RESULTS_AFTER = dt.timedelta(hours=1)  # first poll one hour after the session ends
 RESULTS_UNTIL = dt.timedelta(hours=12)  # then hourly, give up after twelve hours
 CORRECTIONS_WINDOW = dt.timedelta(days=8)
+
+# OpenF1 analytics: first try two hours after the session, then every two hours for a day. A
+# session that was already imported is skipped by the importer (a couple of cheap requests).
+ANALYTICS_AFTER = dt.timedelta(hours=2)
+ANALYTICS_UNTIL = dt.timedelta(hours=24)
+ANALYTICS_TYPES = ("RACE", "SPRINT")
 
 
 def results_due(now: dt.datetime):
@@ -31,6 +39,44 @@ def results_due(now: dt.datetime):
             event_type="SessionResultsDue",
             key=f"session:{ref.id}",
             payload={"session_id": ref.id},
+        )
+
+
+def analytics_due(now: dt.datetime):
+    """One `AnalyticsDue` per race or sprint per two-hour slot in the first day after it ends."""
+    slot = now.replace(hour=now.hour - now.hour % 2, minute=0, second=0, microsecond=0)
+    for ref in scheduling.sessions_ended_between(
+        now, after=ANALYTICS_AFTER, until=ANALYTICS_UNTIL, types=ANALYTICS_TYPES
+    ):
+        yield DueEvent(
+            job=f"analytics:{ref.id}",
+            slot=slot,
+            event_type="AnalyticsDue",
+            key=f"session:{ref.id}",
+            payload={"session_id": ref.id},
+        )
+
+
+def on_analytics_due(event) -> None:
+    ref = scheduling.session_ref(event.payload["session_id"])
+    if ref is None or ref.round is None or ref.year < 2023:  # OpenF1 starts in 2023
+        return
+    summary = run_import(
+        OpenF1Client(),
+        years=[ref.year],
+        round_number=ref.round,
+        types=frozenset({ref.type}),
+        force=False,
+        dry_run=False,
+    )
+    run = summary.run
+    if run.status == run.Status.FAILED:
+        raise RuntimeError(f"OpenF1 import failed for session {ref.id}")  # retried by the outbox
+    if run.errors:
+        # Typically a driver that only appeared in practice (fix DriverNumberMap in the admin).
+        # A retry cannot repair that, so it is reported but does not fail the event.
+        log.warning(
+            "OpenF1 import for session %s finished with %s problem(s)", ref.id, len(run.errors)
         )
 
 
@@ -64,3 +110,5 @@ def register() -> None:
     subscribe("CalendarSyncDue")(on_calendar_sync_due)
     subscribe("ResultsCorrectionsDue")(on_results_corrections_due)
     register_provider(results_due)
+    subscribe("AnalyticsDue")(on_analytics_due)
+    register_provider(analytics_due)
