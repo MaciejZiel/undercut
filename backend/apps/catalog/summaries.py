@@ -13,7 +13,6 @@ from django.db.models import F, Max, Q
 from .models import Result, Round, Session
 
 
-
 def _classified(r: Result) -> bool:
     """Classified finish: a position and no retirement/disqualification marker."""
     return r.position is not None and (r.position_text == "" or r.position_text.isdigit())
