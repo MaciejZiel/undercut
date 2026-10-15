@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { DetailPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
+import { SessionPending } from "@/components/round/session-pending";
 import { Badge, CircuitLink, Nationality } from "@/components/ui/entity-links";
 import { RaceSummary } from "@/components/round/race-summary";
 import { TrackOutline } from "@/components/catalog/track-outline";
@@ -57,12 +58,14 @@ async function RoundDetail({ params, searchParams }: Props) {
   const tabs = availableTabs(round.sessions);
   const active = pickTab(requested, tabs, round.sessions);
   const defaultTab = pickTab(undefined, tabs, round.sessions);
+  const sessionInfo = active ? round.sessions.find((s) => s.type === active.type) : undefined;
   // Analysis, strategy and replay exist for race, sprint and qualifying only.
   const analytic = active && ["RACE", "SPRINT", "Q"].includes(active.type) ? (active.type as "RACE" | "SPRINT" | "Q") : null;
-  const views = analytic ? visibleViews(round.year) : [];
-  const view = analytic ? pickView(first((await searchParams).view), round.year) : "results";
+  const hasResults = sessionInfo?.has_results ?? false;
+  // Sub-views of a session that has no data would all be empty, so they appear with the results.
+  const views = analytic && hasResults ? visibleViews(round.year) : [];
+  const view = analytic && hasResults ? pickView(first((await searchParams).view), round.year) : "results";
   const base = roundHref(round.year, round.round);
-  const sessionInfo = active ? round.sessions.find((s) => s.type === active.type) : undefined;
   const results = active ? await getRoundResults(round.year, round.round, active.type) : null;
   const circuit = await getCircuit(round.circuit.slug).catch(() => null);
 
@@ -172,15 +175,18 @@ async function RoundDetail({ params, searchParams }: Props) {
         <AnalyticsPanel key={`${view}-${analytic}`} view={view as AnalyticsViewKey} year={round.year} round={round.round} session={analytic} />
       ) : analytic && view === "replay" ? (
         <ReplayPanel key={analytic} year={round.year} round={round.round} session={analytic} roundName={round.name} label={active?.label ?? ""} />
-      ) : !active || results === null || results.results.length === 0 ? (
+      ) : round.is_cancelled || !active ? (
         <EmptyState
-          title={round.is_cancelled ? "This round was cancelled" : "No results yet"}
-          description={
-            round.is_cancelled
-              ? "No sessions were held."
-              : "Results appear here once the session has finished."
-          }
+          title={round.is_cancelled ? "This round was cancelled" : "No sessions yet"}
+          description={round.is_cancelled ? "No sessions were held." : "The schedule for this weekend is not published yet."}
           action={{ label: `Back to ${round.year} calendar`, href: seasonHref(round.year) }}
+        />
+      ) : results === null || results.results.length === 0 ? (
+        <SessionPending
+          label={active.label}
+          startUtc={sessionInfo?.start_utc ?? null}
+          backHref={seasonHref(round.year)}
+          backLabel={`Back to ${round.year} calendar`}
         />
       ) : (
         <section aria-labelledby="results-h">
