@@ -1,26 +1,153 @@
 @import "tailwindcss";
 
+/* Light palette: the base tokens. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --bg: #f3f4f8;
+  --surface: #ffffff;
+  --surface-2: #e9ebf2;
+  --line: #d3d8e4;
+  --fg: #0f1320;
+  --fg-muted: #4a556b;
+  --accent: #5a2dc8;
+  --accent-fg: #ffffff;
+  --accent-soft: #e8e0fb;
+  --danger: #b3261e;
+  --focus: #5a2dc8;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Dark palette: follows the system unless the visitor picked light. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0b0f19;
+    --surface: #121827;
+    --surface-2: #1a2236;
+    --line: #26304a;
+    --fg: #e8ecf5;
+    --fg-muted: #9ba8c1;
+    --accent: #b99cff;
+    --accent-fg: #170a2e;
+    --accent-soft: #2a2148;
+    --danger: #ff8a80;
+    --focus: #c9b6ff;
   }
 }
 
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0f19;
+  --surface: #121827;
+  --surface-2: #1a2236;
+  --line: #26304a;
+  --fg: #e8ecf5;
+  --fg-muted: #9ba8c1;
+  --accent: #b99cff;
+  --accent-fg: #170a2e;
+  --accent-soft: #2a2148;
+  --danger: #ff8a80;
+  --focus: #c9b6ff;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --breakpoint-xs: 22.5rem;
+}
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  overflow-wrap: anywhere;
+  /* room for the fixed tab bar on mobile */
+  padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 0;
+  }
+}
+
+/* Timing tables and any figure that must line up. */
+.timing,
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Theme toggle icons swap by CSS so server and client markup match. */
+.show-in-dark {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .show-in-light {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .show-in-dark {
+    display: block;
+  }
+}
+:root[data-theme="light"] .show-in-light {
+  display: block;
+}
+:root[data-theme="light"] .show-in-dark {
+  display: none;
+}
+:root[data-theme="dark"] .show-in-light {
+  display: none;
+}
+:root[data-theme="dark"] .show-in-dark {
+  display: block;
+}
+
+/* Slanted indicator used for the active nav item: a pit-wall timing bar. */
+.slant-bar {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+
+.skeleton {
+  background: var(--surface-2);
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .t-fast {
+    transition:
+      background-color 120ms ease,
+      color 120ms ease,
+      border-color 120ms ease,
+      opacity 120ms ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
