@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { components } from "@/lib/api/client";
 import {
   describePositionChange,
@@ -160,37 +161,52 @@ export function QualifyingResultsTable({
         </tr>
       </thead>
       <tbody>
-        {results.map((r) => (
-          <Tr key={r.driver.slug} muted={r.eliminated_in !== null}>
-            <Td align="right" className="timing font-bold">
-              {orDash(r.position)}
-            </Td>
-            <RowTh color={r.team.color}>
-              <DriverLink slug={r.driver.slug} name={r.driver.name} />
-              {r.eliminated_in && (
-                <span title={`Eliminated in ${r.eliminated_in}`} className="ml-2 text-xs font-bold text-muted">
-                  out in {r.eliminated_in}
-                </span>
+        {results.map((r, i) => {
+          const next = results[i + 1];
+          // A cut falls where the session in which the next car was knocked out differs from this car's.
+          const cutDigit = next && next.eliminated_in !== r.eliminated_in ? next.eliminated_in?.match(/(\d)$/)?.[1] : undefined;
+          return (
+            <Fragment key={r.driver.slug}>
+              <Tr muted={r.eliminated_in !== null}>
+                <Td align="right" className="timing font-bold">
+                  {orDash(r.position)}
+                </Td>
+                <RowTh color={r.team.color}>
+                  <DriverLink slug={r.driver.slug} name={r.driver.name} />
+                  {r.eliminated_in && (
+                    <span title={`Eliminated in ${r.eliminated_in}`} className="ml-2 text-xs font-bold text-muted">
+                      out in {r.eliminated_in}
+                    </span>
+                  )}
+                </RowTh>
+                <Td>
+                  <ConstructorLink {...r.team} dot={false} />
+                </Td>
+                <Td align="right" className="timing">
+                  {orDash(formatLapTime(r.q1_ms))}
+                </Td>
+                {!single && (
+                  <Td align="right" className="timing">
+                    {orDash(formatLapTime(r.q2_ms))}
+                  </Td>
+                )}
+                {!single && (
+                  <Td align="right" className={`timing ${r.position === 1 ? "font-extrabold" : ""}`}>
+                    {orDash(formatLapTime(r.q3_ms))}
+                  </Td>
+                )}
+              </Tr>
+              {cutDigit && (
+                <tr aria-hidden="true">
+                  <td colSpan={single ? 4 : 6} className="border-b-[3px] border-fg p-0 pb-0.5 text-right text-xs font-bold text-muted">
+                    {prefix}
+                    {Number(cutDigit) + 1} cut
+                  </td>
+                </tr>
               )}
-            </RowTh>
-            <Td>
-              <ConstructorLink {...r.team} dot={false} />
-            </Td>
-            <Td align="right" className="timing">
-              {orDash(formatLapTime(r.q1_ms))}
-            </Td>
-            {!single && (
-              <Td align="right" className="timing">
-                {orDash(formatLapTime(r.q2_ms))}
-              </Td>
-            )}
-            {!single && (
-              <Td align="right" className="timing">
-                {orDash(formatLapTime(r.q3_ms))}
-              </Td>
-            )}
-          </Tr>
-        ))}
+            </Fragment>
+          );
+        })}
       </tbody>
     </DataTable>
   );

@@ -13,8 +13,8 @@ test("dashboard to race analysis: positions chart renders and has a table altern
   await page.goto("/seasons/2024/1");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("2024");
 
-  await page.getByRole("navigation", { name: "Views" }).getByRole("link", { name: "Analysis" }).click();
-  await expect(page).toHaveURL(/view=analysis/);
+  await page.getByRole("navigation", { name: "Views" }).getByRole("link", { name: "Positions" }).click();
+  await expect(page).toHaveURL(/view=positions/);
 
   const chart = page.getByRole("img", { name: /position by lap/i });
   await expect(chart).toBeVisible();

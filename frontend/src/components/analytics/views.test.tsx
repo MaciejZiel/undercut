@@ -49,7 +49,7 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 
-function renderPanel(view: "analysis" | "strategy") {
+function renderPanel(view: "positions" | "laps" | "tyres" | "pits" | "weather" | "control") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={client}>
@@ -60,7 +60,7 @@ function renderPanel(view: "analysis" | "strategy") {
 
 describe("analytics views", () => {
   it("shows a loading state then the position chart with legend, source and table toggle", async () => {
-    renderPanel("analysis");
+    renderPanel("positions");
     expect(screen.getByRole("status")).toBeInTheDocument();
     expect(await screen.findByRole("img", { name: /position by lap/ })).toBeInTheDocument();
     expect(screen.getByText("Data: OpenF1")).toBeInTheDocument();
@@ -75,8 +75,7 @@ describe("analytics views", () => {
   });
 
   it("requests the top 3 laps with hide_slow on and refetches when toggled", async () => {
-    renderPanel("analysis");
-    fireEvent.click(screen.getByRole("button", { name: "Lap times" }));
+    renderPanel("laps");
     await screen.findByRole("img", { name: /lap times/ });
     const first = calls.find((u) => u.includes("/analytics/laps/")) ?? "";
     expect(first).toContain("drivers=VER%2CNOR");
@@ -87,21 +86,19 @@ describe("analytics views", () => {
   });
 
   it("names the pit stop ranking method", async () => {
-    renderPanel("analysis");
-    fireEvent.click(screen.getByRole("button", { name: "Pit stops" }));
+    renderPanel("pits");
     expect(await screen.findByText(/Ranked by pit lane duration/)).toBeInTheDocument();
     expect(screen.getByText("S → H")).toBeInTheDocument();
   });
 
   it("renders stint bars with compound letters", async () => {
-    renderPanel("strategy");
+    renderPanel("tyres");
     expect(await screen.findByRole("list", { name: /Tyre stints/ })).toBeInTheDocument();
     expect(screen.getByText("Soft tyre, 2 laps")).toBeInTheDocument();
   });
 
   it("shows an empty state when the API reports no analytics", async () => {
-    renderPanel("analysis");
-    fireEvent.click(screen.getByRole("button", { name: "Weather" }));
+    renderPanel("weather");
     expect(await screen.findByText("No detailed analytics for this season")).toBeInTheDocument();
   });
 });

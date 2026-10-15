@@ -16,7 +16,7 @@ import { getCircuit, getRound, getRoundResults, type PracticeResults, type Quali
 import { formatDate, formatLength } from "@/lib/format";
 import { roundHref, seasonHref } from "@/lib/routes";
 import { availableTabs, pickTab } from "@/lib/sessions";
-import { AnalyticsPanel } from "@/components/analytics/analytics-panel";
+import { AnalyticsPanel, type AnalyticsViewKey } from "@/components/analytics/analytics-panel";
 import { pickView, viewHref, visibleViews } from "@/components/analytics/round-views";
 import { ReplayPanel } from "@/components/replay/replay-panel";
 import { first, parseIntParam } from "@/lib/url";
@@ -149,14 +149,14 @@ async function RoundDetail({ params, searchParams }: Props) {
         </nav>
       )}
       {views.length > 1 && (
-        <nav aria-label="Views" className="mb-4 flex flex-wrap gap-2">
+        <nav aria-label="Views" className="mb-6 flex gap-5 overflow-x-auto">
           {views.map((v) => (
             <Link
               key={v.key}
               href={viewHref(base, { session: active && active.key !== defaultTab?.key ? active.key : null, view: v.key })}
               aria-current={v.key === view ? "page" : undefined}
-              className={`t-fast rounded-md border px-3.5 py-2 text-sm font-bold ${
-                v.key === view ? "border-accent bg-accent text-accent-fg" : "border-line-strong text-accent hover:border-accent hover:bg-surface"
+              className={`t-fast -mb-px whitespace-nowrap border-b-2 py-1.5 text-sm font-bold ${
+                v.key === view ? "border-fg text-fg" : "border-transparent text-muted hover:text-fg"
               }`}
             >
               {v.label}
@@ -168,8 +168,8 @@ async function RoundDetail({ params, searchParams }: Props) {
         <p className="mb-4 text-sm text-muted">Detailed analytics are available from the 2023 season.</p>
       )}
 
-      {analytic && (view === "analysis" || view === "strategy") ? (
-        <AnalyticsPanel key={`${view}-${analytic}`} view={view} year={round.year} round={round.round} session={analytic} />
+      {analytic && view !== "results" && view !== "replay" ? (
+        <AnalyticsPanel key={`${view}-${analytic}`} view={view as AnalyticsViewKey} year={round.year} round={round.round} session={analytic} />
       ) : analytic && view === "replay" ? (
         <ReplayPanel key={analytic} year={round.year} round={round.round} session={analytic} roundName={round.name} label={active?.label ?? ""} />
       ) : !active || results === null || results.results.length === 0 ? (

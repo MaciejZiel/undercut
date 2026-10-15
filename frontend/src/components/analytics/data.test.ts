@@ -148,9 +148,10 @@ describe("laps and formatting", () => {
 describe("round views", () => {
   it("hides analytics views before 2023", () => {
     expect(visibleViews(2022).map((v) => v.key)).toEqual(["results"]);
-    expect(visibleViews(2023).map((v) => v.key)).toEqual(["results", "analysis", "strategy", "replay"]);
+    expect(visibleViews(2023).map((v) => v.key)).toEqual(["results", "positions", "laps", "tyres", "pits", "weather", "control", "replay"]);
     expect(pickView("analysis", 2021)).toBe("results");
-    expect(pickView("strategy", 2024)).toBe("strategy");
+    expect(pickView("strategy", 2024)).toBe("tyres");
+    expect(pickView("analysis", 2024)).toBe("positions");
     expect(pickView("bogus", 2024)).toBe("results");
   });
   it("builds hrefs without defaults", () => {
