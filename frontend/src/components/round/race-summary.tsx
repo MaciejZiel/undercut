@@ -1,21 +1,16 @@
+import Link from "next/link";
 import type { components } from "@/lib/api/client";
 import { formatInteger, formatLapTime, formatRaceGap, formatRaceTime } from "@/lib/format";
-import Link from "next/link";
 import { driverHref } from "@/lib/routes";
 
 type RaceResult = components["schemas"]["RaceResult"];
 
-function Cell({ label, children, note }: { label: string; children: React.ReactNode; note?: React.ReactNode }) {
-  return (
-    <div className="px-5 py-4 sm:px-6 sm:py-5">
-      <dt className="text-xs font-semibold text-muted">{label}</dt>
-      <dd className="mt-1.5 text-2xl font-extrabold leading-tight tracking-tight tabular-nums sm:text-[1.75rem]">{children}</dd>
-      {note && <dd className="mt-0.5 text-xs text-muted">{note}</dd>}
-    </div>
-  );
-}
+const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
-/** Four facts about a finished race or sprint, taken from its own classification. Anything missing is left out. */
+/**
+ * The result in one sentence, built only from numbers that are in the table below it. The team colour
+ * bar on the left is the same mark as in the tables. Anything missing is left out, never guessed.
+ */
 export function RaceSummary({ results, label }: { results: RaceResult[]; label: string }) {
   const winner = results.find((r) => r.position === 1);
   if (!winner) return null;
@@ -24,44 +19,42 @@ export function RaceSummary({ results, label }: { results: RaceResult[]; label: 
   const fastest = results.find((r) => r.fastest_lap === true && r.best_lap_ms != null);
   const winnerTime = winner.time_ms != null ? formatRaceTime(winner.time_ms) : null;
   const laps = formatInteger(winner.laps);
+  const color = winner.team.color && HEX.test(winner.team.color) ? winner.team.color : null;
+  const sprint = label === "Sprint";
   return (
-    <dl aria-label={`${label} summary`} className="mb-10 grid grid-cols-2 overflow-hidden rounded-xl bg-surface lg:grid-cols-[1.6fr_1fr_1fr_0.8fr]">
-      <div className="col-span-2 bg-accent px-5 py-4 text-accent-fg sm:px-6 sm:py-5 lg:col-span-1">
-        <dt className="text-xs font-semibold opacity-80">{label === "Sprint" ? "Sprint winner" : "Race winner"}</dt>
-        <dd className="heading mt-1.5 text-3xl">
-          <Link href={driverHref(winner.driver.slug)} className="underline-offset-4 hover:underline">
-            {winner.driver.name}
-          </Link>
-        </dd>
-        <dd className="mt-1 flex flex-wrap gap-x-4 text-sm opacity-90">
-          <span>{winner.team.name}</span>
-          {winnerTime && <span className="tabular-nums">{winnerTime}</span>}
-        </dd>
-      </div>
-      {margin && second && (
-        <Cell label="Winning margin" note={<>over {second.driver.name}</>}>
-          {margin.replace("+", "")}
-          <span className="ml-1.5 text-sm font-medium text-muted">{margin.includes(":") ? "" : "sec"}</span>
-        </Cell>
-      )}
-      {fastest && (
-        <Cell
-          label="Fastest lap"
-          note={
-            <>
-              {fastest.driver.name}, {fastest.team.name}
-            </>
-          }
-        >
-          {formatLapTime(fastest.best_lap_ms)}
-        </Cell>
-      )}
-      {laps && (
-        <Cell label="Distance" note={`${results.length} drivers started`}>
-          {laps}
-          <span className="ml-1.5 text-sm font-medium text-muted">laps</span>
-        </Cell>
-      )}
-    </dl>
+    <section
+      aria-label={`${label} summary`}
+      className="mb-10 border-l-[6px] pl-5"
+      style={{ borderColor: color ?? "var(--line-strong)" }}
+    >
+      <p className="max-w-3xl text-xl font-semibold leading-snug sm:text-[1.375rem]">
+        <Link href={driverHref(winner.driver.slug)} className="font-extrabold underline-offset-4 hover:text-accent hover:underline">
+          {winner.driver.name}
+        </Link>{" "}
+        {sprint ? "wins the sprint" : "wins"} for {winner.team.name}
+        {winnerTime && (
+          <>
+            {" "}
+            in <span className="tabular-nums">{winnerTime}</span>
+          </>
+        )}
+        {margin && second && (
+          <>
+            , <span className="tabular-nums">{margin.replace("+", "")}</span>
+            {margin.includes(":") ? "" : " s"} ahead of {second.driver.name}
+          </>
+        )}
+        .
+      </p>
+      <p className="mt-2 text-sm text-muted">
+        {fastest && (
+          <>
+            Fastest lap {fastest.driver.name}, <span className="tabular-nums">{formatLapTime(fastest.best_lap_ms)}</span>.{" "}
+          </>
+        )}
+        {laps && <span className="tabular-nums">{laps} laps</span>}
+        {laps && results.length > 0 ? `, ${results.length} drivers.` : ""}
+      </p>
+    </section>
   );
 }

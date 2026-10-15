@@ -32,7 +32,7 @@ export function PodiumCards({
     <section aria-labelledby="podium-h">
       <p className="text-sm font-bold text-accent">Last race</p>
       <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-        <h2 id="podium-h" className="heading text-3xl sm:text-4xl">
+        <h2 id="podium-h" className="heading text-xl sm:text-[1.375rem]">
           {name}
         </h2>
         {date && <span className="text-sm text-muted">{formatDate(date)}</span>}
@@ -44,7 +44,7 @@ export function PodiumCards({
           return (
             <li key={r.driver.slug} className="grid grid-cols-[2.75rem_minmax(0,1fr)] items-center gap-3 border-b border-line py-4">
               <span
-                className={`numeral grid size-10 place-items-center rounded-full text-2xl ${first ? "bg-surface text-accent" : "text-muted"}`}
+                className={`numeral text-3xl ${first ? "text-accent" : "text-muted"}`}
               >
                 <span className="sr-only">Position </span>
                 {r.position}
@@ -63,7 +63,6 @@ export function PodiumCards({
         Fastest lap:{" "}
         {fastestLap ? (
           <>
-            <span className="rounded-sm bg-accent-soft px-1.5 py-0.5 text-xs font-bold text-accent">Fastest</span>
             <DriverLink slug={fastestLap.driver.slug} name={fastestLap.driver.name} />
             <span className="mono text-fg">{lap ?? <Dash />}</span>
           </>

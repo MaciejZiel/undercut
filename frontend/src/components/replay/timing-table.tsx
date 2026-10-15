@@ -7,7 +7,7 @@ import { frameAt, frameIndexAt } from "@/lib/replay/frame";
 import type { PlaybackController } from "@/lib/replay/controller";
 import type { GapValue, ReplayDoc, ReplayDriver } from "@/lib/replay/types";
 import { DataTable, Th } from "@/components/ui/data-table";
-import { TeamDot } from "@/components/ui/entity-links";
+import { TeamBar } from "@/components/ui/entity-links";
 import { usePlayback } from "./use-playback";
 import { useFlip } from "./use-flip";
 
@@ -51,7 +51,7 @@ const ReplayRow = memo(function ReplayRow({ driver, place, gap, interval, lap, t
       <td className="timing w-12 px-3 py-2 text-right font-bold">{place || EM_DASH}</td>
       <th scope="row" className="px-3 py-2 text-left font-bold">
         <span className="inline-flex items-center gap-2">
-          <TeamDot color={driver.color_hex} />
+          <TeamBar color={driver.color_hex} />
           <abbr title={driver.full_name} className="no-underline">
             {driver.code}
           </abbr>

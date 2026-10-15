@@ -8,12 +8,12 @@ type ThisDay = components["schemas"]["ThisDay"];
 
 export function ThisDayCard({ item }: { item: ThisDay }) {
   return (
-    <section aria-labelledby="this-day-h" className="self-start rounded-xl bg-surface p-6">
+    <section aria-labelledby="this-day-h">
       <h2 id="this-day-h" className="text-sm font-bold text-accent">
         This day in F1
       </h2>
       <p className="timing mt-1 text-sm text-muted">{formatDate(item.date)}</p>
-      <p className="heading mt-3 max-w-[34ch] text-2xl">
+      <p className="display mt-3 max-w-[30ch] text-2xl sm:text-[1.75rem]">
         <DriverLink slug={item.driver.slug} name={item.driver.name} /> won the{" "}
         {item.round != null ? (
           <Link href={roundHref(item.year, item.round)} className="underline underline-offset-4 hover:text-accent">

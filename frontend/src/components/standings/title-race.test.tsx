@@ -36,7 +36,7 @@ describe("TitleRacePanel", () => {
     expect(screen.getByText(/17 drivers can no longer win/)).toBeInTheDocument();
     const rows = screen.getAllByRole("row");
     expect(within(rows[1]).getByText("408")).toBeInTheDocument();
-    expect(within(rows[1]).getByText("Possible")).toBeInTheDocument();
+    expect(within(rows[1]).queryByText("Possible")).toBeNull();
     expect(within(rows[2]).getByText("Only on countback")).toBeInTheDocument();
     expect(within(rows[1]).getByText("Leader, or level with the leader")).toBeInTheDocument();
   });

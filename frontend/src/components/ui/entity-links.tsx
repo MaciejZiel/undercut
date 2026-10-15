@@ -32,14 +32,14 @@ export function RoundLink({ year, round, name }: { year: number; round: number; 
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
-/** Team colour is an accent (a dot), never a background. Unknown colour gives a neutral dot. */
-export function TeamDot({ color }: { color: string | null | undefined }) {
+/** Team colour as a thin vertical bar, the one mark used for teams everywhere. Unknown colour gives a neutral bar. */
+export function TeamBar({ color }: { color: string | null | undefined }) {
   const valid = color && HEX.test(color) ? color : null;
   return (
     <span
       aria-hidden="true"
-      className="inline-block size-2.5 shrink-0 rounded-full border border-line"
-      style={{ backgroundColor: valid ?? "var(--fg-muted)", opacity: valid ? 1 : 0.5 }}
+      className="inline-block h-[1.1em] w-[3px] shrink-0 rounded-[1px] align-[-0.15em]"
+      style={{ backgroundColor: valid ?? "var(--line-strong)" }}
     />
   );
 }
@@ -58,7 +58,7 @@ export function ConstructorLink({
 }) {
   return (
     <span className="inline-flex items-center gap-2">
-      {dot && <TeamDot color={color} />}
+      {dot && <TeamBar color={color} />}
       <Link href={constructorHref(slug)} className={linkClass}>
         {name}
       </Link>

@@ -67,7 +67,7 @@ function LapsPanel({ refs, positions }: { refs: AnalyticsRef; positions: Positio
                 >
                   <span
                     aria-hidden="true"
-                    className="inline-block size-2.5 rounded-full"
+                    className="inline-block h-3.5 w-[3px]"
                     style={{ backgroundColor: teamColor(d.color_hex, neutral), opacity: on ? 1 : 0.4 }}
                   />
                   {d.code}
@@ -113,7 +113,7 @@ function LapsOutput({ data }: { data: Laps }) {
     <ul aria-label="Drivers" className="flex flex-wrap gap-2 lg:flex-col">
       {data.drivers.map((d) => (
         <li key={d.code} className="inline-flex items-center gap-2 text-sm font-semibold">
-          <span aria-hidden="true" className="inline-block size-3 rounded-full" style={{ backgroundColor: teamColor(d.color_hex, neutral) }} />
+          <span aria-hidden="true" className="inline-block h-3.5 w-[3px]" style={{ backgroundColor: teamColor(d.color_hex, neutral) }} />
           {d.code}
         </li>
       ))}

@@ -8,14 +8,11 @@ export default function CatalogPage() {
   return (
     <>
       <PageHeader title="Catalog" description="Browse the sport by driver, team, track or year." />
-      <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <ul className="max-w-3xl border-t border-line">
         {CATALOG_LINKS.map((l) => (
-          <li key={l.href}>
-            <Link
-              href={l.href}
-              className="t-fast flex h-full min-h-28 flex-col justify-end rounded-xl bg-surface p-4 hover:bg-surface-2"
-            >
-              <span className="text-lg font-bold">{l.label}</span>
+          <li key={l.href} className="border-b border-line">
+            <Link href={l.href} className="t-fast group flex items-baseline justify-between gap-4 py-5 hover:text-accent">
+              <span className="display text-3xl underline-offset-4 group-hover:underline">{l.label}</span>
               <span className="text-sm text-muted">{l.hint}</span>
             </Link>
           </li>

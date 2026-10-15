@@ -64,7 +64,7 @@ export function Modal({
         }}
       >
         <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 id={titleId} className="heading text-2xl">
+          <h2 id={titleId} className="heading text-xl sm:text-[1.375rem]">
             {title}
           </h2>
           <button type="button" onClick={onClose} aria-label="Close dialog" className="t-fast -mr-1 rounded-sm px-2 py-1 text-muted hover:bg-surface-2 hover:text-fg">

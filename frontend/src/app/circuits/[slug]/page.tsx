@@ -39,7 +39,7 @@ function OsmMap({ lat, lng, name }: { lat: number; lng: number; name: string }) 
   const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat.toFixed(5)}%2C${lng.toFixed(5)}`;
   return (
     <section aria-labelledby="map-h" className="mb-10">
-      <h2 id="map-h" className="mb-3 heading text-3xl">
+      <h2 id="map-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
         Location
       </h2>
       <iframe
@@ -120,7 +120,7 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
       </div>
       {c.lat != null && c.lng != null && <OsmMap lat={c.lat} lng={c.lng} name={c.name} />}
       <section aria-labelledby="records-h" className="mb-10">
-        <h2 id="records-h" className="mb-3 heading text-3xl">
+        <h2 id="records-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
           Most wins
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -143,7 +143,7 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
         </div>
       </section>
       <section aria-labelledby="winners-h">
-        <h2 id="winners-h" className="mb-3 heading text-3xl">
+        <h2 id="winners-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
           Winners
         </h2>
         {c.winners.length === 0 ? (

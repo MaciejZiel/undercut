@@ -139,7 +139,7 @@ function ChartPanel({ data, kind, season }: { data: Progress; kind: StandingsKin
       ) : asTable ? (
         <ProgressTable data={data} selected={selected} metric={metric} caption={label} />
       ) : (
-        <div className="rounded-xl bg-surface p-3">
+        <div className="py-3">
           <EChart option={option} label={label} height={360} />
         </div>
       )}

@@ -23,10 +23,10 @@ export function Countdown({ target }: { target: string }) {
   ];
   return (
     <div role="timer" aria-label={`${parts.days} days, ${parts.hours} hours and ${parts.minutes} minutes to go`}>
-      <dl aria-hidden="true" className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+      <dl aria-hidden="true" className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
         {cells.map(([label, value]) => (
           <div key={label} className="flex items-baseline gap-1.5">
-            <dd className="numeral text-4xl">{String(value).padStart(2, "0")}</dd>
+            <dd className="numeral text-[1.75rem] sm:text-3xl">{String(value).padStart(2, "0")}</dd>
             <dt className="text-xs font-semibold text-muted">{label}</dt>
           </div>
         ))}

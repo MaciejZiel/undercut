@@ -37,7 +37,7 @@ export function TitleRacePanel({ race }: { race: TitleRace }) {
   const heading = `Title race ${race.season}`;
   return (
     <section aria-labelledby="title-race-h" className="mt-10">
-      <h2 id="title-race-h" className="mb-1 heading text-2xl">
+      <h2 id="title-race-h" className="mb-1 heading text-xl sm:text-[1.375rem]">
         {heading}
       </h2>
       {race.decided && race.champion ? (
@@ -70,7 +70,6 @@ export function TitleRacePanel({ race }: { race: TitleRace }) {
               <Th align="right">Points</Th>
               <Th align="right">Gap</Th>
               <Th align="right">Max possible</Th>
-              <Th>Title chance</Th>
             </tr>
           </thead>
           <tbody>
@@ -81,6 +80,12 @@ export function TitleRacePanel({ race }: { race: TitleRace }) {
                   <RowTh className="timing font-bold">{c.position ?? <Dash />}</RowTh>
                   <Td>
                     <DriverLink slug={c.entity.slug} name={c.entity.name} />
+                    {champion && (
+                      <span className="ml-2">
+                        <Badge tone="accent">Champion</Badge>
+                      </span>
+                    )}
+                    {!champion && c.tie_break_needed && <span className="ml-2 text-xs text-muted">Only on countback</span>}
                   </Td>
                   <Td align="right" className="timing font-bold">
                     {formatPoints(c.points) ?? <Dash />}
@@ -90,15 +95,6 @@ export function TitleRacePanel({ race }: { race: TitleRace }) {
                   </Td>
                   <Td align="right" className="timing">
                     {formatPoints(c.max_points) ?? <Dash />}
-                  </Td>
-                  <Td>
-                    {champion ? (
-                      <Badge tone="accent">Champion</Badge>
-                    ) : c.tie_break_needed ? (
-                      <Badge>Only on countback</Badge>
-                    ) : (
-                      <Badge tone="accent">Possible</Badge>
-                    )}
                   </Td>
                 </Tr>
               );

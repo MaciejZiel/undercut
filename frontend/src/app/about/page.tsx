@@ -22,7 +22,7 @@ const AVAILABILITY = [
 ] as const;
 
 const link = "font-semibold text-accent underline underline-offset-4 hover:no-underline";
-const h2 = "heading mb-3 text-2xl";
+const h2 = "heading mb-3 text-xl sm:text-[1.375rem]";
 
 export default function AboutPage() {
   return (
@@ -48,7 +48,7 @@ export default function AboutPage() {
           <h2 id="notice-h" className={h2}>
             Unofficial and non-commercial
           </h2>
-          <p className="rounded-xl bg-surface p-4">
+          <p className="border-l-4 border-line-strong pl-4">
             Undercut is an unofficial fan site. It is not affiliated with, endorsed by or connected to Formula One
             Group, Formula 1, the FIA or any team or driver. It is non-commercial: there are no ads, no payments and
             no sponsored content. It does not use official logos, trademarks or driver photos.

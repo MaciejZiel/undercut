@@ -178,7 +178,7 @@ async function RoundDetail({ params, searchParams }: Props) {
       ) : (
         <section aria-labelledby="results-h">
           <div className="mb-3 flex flex-wrap items-center gap-3">
-            <h2 id="results-h" className="heading text-3xl">
+            <h2 id="results-h" className="heading text-xl sm:text-[1.375rem]">
               {active.label} results
             </h2>
             {sessionInfo && sessionInfo.status !== "results_final" && <Badge tone="accent">Preliminary</Badge>}

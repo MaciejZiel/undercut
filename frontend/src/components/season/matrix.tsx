@@ -3,7 +3,7 @@ import type { components } from "@/lib/api/client";
 import { formatPoints } from "@/lib/format";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
-import { DriverLink, TeamDot } from "@/components/ui/entity-links";
+import { DriverLink, TeamBar } from "@/components/ui/entity-links";
 import { Dash } from "@/components/ui/value";
 import { getSeasonMatrix } from "./data";
 
@@ -128,7 +128,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
                 >
                   <span className="flex items-center gap-2">
                     <span className="timing w-5 text-right text-xs text-muted">{d.position ?? <Dash />}</span>
-                    <TeamDot color={d.team.color} />
+                    <TeamBar color={d.team.color} />
                     <DriverLink slug={d.slug} name={d.name} />
                   </span>
                 </th>
@@ -141,7 +141,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
                       key={r.round}
                       title={full}
                       style={cell ? CATEGORY[cell.category].style : undefined}
-                      className="timing h-9 min-w-11 border-l border-line px-1 text-center"
+                      className="timing h-9 min-w-12 whitespace-nowrap border-l border-line px-1 text-center"
                     >
                       {cell ? (
                         <>

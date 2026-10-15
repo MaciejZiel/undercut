@@ -48,7 +48,7 @@ export function ChartFrame({
       className={
         full
           ? "fixed inset-0 z-50 flex flex-col overflow-auto bg-bg p-4"
-          : "rounded-xl bg-surface p-3"
+          : "py-3"
       }
       aria-label={title}
     >

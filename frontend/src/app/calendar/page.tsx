@@ -48,7 +48,7 @@ async function CalendarContent({ searchParams }: { searchParams: PageProps<"/cal
   return (
     <>
       <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="heading text-2xl">{calendar.year} season</h2>
+        <h2 className="heading text-xl sm:text-[1.375rem]">{calendar.year} season</h2>
         <a href={icsHref(calendar.year)} className="text-sm font-semibold text-muted hover:text-accent hover:underline">
           Add the whole season to your calendar
         </a>

@@ -22,7 +22,7 @@ function MessageList({ data }: { data: RaceControl }) {
   const [category, setCategory] = useState<string | null>(null);
   const shown = filterMessages(data.messages, category);
   return (
-    <section aria-labelledby="rc-h" className="rounded-xl bg-surface p-3">
+    <section aria-labelledby="rc-h" className="py-3">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <h3 id="rc-h" className="mr-auto text-base font-bold">
           Race control messages

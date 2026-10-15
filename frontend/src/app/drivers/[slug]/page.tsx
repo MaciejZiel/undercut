@@ -99,7 +99,7 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
         ]}
       />
       <section aria-labelledby="seasons-h" className="mb-10">
-        <h2 id="seasons-h" className="mb-3 heading text-2xl">
+        <h2 id="seasons-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
           Seasons
         </h2>
         {seasons.length === 0 ? (
@@ -109,7 +109,7 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
         )}
       </section>
       <section aria-labelledby="last-h">
-        <h2 id="last-h" className="mb-3 heading text-2xl">
+        <h2 id="last-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
           Last results
         </h2>
         {driver.last_results.length === 0 ? (

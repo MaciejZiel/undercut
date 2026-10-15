@@ -56,7 +56,7 @@ export function NextRaceCard({
         <CircuitPhoto className="mt-6 flex flex-1 flex-col" priority />
       </div>
       <aside aria-labelledby="weekend-h" className="flex flex-col rounded-xl bg-surface p-6 sm:p-7">
-        <h3 id="weekend-h" className="heading text-3xl">
+        <h3 id="weekend-h" className="heading text-xl sm:text-[1.375rem]">
           Race weekend
         </h3>
         <div className="mt-4 min-h-[3.25rem] border-b border-line pb-4">

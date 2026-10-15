@@ -97,14 +97,14 @@ export function MostWinsList({
   items: { key: string; node: React.ReactNode; wins: number }[];
 }) {
   return (
-    <section aria-label={title} className="rounded-xl bg-surface p-4">
-      <h3 className="mb-2 text-xs font-bold text-muted">{title}</h3>
+    <section aria-label={title} className="border-t border-line pt-3">
+      <h3 className="mb-2 text-[0.8125rem] font-bold text-muted">{title}</h3>
       {items.length === 0 ? (
         <p className="text-muted">{orDash(null)}</p>
       ) : (
-        <ol className="space-y-1.5">
+        <ol className="divide-y divide-line">
           {items.map((i) => (
-            <li key={i.key} className="flex items-baseline justify-between gap-3">
+            <li key={i.key} className="flex items-baseline justify-between gap-3 py-2 text-base">
               {i.node}
               <span className="timing font-bold">
                 {i.wins} <span className="sr-only">wins</span>

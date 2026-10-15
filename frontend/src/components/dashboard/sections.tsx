@@ -7,6 +7,7 @@ import { getDashboard } from "./data";
 import { NextRaceCard } from "./next-race-card";
 import { PodiumCards } from "./podium-cards";
 import { ThisDayCard } from "./this-day-card";
+import { ArchiveLinks } from "./archive-links";
 import { StandingsSwitch } from "./standings-switch";
 import { TopFive } from "./top-five";
 
@@ -82,7 +83,7 @@ export async function ChampionshipSection() {
     return (
       <section aria-labelledby="championship-h">
         <p className="text-sm font-bold text-accent">{drivers.season ? `${drivers.season} season` : "Season"}</p>
-        <h2 id="championship-h" className="heading mb-5 mt-2 text-3xl sm:text-4xl">
+        <h2 id="championship-h" className="heading mb-5 mt-2 text-xl sm:text-[1.375rem]">
           The championship
         </h2>
         <StandingsSwitch
@@ -117,7 +118,7 @@ export async function PredictionInvite() {
     return (
       <section aria-labelledby="predict-h" className="flex flex-col gap-5 rounded-xl bg-flag p-6 text-on-flag sm:flex-row sm:items-center sm:justify-between sm:px-9 sm:py-7">
         <div>
-          <h2 id="predict-h" className="heading text-3xl">
+          <h2 id="predict-h" className="heading text-xl sm:text-[1.375rem]">
             Who is on your {next.name.replace(/ Grand Prix$/, "")} podium?
           </h2>
           <p className="mt-2 text-sm">Pick your top three before qualifying starts.</p>
@@ -140,4 +141,16 @@ export async function ThisDaySection() {
     const { this_day_in_f1: item } = await getDashboard();
     return item ? <ThisDayCard item={item} /> : null;
   });
+}
+
+/** The archive entry point with the size of the archive from the cached call; the links work even when the call fails. */
+export async function ArchiveSection() {
+  await connection();
+  let counts: { seasons: number; races: number; drivers: number } | null = null;
+  try {
+    counts = (await getDashboard()).counts;
+  } catch {
+    counts = null;
+  }
+  return <ArchiveLinks counts={counts} />;
 }

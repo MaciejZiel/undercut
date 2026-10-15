@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ArchiveLinks } from "@/components/dashboard/archive-links";
 import {
+  ArchiveSection,
   ChampionshipSection,
   LastRaceSection,
   NextRaceSection,
@@ -51,8 +51,10 @@ export default function DashboardPage() {
         <Suspense fallback={<div className="skeleton h-28 rounded-xl" aria-hidden="true" />}>
           <PredictionInvite />
         </Suspense>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
-          <ArchiveLinks />
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-20">
+          <Suspense fallback={<div className="skeleton h-40" aria-hidden="true" />}>
+            <ArchiveSection />
+          </Suspense>
           <Suspense fallback={<div className="skeleton h-40 rounded-xl" aria-hidden="true" />}>
             <ThisDaySection />
           </Suspense>

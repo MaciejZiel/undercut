@@ -69,7 +69,7 @@ export function FormCard({ title, children, footer }: { title: string; children:
   return (
     <div className="mx-auto w-full max-w-md">
       <h1 className="display mb-6 text-4xl">{title}</h1>
-      <div className="rounded-xl bg-surface p-5">{children}</div>
+      <div>{children}</div>
       {footer && <div className="mt-4 text-sm text-muted">{footer}</div>}
     </div>
   );

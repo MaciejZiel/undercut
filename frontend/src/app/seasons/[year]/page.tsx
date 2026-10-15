@@ -79,7 +79,7 @@ async function SeasonDetail({ params }: { params: PageProps<"/seasons/[year]">["
         ]}
       />
       <section aria-labelledby="calendar-h">
-        <h2 id="calendar-h" className="mb-3 heading text-2xl">
+        <h2 id="calendar-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
           Calendar
         </h2>
         {season.rounds.length === 0 ? (
@@ -89,7 +89,7 @@ async function SeasonDetail({ params }: { params: PageProps<"/seasons/[year]">["
         )}
       </section>
       <section aria-labelledby="matrix-h" className="mt-10">
-        <h2 id="matrix-h" className="mb-3 heading text-2xl">
+        <h2 id="matrix-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
           Results matrix
         </h2>
         <Suspense fallback={<LoadingSkeleton variant="table" rows={10} label="Loading the results matrix" />}>

@@ -12,7 +12,7 @@ export function BiggestMovers({ results }: { results: RaceResult[] }) {
   if (movers.length === 0) return null;
   return (
     <section aria-labelledby="movers-h" className="mt-10">
-      <h3 id="movers-h" className="heading text-2xl">
+      <h3 id="movers-h" className="heading text-xl sm:text-[1.375rem]">
         Biggest gains
       </h3>
       <ul className="mt-3 border-t border-line">

@@ -107,7 +107,7 @@ async function StandingsContent({ kind, searchParams }: { kind: StandingsKind; s
       ) : (
         <>
           <section aria-labelledby="table-h" className="mb-10">
-            <h2 id="table-h" className="mb-3 heading text-2xl">
+            <h2 id="table-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
               {heading}
             </h2>
             <StandingsTable kind={kind} rows={data.results} caption={`${copy.title}: ${heading}`} />
@@ -121,7 +121,7 @@ async function StandingsContent({ kind, searchParams }: { kind: StandingsKind; s
             </p>
           </section>
           <section aria-labelledby="chart-h">
-            <h2 id="chart-h" className="mb-3 heading text-2xl">
+            <h2 id="chart-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
               Points progression
             </h2>
             <PointsChart kind={kind} season={data.season} />

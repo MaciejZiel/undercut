@@ -1,24 +1,40 @@
 import Link from "next/link";
-import { CATALOG_LINKS } from "@/lib/nav";
+import { formatInteger } from "@/lib/format";
 
-/** Ways into the archive: every list in the catalog, each with what it holds. */
-export function ArchiveLinks() {
+const link = "font-bold text-accent underline underline-offset-4 hover:no-underline";
+
+/** The way into the archive: one sentence with the four lists linked in it, and what the archive holds. */
+export function ArchiveLinks({ counts }: { counts?: { seasons: number; races: number; drivers: number } | null }) {
   return (
     <section aria-labelledby="archive-h">
       <p className="text-sm font-bold text-accent">The archive</p>
-      <h2 id="archive-h" className="heading mb-5 mt-2 text-3xl sm:text-4xl">
+      <h2 id="archive-h" className="heading mb-4 mt-2 text-xl sm:text-[1.375rem]">
         Every race since 1950
       </h2>
-      <ul className="border-t border-line">
-        {CATALOG_LINKS.map((l) => (
-          <li key={l.href} className="border-b border-line">
-            <Link href={l.href} className="t-fast group flex items-baseline justify-between gap-4 py-3.5 hover:text-accent">
-              <span className="font-bold underline-offset-4 group-hover:underline">{l.label}</span>
-              <span className="text-sm text-muted">{l.hint}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <p className="max-w-[34ch] text-lg leading-snug">
+        Every{" "}
+        <Link href="/drivers" className={link}>
+          driver
+        </Link>
+        ,{" "}
+        <Link href="/constructors" className={link}>
+          constructor
+        </Link>
+        ,{" "}
+        <Link href="/circuits" className={link}>
+          circuit
+        </Link>{" "}
+        and{" "}
+        <Link href="/seasons" className={link}>
+          season
+        </Link>{" "}
+        since 1950.
+      </p>
+      {counts && (
+        <p className="mt-3 text-sm tabular-nums text-muted">
+          {formatInteger(counts.seasons)} seasons · {formatInteger(counts.races)} races · {formatInteger(counts.drivers)} drivers
+        </p>
+      )}
     </section>
   );
 }
