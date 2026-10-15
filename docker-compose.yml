@@ -23,9 +23,21 @@ services:
       timeout: 3s
       retries: 10
 
+  migrate:
+    build: ./backend
+    command: python manage.py migrate --noinput
+    environment:
+      DATABASE_URL: postgres://undercut:${POSTGRES_PASSWORD:-undercut}@db:5432/undercut
+      CACHE_URL: redis://redis:6379/0
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-insecure-key-change-me}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+
   backend:
     build: ./backend
-    command: sh -c "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
     environment:
       DATABASE_URL: postgres://undercut:${POSTGRES_PASSWORD:-undercut}@db:5432/undercut
       CACHE_URL: redis://redis:6379/0
@@ -34,10 +46,40 @@ services:
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
       DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-http://localhost:8080}
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
+
+  worker:
+    build: ./backend
+    command: python manage.py run_outbox_worker
+    environment:
+      DATABASE_URL: postgres://undercut:${POSTGRES_PASSWORD:-undercut}@db:5432/undercut
+      CACHE_URL: redis://redis:6379/0
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-insecure-key-change-me}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-true}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  scheduler:
+    build: ./backend
+    command: python manage.py run_scheduler
+    environment:
+      DATABASE_URL: postgres://undercut:${POSTGRES_PASSWORD:-undercut}@db:5432/undercut
+      CACHE_URL: redis://redis:6379/0
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-insecure-key-change-me}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-true}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
   frontend:
     build: ./frontend
