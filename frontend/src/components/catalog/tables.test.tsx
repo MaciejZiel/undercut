@@ -5,6 +5,7 @@ import { CalendarTable } from "./season-tables";
 
 describe("DriversTable", () => {
   const driver = {
+    id: 1,
     slug: "ayrton_senna",
     given_name: "Ayrton",
     family_name: "Senna",
@@ -13,16 +14,17 @@ describe("DriversTable", () => {
     nationality: "Brazilian",
     starts: 161,
     wins: 41,
-    titles: null,
+    titles: 3,
     team: { slug: "mclaren", name: "McLaren", color: null },
   };
 
-  it("links the driver and team, shows a flag, and dashes for null titles and number", () => {
+  it("links the driver and team, shows a flag, the titles, and a dash for a missing number", () => {
     render(<DriversTable drivers={[driver]} ordering="wins" params={{}} />);
     expect(screen.getByRole("link", { name: "Ayrton Senna" })).toHaveAttribute("href", "/drivers/ayrton_senna");
     expect(screen.getByRole("link", { name: "McLaren" })).toHaveAttribute("href", "/constructors/mclaren");
     expect(screen.getByText("🇧🇷")).toBeInTheDocument();
-    expect(screen.getByTitle("Not available yet")).toHaveTextContent("—");
+    expect(screen.getAllByText("—").length).toBeGreaterThan(0); // no code or number on file
+    expect(screen.getByRole("cell", { name: "3" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /Wins/ })).toHaveAttribute("aria-sort", "ascending");
   });
 });

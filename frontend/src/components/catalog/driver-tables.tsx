@@ -48,7 +48,7 @@ export function DriversTable({
             <Td>{d.team ? <ConstructorLink {...d.team} /> : <Dash />}</Td>
             <Td align="right">{orDash(formatInteger(d.starts))}</Td>
             <Td align="right">{orDash(formatInteger(d.wins))}</Td>
-            <Td align="right">{orDash(formatInteger(d.titles), "Not available yet")}</Td>
+            <Td align="right">{orDash(formatInteger(d.titles))}</Td>
           </Tr>
         ))}
       </tbody>
