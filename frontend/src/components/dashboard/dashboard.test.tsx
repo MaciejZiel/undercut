@@ -1,4 +1,7 @@
 import { act, cleanup, render, screen, within } from "@testing-library/react";
+import { mockFetch } from "@/test/fetch-mock";
+import { ME_ANON, renderWithProviders } from "@/test/render";
+import type { ReactElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { components } from "@/lib/api/client";
 import { Countdown } from "./countdown";
@@ -15,7 +18,10 @@ describe("countdownParts", () => {
 });
 
 describe("Countdown", () => {
-  afterEach(() => vi.useRealTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
   it("ticks once mounted and shows lights out after the target", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2024-01-01T00:00:00Z"));
@@ -69,14 +75,22 @@ describe("TopFive", () => {
       name: `Driver ${i}`,
       code: null,
       color: "#ff0000",
+      team_name: null,
       points: 100 - i,
       wins: 0,
     })),
   });
   it("lists only five rows and links to the full table", () => {
     render(<TopFive kind="drivers" standings={standings(8)} />);
-    expect(screen.getAllByRole("row")).toHaveLength(6);
+    expect(screen.getAllByRole("listitem")).toHaveLength(5);
     expect(screen.getByRole("link", { name: /Full table/ })).toHaveAttribute("href", "/standings/drivers");
+  });
+  it("shows each driver's team and how far behind the leader", () => {
+    const rows = standings(2);
+    rows.entries[0] = { ...rows.entries[0], team_name: "Mercedes" };
+    render(<TopFive kind="drivers" standings={rows} />);
+    expect(screen.getByText("Mercedes")).toBeInTheDocument();
+    expect(screen.getByText("−1")).toBeInTheDocument();
   });
   it("links constructors to their pages", () => {
     render(<TopFive kind="constructors" standings={standings(2)} />);
@@ -136,11 +150,15 @@ describe("dashboard sections", () => {
         fastest_lap: null,
       },
     });
+    mockFetch({ "GET /api/v1/auth/me/": { body: ME_ANON } });
     const { RaceSections } = await import("./sections");
-    render(await RaceSections());
+    renderWithProviders((await RaceSections()) as ReactElement);
     expect(screen.getByRole("link", { name: "Next GP" })).toHaveAttribute("href", "/seasons/2025/4");
     expect(screen.getByRole("link", { name: "N a" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Add to calendar" })).toHaveAttribute("href", "/api/v1/calendar/ics/?year=2025&round=4");
+    expect(screen.getByRole("link", { name: "Add the weekend to my calendar" })).toHaveAttribute(
+      "href",
+      "/api/v1/calendar/ics/?year=2025&round=4",
+    );
   });
   it("keeps the error inside the section", async () => {
     getDashboard.mockRejectedValue(new Error("down"));

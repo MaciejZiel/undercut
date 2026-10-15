@@ -83,7 +83,7 @@ export function EChart({
   return (
     <div className={`relative w-full ${className}`} style={{ height }}>
       <div ref={host} role="img" aria-label={label} className="size-full" />
-      {!ready && !failed && <div className="skeleton absolute inset-0 rounded-md" aria-hidden="true" />}
+      {!ready && !failed && <div className="skeleton absolute inset-0 rounded-sm" aria-hidden="true" />}
       {failed && (
         <p className="absolute inset-0 p-4 text-sm text-muted">
           The chart could not be loaded. Use the table view instead.

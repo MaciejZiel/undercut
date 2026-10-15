@@ -242,8 +242,14 @@ def test_dashboard_content(client):
     assert last["fastest_lap"]["time_ms"] == 91234
     assert len(body["driver_standings"]["entries"]) == 5
     assert body["driver_standings"]["entries"][0]["slug"] == drivers[0].slug
+    first, second, _, _, no_race = body["driver_standings"]["entries"]
+    # A driver's colour is the colour of the team they raced for that season.
+    assert (first["team_name"], first["color"]) == (teams[1].name, "#222222")
+    assert (second["team_name"], second["color"]) == (teams[2].name, None)
+    assert (no_race["team_name"], no_race["color"]) == (None, None)
     assert len(body["constructor_standings"]["entries"]) == 3
     assert body["constructor_standings"]["entries"][0]["color"] == "#111111"
+    assert body["constructor_standings"]["entries"][0]["team_name"] is None
     assert body["counts"]["seasons"] == 1
     assert body["counts"]["races"] == 1  # the future round is not counted
     assert body["counts"]["drivers"] == 7

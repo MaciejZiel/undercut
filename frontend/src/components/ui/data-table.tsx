@@ -16,7 +16,7 @@ export function DataTable({
   minWidth?: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+    <div className="overflow-x-auto border-t-2 border-fg">
       <table className="w-full border-collapse text-left text-sm" style={{ minWidth }}>
         <caption className="sr-only">{caption}</caption>
         {children}
@@ -25,7 +25,7 @@ export function DataTable({
   );
 }
 
-const headClass = "whitespace-nowrap border-b border-line bg-surface-2 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-muted";
+const headClass = "whitespace-nowrap border-b border-line px-3 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-muted";
 
 export function Th({
   children,
@@ -92,7 +92,7 @@ export function SortTh({
 
 export function Tr({ children, muted = false }: { children: ReactNode; muted?: boolean }) {
   return (
-    <tr className={`border-b border-line last:border-b-0 hover:bg-surface-2/60 ${muted ? "text-muted" : ""}`}>
+    <tr className={`border-b border-line hover:bg-surface ${muted ? "text-muted" : ""}`}>
       {children}
     </tr>
   );
@@ -108,13 +108,13 @@ export function Td({
   className?: string;
 }) {
   const a = align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left";
-  return <td className={`px-3 py-2.5 align-middle ${a} ${className}`}>{children}</td>;
+  return <td className={`px-3 py-3 align-middle ${a} ${className}`}>{children}</td>;
 }
 
 /** First cell of a row: the row header. */
 export function RowTh({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <th scope="row" className={`px-3 py-2.5 text-left align-middle font-normal ${className}`}>
+    <th scope="row" className={`px-3 py-3 text-left align-middle font-normal ${className}`}>
       {children}
     </th>
   );

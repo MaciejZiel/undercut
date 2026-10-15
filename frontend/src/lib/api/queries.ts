@@ -34,9 +34,12 @@ type Query<P extends keyof paths> = paths[P] extends { get: { parameters: { quer
 export type DriverQuery = NonNullable<Query<"/api/v1/drivers/">>;
 export type ConstructorQuery = NonNullable<Query<"/api/v1/constructors/">>;
 export type CircuitQuery = NonNullable<Query<"/api/v1/circuits/">>;
-export type SessionType = "RACE" | "SPRINT" | "Q";
+export type SessionType = "RACE" | "SPRINT" | "Q" | "SQ" | "FP1" | "FP2" | "FP3";
+/** The sessions with analytics (laps, strategy, replay). */
+export type AnalyticsSessionType = "RACE" | "SPRINT" | "Q";
 export type RaceResults = Schemas["RaceSessionResults"];
 export type QualifyingResults = Schemas["QualifyingSessionResults"];
+export type PracticeResults = Schemas["PracticeSessionResults"];
 
 export async function getDrivers(query: DriverQuery) {
   "use cache";

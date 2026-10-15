@@ -1,52 +1,59 @@
 @import "tailwindcss";
 
-/* Light palette: the base tokens. */
+/*
+ * Look: a timing tower, not a card grid. The interface is concrete grey and ink; colour belongs to
+ * the teams (their rows are recognisable before you read them). The one accent is the yellow flag,
+ * used as a fill for "this is happening / this is the one" and never as text colour.
+ * `--accent` is ink on purpose: links, primary buttons and highlights read as ink, the flag is separate.
+ */
 :root {
   color-scheme: light;
-  --bg: #f3f4f8;
-  --surface: #ffffff;
-  --surface-2: #e9ebf2;
-  --line: #d3d8e4;
-  --fg: #0f1320;
-  --fg-muted: #4a556b;
-  --accent: #5a2dc8;
-  --accent-fg: #ffffff;
-  --accent-soft: #e8e0fb;
+  --bg: #e9ecee;
+  --surface: #f5f6f7;
+  --surface-2: #dfe3e6;
+  --line: #c5ccd1;
+  --fg: #0d1215;
+  --fg-muted: #46525a;
+  --accent: #0d1215;
+  --accent-fg: #f5f6f7;
+  --accent-soft: #d6dce0;
+  --flag: #ffd21f;
+  --on-flag: #0d1215;
   --danger: #b3261e;
-  --focus: #5a2dc8;
+  --focus: #0d1215;
 }
 
 /* Dark palette: follows the system unless the visitor picked light. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0b0f19;
-    --surface: #121827;
-    --surface-2: #1a2236;
-    --line: #26304a;
-    --fg: #e8ecf5;
-    --fg-muted: #9ba8c1;
-    --accent: #b99cff;
-    --accent-fg: #170a2e;
-    --accent-soft: #2a2148;
+    --bg: #0e1316;
+    --surface: #151b1f;
+    --surface-2: #1d252a;
+    --line: #2a343b;
+    --fg: #e9edef;
+    --fg-muted: #97a3aa;
+    --accent: #e9edef;
+    --accent-fg: #0e1316;
+    --accent-soft: #263037;
     --danger: #ff8a80;
-    --focus: #c9b6ff;
+    --focus: #e9edef;
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0b0f19;
-  --surface: #121827;
-  --surface-2: #1a2236;
-  --line: #26304a;
-  --fg: #e8ecf5;
-  --fg-muted: #9ba8c1;
-  --accent: #b99cff;
-  --accent-fg: #170a2e;
-  --accent-soft: #2a2148;
+  --bg: #0e1316;
+  --surface: #151b1f;
+  --surface-2: #1d252a;
+  --line: #2a343b;
+  --fg: #e9edef;
+  --fg-muted: #97a3aa;
+  --accent: #e9edef;
+  --accent-fg: #0e1316;
+  --accent-soft: #263037;
   --danger: #ff8a80;
-  --focus: #c9b6ff;
+  --focus: #e9edef;
 }
 
 @theme inline {
@@ -59,8 +66,11 @@
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
   --color-accent-soft: var(--accent-soft);
+  --color-flag: var(--flag);
+  --color-on-flag: var(--on-flag);
   --color-danger: var(--danger);
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
   --breakpoint-xs: 22.5rem;
 }
 
@@ -82,6 +92,40 @@ body {
   body {
     padding-bottom: 0;
   }
+}
+
+/* Condensed Archivo for race names, page titles and big numerals (the width axis does the work). */
+.display {
+  font-variation-settings: "wdth" 68;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  line-height: 0.92;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* Big figures: the condensed face without capitals, so words and numbers both work. */
+.numeral {
+  font-variation-settings: "wdth" 70;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Lap times, gaps and clocks: monospaced so the digits stay in line. */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Small label above a value. Sentence case would be quieter, capitals keep the timing-sheet voice. */
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
 }
 
 /* Timing tables and any figure that must line up. */

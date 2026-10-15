@@ -21,7 +21,7 @@ export type FilterField =
     };
 
 const control =
-  "t-fast h-10 w-full rounded-md border border-line bg-surface px-3 text-sm placeholder:text-muted hover:border-muted";
+  "t-fast h-10 w-full rounded-sm border border-line bg-surface px-3 text-sm placeholder:text-muted hover:border-muted";
 
 /**
  * Filters as a plain GET form: state lives in the URL, it works without
@@ -95,7 +95,7 @@ export function FilterForm({
       <div className="flex items-center gap-2">
         <button
           type="submit"
-          className="t-fast h-10 rounded-md bg-accent px-4 text-sm font-bold text-accent-fg hover:opacity-90"
+          className="t-fast h-10 rounded-sm bg-accent px-4 text-sm font-bold text-accent-fg hover:opacity-90"
         >
           Apply
         </button>

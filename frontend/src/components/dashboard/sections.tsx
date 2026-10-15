@@ -34,38 +34,35 @@ export async function RaceSections() {
       );
     }
     return (
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        <div>
-          {next && next.round != null ? (
-            <NextRaceCard
-              year={next.year}
-              round={next.round}
-              name={next.name}
-              date={next.date}
-              circuit={next.circuit}
-              raceStartUtc={next.race_start_utc}
-            />
-          ) : (
-            <EmptyState
-              title="No upcoming race"
-              description="The calendar has no further rounds."
-              action={{ label: "Open the calendar", href: "/calendar" }}
-            />
-          )}
-        </div>
-        <div>
-          {last && last.podium.length > 0 ? (
-            <PodiumCards
-              year={last.year}
-              round={last.round}
-              name={last.name}
-              podium={last.podium}
-              fastestLap={last.fastest_lap}
-            />
-          ) : (
-            <EmptyState title="No race results yet" description="The podium of the latest race will show up here." />
-          )}
-        </div>
+      <div className="flex flex-col gap-14">
+        {next && next.round != null ? (
+          <NextRaceCard
+            year={next.year}
+            round={next.round}
+            name={next.name}
+            date={next.date}
+            circuit={next.circuit}
+            raceStartUtc={next.race_start_utc}
+            sessions={next.sessions}
+          />
+        ) : (
+          <EmptyState
+            title="No upcoming race"
+            description="The calendar has no further rounds."
+            action={{ label: "Open the calendar", href: "/calendar" }}
+          />
+        )}
+        {last && last.podium.length > 0 ? (
+          <PodiumCards
+            year={last.year}
+            round={last.round}
+            name={last.name}
+            podium={last.podium}
+            fastestLap={last.fastest_lap}
+          />
+        ) : (
+          <EmptyState title="No race results yet" description="The podium of the latest race will show up here." />
+        )}
       </div>
     );
   });

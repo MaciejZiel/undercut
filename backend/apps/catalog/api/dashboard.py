@@ -41,7 +41,10 @@ class StandingsEntrySerializer(serializers.Serializer):
     slug = serializers.CharField()
     name = serializers.CharField()
     code = serializers.CharField(allow_null=True)
-    color = serializers.CharField(allow_null=True, help_text="Constructors only.")
+    color = serializers.CharField(
+        allow_null=True, help_text="Team colour: the constructor itself, or the driver's team."
+    )
+    team_name = serializers.CharField(allow_null=True, help_text="Drivers only: their team.")
     points = serializers.DecimalField(max_digits=6, decimal_places=2, coerce_to_string=False)
     wins = serializers.IntegerField()
 

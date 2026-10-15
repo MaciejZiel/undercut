@@ -13,10 +13,10 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <div className="mb-8">
+    <div className="mb-10">
       <Breadcrumbs items={breadcrumbs} />
-      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{title}</h1>
-      {description && <p className="mt-2 max-w-prose text-muted">{description}</p>}
+      <h1 className="display text-5xl sm:text-6xl">{title}</h1>
+      {description && <p className="mt-3 max-w-prose text-lg text-muted">{description}</p>}
       {children}
     </div>
   );

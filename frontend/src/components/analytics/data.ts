@@ -1,5 +1,5 @@
 import { createApiClient, type components } from "@/lib/api/client";
-import type { SessionType } from "@/lib/api/queries";
+import type { AnalyticsSessionType } from "@/lib/api/queries";
 import { formatLapTime } from "@/lib/format";
 
 type S = components["schemas"];
@@ -12,7 +12,7 @@ export type Weather = S["Weather"];
 export type RaceControl = S["RaceControl"];
 export type Neutralisation = S["Neutralisation"];
 
-export type AnalyticsRef = { year: number; round: number; session: SessionType };
+export type AnalyticsRef = { year: number; round: number; session: AnalyticsSessionType };
 
 /** HTTP failure of an analytics request. `analyticsAvailable` is the API's answer on a 404. */
 export class AnalyticsError extends Error {

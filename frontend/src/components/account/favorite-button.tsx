@@ -91,14 +91,14 @@ export function FavoriteButton({ kind, slug, name, className = "" }: { kind: Fav
   }
 
   return (
-    <div className={`mt-3 flex flex-wrap items-center gap-3 ${className}`}>
+    <div className={`flex flex-wrap items-center gap-3 ${className}`}>
       <button
         type="button"
         onClick={onClick}
         aria-pressed={signedIn ? active : false}
         aria-label={active ? `Unfollow ${name}` : `Follow ${name}`}
         disabled={auth.status === "loading" || (signedIn && favorites.isPending)}
-        className={`t-fast inline-flex items-center gap-2 rounded-md border border-line px-3 py-1.5 text-sm font-semibold hover:bg-surface-2 disabled:opacity-60 ${active ? "text-accent" : "text-muted"}`}
+        className={`t-fast inline-flex items-center gap-2 rounded-sm border px-3.5 py-2 text-sm font-semibold active:translate-y-px disabled:opacity-60 ${active ? "border-flag bg-flag text-on-flag" : "border-fg bg-transparent text-fg hover:bg-fg hover:text-bg"}`}
       >
         <StarIcon filled={active} />
         <span>{active ? "Following" : "Follow"}</span>

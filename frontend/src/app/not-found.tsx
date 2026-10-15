@@ -13,7 +13,7 @@ export default function NotFound() {
       <SearchBox className="mt-6 w-full" />
       <Link
         href="/"
-        className="t-fast mt-5 rounded-md bg-accent px-4 py-2 text-sm font-bold text-accent-fg hover:opacity-90"
+        className="t-fast mt-5 rounded-sm bg-accent px-4 py-2 text-sm font-bold text-accent-fg hover:opacity-90"
       >
         Back to dashboard
       </Link>

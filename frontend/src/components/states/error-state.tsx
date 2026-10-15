@@ -15,7 +15,7 @@ export function ErrorState({
   return (
     <section
       role="alert"
-      className="flex flex-col items-center rounded-lg border border-line bg-surface px-6 py-12 text-center"
+      className="flex flex-col items-center rounded-sm border border-line bg-surface px-6 py-12 text-center"
     >
       <div className="mb-4 grid size-12 place-items-center rounded-full bg-surface-2 text-danger">
         <AlertIcon />
@@ -26,7 +26,7 @@ export function ErrorState({
         <button
           type="button"
           onClick={onRetry}
-          className="t-fast mt-5 rounded-md bg-accent px-4 py-2 text-sm font-bold text-accent-fg hover:opacity-90"
+          className="t-fast mt-5 rounded-sm bg-accent px-4 py-2 text-sm font-bold text-accent-fg hover:opacity-90"
         >
           Try again
         </button>

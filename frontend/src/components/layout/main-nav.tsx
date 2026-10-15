@@ -7,10 +7,10 @@ import { CatalogMenu } from "./catalog-menu";
 
 function linkClass(active: boolean) {
   return [
-    "t-fast relative inline-flex h-16 items-center px-3 text-sm font-semibold",
+    "t-fast relative inline-flex h-16 items-center px-3 text-[0.9375rem] font-semibold",
     active ? "text-fg" : "text-muted hover:text-fg",
     active
-      ? "after:slant-bar after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:bg-accent"
+      ? "after:slant-bar after:absolute after:inset-x-3 after:bottom-0 after:h-[4px] after:bg-flag"
       : "",
   ].join(" ");
 }

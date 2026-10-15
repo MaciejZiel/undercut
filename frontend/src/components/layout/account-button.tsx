@@ -73,7 +73,7 @@ export function AccountButton() {
     }
   }
 
-  const itemClass = "t-fast block w-full rounded-md px-3 py-2 text-left text-sm hover:bg-surface-2 focus:bg-surface-2";
+  const itemClass = "t-fast block w-full rounded-sm px-3 py-2 text-left text-sm hover:bg-surface-2 focus:bg-surface-2";
 
   return (
     <div ref={wrapper} className="relative" onKeyDown={onKeyDown}>
@@ -94,7 +94,7 @@ export function AccountButton() {
           id={menuId}
           role="menu"
           aria-label="Account"
-          className="absolute right-0 top-12 z-40 w-56 rounded-lg border border-line bg-surface p-1 shadow-lg"
+          className="absolute right-0 top-12 z-40 w-56 rounded-sm border border-line bg-surface p-1 shadow-lg"
         >
           <p className="truncate px-3 py-2 text-xs text-muted">{name}</p>
           {ITEMS.map((item) => (

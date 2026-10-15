@@ -113,7 +113,7 @@ export function ReplayView({ doc, caption }: { doc: ReplayDoc; caption: string }
       aria-label="Session replay"
       tabIndex={0}
       onKeyDown={(e) => handleReplayKey(controller, e)}
-      className="grid gap-4 rounded-lg outline-offset-4"
+      className="grid gap-4 rounded-sm outline-offset-4"
     >
       <Controls controller={controller} laps={laps} totalLaps={doc.session.laps || null} duration={duration} />
       <Timeline controller={controller} duration={duration} events={doc.events} laps={laps} />

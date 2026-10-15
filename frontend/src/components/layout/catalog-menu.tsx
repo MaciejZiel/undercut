@@ -64,13 +64,13 @@ export function CatalogMenu({ linkClass }: { linkClass: (active: boolean) => str
       <ul
         id={panelId}
         hidden={!open}
-        className="absolute left-0 top-full z-30 mt-2 w-64 rounded-lg border border-line bg-surface p-1.5 shadow-lg"
+        className="absolute left-0 top-full z-30 mt-2 w-64 rounded-sm border border-line bg-surface p-1.5 shadow-lg"
       >
         {CATALOG_LINKS.map((l) => (
           <li key={l.href}>
             <Link
               href={l.href}
-              className="t-fast flex flex-col rounded-md px-3 py-2 hover:bg-surface-2"
+              className="t-fast flex flex-col rounded-sm px-3 py-2 hover:bg-surface-2"
             >
               <span className="font-semibold">{l.label}</span>
               <span className="text-xs text-muted">{l.hint}</span>

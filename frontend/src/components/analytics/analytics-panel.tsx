@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { SessionType } from "@/lib/api/queries";
+import type { AnalyticsSessionType } from "@/lib/api/queries";
 import type { AnalyticsRef } from "./data";
 import { LapsView } from "./laps-view";
 import { PitStopsView } from "./pit-stops-view";
@@ -30,7 +30,7 @@ export function AnalyticsPanel({
   view: "analysis" | "strategy";
   year: number;
   round: number;
-  session: SessionType;
+  session: AnalyticsSessionType;
 }) {
   const refs: AnalyticsRef = { year, round, session };
   const [section, setSection] = useState<SectionKey>("positions");
@@ -46,7 +46,7 @@ export function AnalyticsPanel({
             type="button"
             aria-pressed={section === s.key}
             onClick={() => setSection(s.key)}
-            className={`t-fast rounded-md border px-3 py-1.5 text-sm font-semibold ${
+            className={`t-fast rounded-sm border px-3 py-1.5 text-sm font-semibold ${
               section === s.key ? "border-accent bg-accent-soft text-accent" : "border-line text-muted hover:text-fg"
             }`}
           >

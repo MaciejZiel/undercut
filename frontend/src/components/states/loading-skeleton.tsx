@@ -17,7 +17,7 @@ export function LoadingSkeleton({
     <div role="status" aria-live="polite" aria-busy="true" data-variant={variant}>
       <span className="sr-only">{label}…</span>
       {variant === "table" && (
-        <div className="overflow-hidden rounded-lg border border-line bg-surface" aria-hidden="true">
+        <div className="overflow-hidden rounded-sm border border-line bg-surface" aria-hidden="true">
           <div className="flex gap-4 border-b border-line px-4 py-3">
             <div className="skeleton h-3 w-8" />
             <div className="skeleton h-3 w-32" />
@@ -35,7 +35,7 @@ export function LoadingSkeleton({
       {variant === "cards" && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
           {Array.from({ length: rows > 6 ? 6 : rows }, (_, i) => (
-            <div key={i} className="rounded-lg border border-line bg-surface p-4">
+            <div key={i} className="rounded-sm border border-line bg-surface p-4">
               <div className="skeleton mb-4 h-3 w-1/3" />
               <div className="skeleton mb-2 h-6 w-2/3" />
               <div className="skeleton h-3 w-full" />

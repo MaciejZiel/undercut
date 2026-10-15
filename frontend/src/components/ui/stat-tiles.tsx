@@ -3,14 +3,14 @@ import { orDash } from "./value";
 
 export type Stat = { label: string; value: ReactNode | null; hint?: string };
 
-/** 4 columns on desktop, 2 on mobile. A null value shows an em dash, never 0. */
+/** A row of figures under a heavy rule, 4 across on desktop and 2 on mobile. A null value is a dash, never 0. */
 export function StatTiles({ stats, label = "Statistics" }: { stats: Stat[]; label?: string }) {
   return (
-    <dl aria-label={label} className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <dl aria-label={label} className="mb-10 grid grid-cols-2 gap-x-8 border-t-2 border-fg lg:grid-cols-4">
       {stats.map((s) => (
-        <div key={s.label} className="rounded-lg border border-line bg-surface p-4">
-          <dt className="text-xs font-bold uppercase tracking-wide text-muted">{s.label}</dt>
-          <dd className="timing mt-1 text-2xl font-extrabold tracking-tight">{orDash(s.value, s.hint)}</dd>
+        <div key={s.label} className="border-b border-line py-4">
+          <dt className="label">{s.label}</dt>
+          <dd className="numeral mt-1 text-4xl">{orDash(s.value, s.hint)}</dd>
         </div>
       ))}
     </dl>

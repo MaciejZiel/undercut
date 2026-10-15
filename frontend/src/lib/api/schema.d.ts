@@ -2167,8 +2167,10 @@ export interface components {
             slug: string;
             name: string;
             code: string | null;
-            /** @description Constructors only. */
+            /** @description Team colour: the constructor itself, or the driver's team. */
             color: string | null;
+            /** @description Drivers only: their team. */
+            team_name: string | null;
             /** Format: double */
             points: number;
             wins: number;

@@ -42,7 +42,7 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border border-line bg-surface p-5 shadow-xl outline-none"
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-sm border border-line bg-surface p-5 shadow-xl outline-none"
         onKeyDown={(e) => {
           if (e.key === "Escape") {
             e.stopPropagation();
@@ -67,7 +67,7 @@ export function Modal({
           <h2 id={titleId} className="text-xl font-extrabold tracking-tight">
             {title}
           </h2>
-          <button type="button" onClick={onClose} aria-label="Close dialog" className="t-fast -mr-1 rounded-md px-2 py-1 text-muted hover:bg-surface-2 hover:text-fg">
+          <button type="button" onClick={onClose} aria-label="Close dialog" className="t-fast -mr-1 rounded-sm px-2 py-1 text-muted hover:bg-surface-2 hover:text-fg">
             <span aria-hidden="true">×</span>
           </button>
         </div>

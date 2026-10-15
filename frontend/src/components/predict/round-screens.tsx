@@ -41,7 +41,7 @@ export function PredictHome() {
         const href = `/predict/${state.round.year}/${state.round.round}`;
         const open = state.status === "open";
         return (
-          <section aria-labelledby="next-h" className="rounded-lg border border-line bg-surface p-6">
+          <section aria-labelledby="next-h" className="rounded-sm border border-line bg-surface p-6">
             <p className="text-xs font-bold uppercase tracking-wide text-muted">
               {state.round.year} round {state.round.round}
             </p>

@@ -77,7 +77,7 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
         <FavoriteButton kind="driver" slug={driver.slug} name={name} />
         <Link
           href={buildHref("/compare", { a: driver.slug })}
-          className="t-fast mt-3 inline-block rounded-md border border-line px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
+          className="t-fast inline-block rounded-sm border border-line px-3.5 py-2 text-sm font-semibold hover:border-fg"
         >
           Compare with&hellip;
         </Link>

@@ -18,6 +18,17 @@ describe("session tabs", () => {
     expect(availableTabs([])).toEqual([]);
   });
 
+  it("adds practice and sprint qualifying once they have results, practice 3 before practice 1", () => {
+    const sessions = [
+      { type: "FP1", has_results: true },
+      { type: "FP2", has_results: true },
+      { type: "FP3", has_results: false },
+      { type: "SQ", has_results: true },
+      { type: "RACE", has_results: true },
+    ];
+    expect(availableTabs(sessions).map((t) => t.key)).toEqual(["race", "sprint-qualifying", "fp2", "fp1"]);
+  });
+
   it("opens the race by default when it has results", () => {
     const tabs = availableTabs(weekend);
     expect(pickTab(undefined, tabs, weekend)?.key).toBe("race");

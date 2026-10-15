@@ -1,6 +1,7 @@
 import type { components } from "@/lib/api/client";
 import {
   describePositionChange,
+  formatGap,
   formatInteger,
   formatLapTime,
   formatPoints,
@@ -90,7 +91,16 @@ export function RaceResultsTable({ results, caption }: { results: S["RaceResult"
   );
 }
 
-export function QualifyingResultsTable({ results, caption }: { results: S["QualifyingResult"][]; caption: string }) {
+export function QualifyingResultsTable({
+  results,
+  caption,
+  prefix = "Q",
+}: {
+  results: S["QualifyingResult"][];
+  caption: string;
+  /** "SQ" for sprint qualifying, whose parts are SQ1 to SQ3. */
+  prefix?: "Q" | "SQ";
+}) {
   const hasQ2 = results.some((r) => r.q2_ms != null);
   const hasQ3 = results.some((r) => r.q3_ms != null);
   // Older formats had a single timed session: one column instead of Q1 to Q3.
@@ -102,9 +112,9 @@ export function QualifyingResultsTable({ results, caption }: { results: S["Quali
           <Th align="right">Pos</Th>
           <Th>Driver</Th>
           <Th>Team</Th>
-          <Th align="right">{single ? "Time" : "Q1"}</Th>
-          {!single && <Th align="right">Q2</Th>}
-          {!single && <Th align="right">Q3</Th>}
+          <Th align="right">{single ? "Time" : `${prefix}1`}</Th>
+          {!single && <Th align="right">{prefix}2</Th>}
+          {!single && <Th align="right">{prefix}3</Th>}
         </tr>
       </thead>
       <tbody>
@@ -137,6 +147,47 @@ export function QualifyingResultsTable({ results, caption }: { results: S["Quali
                 {orDash(formatLapTime(r.q3_ms))}
               </Td>
             )}
+          </Tr>
+        ))}
+      </tbody>
+    </DataTable>
+  );
+}
+
+
+/** Practice classification: best lap, the gap to the fastest car and the laps driven. */
+export function PracticeResultsTable({ results, caption }: { results: S["PracticeResult"][]; caption: string }) {
+  return (
+    <DataTable caption={caption} minWidth="36rem">
+      <thead>
+        <tr>
+          <Th align="right">Pos</Th>
+          <Th>Driver</Th>
+          <Th>Team</Th>
+          <Th align="right">Best lap</Th>
+          <Th align="right">Gap</Th>
+          <Th align="right">Laps</Th>
+        </tr>
+      </thead>
+      <tbody>
+        {results.map((r) => (
+          <Tr key={r.driver.slug} muted={r.best_lap_ms === null}>
+            <Td align="right" className="timing font-bold">
+              {orDash(r.position, "No time set")}
+            </Td>
+            <RowTh>
+              <DriverLink slug={r.driver.slug} name={r.driver.name} />
+            </RowTh>
+            <Td>
+              <ConstructorLink {...r.team} />
+            </Td>
+            <Td align="right" className="mono">
+              {orDash(formatLapTime(r.best_lap_ms), "No time set")}
+            </Td>
+            <Td align="right" className="mono text-muted">
+              {r.position === 1 ? <Dash label="Fastest" /> : orDash(formatGap(r.gap_ms))}
+            </Td>
+            <Td align="right">{orDash(formatInteger(r.laps))}</Td>
           </Tr>
         ))}
       </tbody>

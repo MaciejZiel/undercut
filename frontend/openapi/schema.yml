@@ -5001,7 +5001,11 @@ components:
         color:
           type: string
           nullable: true
-          description: Constructors only.
+          description: 'Team colour: the constructor itself, or the driver''s team.'
+        team_name:
+          type: string
+          nullable: true
+          description: 'Drivers only: their team.'
         points:
           type: number
           format: double
@@ -5018,6 +5022,7 @@ components:
       - points
       - position
       - slug
+      - team_name
       - wins
     StatEntry:
       type: object

@@ -97,7 +97,7 @@ export function MostWinsList({
   items: { key: string; node: React.ReactNode; wins: number }[];
 }) {
   return (
-    <section aria-label={title} className="rounded-lg border border-line bg-surface p-4">
+    <section aria-label={title} className="rounded-sm border border-line bg-surface p-4">
       <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">{title}</h3>
       {items.length === 0 ? (
         <p className="text-muted">{orDash(null)}</p>

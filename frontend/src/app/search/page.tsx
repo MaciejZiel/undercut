@@ -68,7 +68,7 @@ async function SearchResults({ searchParams }: { searchParams: PageProps<"/searc
               <h2 id={`g-${g.key}`} className="mb-2 text-xl font-extrabold tracking-tight">
                 {g.label}
               </h2>
-              <ul className="divide-y divide-line rounded-lg border border-line bg-surface">
+              <ul className="divide-y divide-line rounded-sm border border-line bg-surface">
                 {g.items.map((item) => (
                   <li key={item.id}>
                     <Link

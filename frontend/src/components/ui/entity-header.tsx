@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
 import { Breadcrumbs, type Crumb } from "@/components/layout/breadcrumbs";
-import { initials } from "@/lib/format";
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 /**
- * Detail page header: initials on a neutral accent instead of a photo, with the
- * team colour as a thin bar on the left (an accent, never a background).
+ * Detail page header: the name set large and condensed, the team colour as a bar beside it, and
+ * the page's actions (follow, compare) in one row underneath.
  */
 export function EntityHeader({
   title,
@@ -23,26 +22,16 @@ export function EntityHeader({
 }) {
   const bar = accentColor && HEX.test(accentColor) ? accentColor : null;
   return (
-    <div className="mb-8">
+    <div className="mb-10 border-b border-line pb-8">
       <Breadcrumbs items={breadcrumbs} />
-      <div className="flex items-center gap-4">
-        <span
-          aria-hidden="true"
-          className="h-16 w-1.5 shrink-0 rounded-full border border-line"
-          style={{ backgroundColor: bar ?? "var(--line)" }}
-        />
-        <span
-          aria-hidden="true"
-          className="grid size-16 shrink-0 place-items-center rounded-lg bg-accent-soft text-2xl font-extrabold tracking-tight text-accent"
-        >
-          {initials(title)}
-        </span>
+      <div className="flex items-stretch gap-5">
+        <span aria-hidden="true" className="w-2 shrink-0 rounded-[1px]" style={{ backgroundColor: bar ?? "var(--line)" }} />
         <div className="min-w-0">
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{title}</h1>
-          {subtitle && <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-muted">{subtitle}</div>}
+          <h1 className="display text-5xl sm:text-7xl">{title}</h1>
+          {subtitle && <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted">{subtitle}</div>}
         </div>
       </div>
-      {children}
+      {children && <div className="mt-6 flex flex-wrap items-center gap-3">{children}</div>}
     </div>
   );
 }

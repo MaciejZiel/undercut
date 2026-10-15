@@ -15,7 +15,7 @@ export function EmptyState({
   icon?: ReactNode;
 }) {
   return (
-    <section className="flex flex-col items-center rounded-lg border border-dashed border-line px-6 py-12 text-center">
+    <section className="flex flex-col items-center rounded-sm border border-dashed border-line px-6 py-12 text-center">
       <div className="mb-4 grid size-12 place-items-center rounded-full bg-surface-2 text-muted">
         {icon ?? <InboxIcon />}
       </div>
@@ -24,7 +24,7 @@ export function EmptyState({
       {action && (
         <Link
           href={action.href}
-          className="t-fast mt-5 rounded-md bg-accent px-4 py-2 text-sm font-bold text-accent-fg hover:opacity-90"
+          className="t-fast mt-5 rounded-sm bg-accent px-4 py-2 text-sm font-bold text-accent-fg hover:opacity-90"
         >
           {action.label}
         </Link>

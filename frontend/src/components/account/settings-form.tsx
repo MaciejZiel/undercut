@@ -64,7 +64,7 @@ function ProfileForm({ user }: { user: User }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5 rounded-lg border border-line bg-surface p-5" noValidate aria-labelledby="profile-h">
+    <form onSubmit={submit} className="space-y-5 rounded-sm border border-line bg-surface p-5" noValidate aria-labelledby="profile-h">
       <h2 id="profile-h" className="text-xl font-extrabold tracking-tight">
         Profile and preferences
       </h2>
@@ -147,7 +147,7 @@ function ExportSection() {
   }
 
   return (
-    <section aria-labelledby="export-h" className="rounded-lg border border-line bg-surface p-5">
+    <section aria-labelledby="export-h" className="rounded-sm border border-line bg-surface p-5">
       <h2 id="export-h" className="mb-1 text-xl font-extrabold tracking-tight">
         Your data
       </h2>
@@ -187,7 +187,7 @@ function DeleteSection({ user }: { user: User }) {
   }
 
   return (
-    <section aria-labelledby="delete-h" className="rounded-lg border border-danger bg-surface p-5">
+    <section aria-labelledby="delete-h" className="rounded-sm border border-danger bg-surface p-5">
       <h2 id="delete-h" className="mb-1 text-xl font-extrabold tracking-tight text-danger">
         Delete account
       </h2>
@@ -228,7 +228,7 @@ function GoogleSection() {
   const justLinked = params.get("google") === "linked" && linked;
 
   return (
-    <section aria-labelledby="google-h" className="rounded-lg border border-line bg-surface p-5">
+    <section aria-labelledby="google-h" className="rounded-sm border border-line bg-surface p-5">
       <h2 id="google-h" className="mb-1 text-xl font-extrabold tracking-tight">
         Google login
       </h2>

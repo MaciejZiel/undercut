@@ -170,7 +170,7 @@ function Table({ data, offset, onOffset, ownId }: { data: Leaderboard; offset: n
         <div
           data-testid="pinned-own-row"
           role="status"
-          className="sticky bottom-[4.5rem] z-10 mt-3 flex items-center gap-4 rounded-lg border border-accent bg-surface px-4 py-3 text-sm shadow-lg md:bottom-3"
+          className="sticky bottom-[4.5rem] z-10 mt-3 flex items-center gap-4 rounded-sm border border-accent bg-surface px-4 py-3 text-sm shadow-lg md:bottom-3"
         >
           <span className="timing font-extrabold">#{own.rank}</span>
           <span className="font-semibold">You ({own.name})</span>

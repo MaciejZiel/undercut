@@ -93,7 +93,7 @@ export function CompareView({ initial }: { initial: CompareState }) {
 
   return (
     <div className="flex flex-col gap-8">
-      <form onSubmit={submitSeason} className="grid grid-cols-1 gap-4 rounded-lg border border-line bg-surface p-4 sm:grid-cols-3">
+      <form onSubmit={submitSeason} className="grid grid-cols-1 gap-4 rounded-sm border border-line bg-surface p-4 sm:grid-cols-3">
         <DriverPicker
           label="First driver"
           value={state.a ? { slug: state.a, name: nameOf(state.a, query.data?.a.driver.name) } : null}
@@ -120,9 +120,9 @@ export function CompareView({ initial }: { initial: CompareState }) {
               onChange={(e) => setSeasonText(e.target.value)}
               aria-invalid={seasonError ? true : undefined}
               aria-describedby={seasonError ? "compare-season-err" : undefined}
-              className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm"
+              className="w-full rounded-sm border border-line bg-surface px-3 py-2 text-sm"
             />
-            <button type="submit" className="t-fast rounded-md bg-accent px-3 py-2 text-sm font-bold text-accent-fg hover:opacity-90">
+            <button type="submit" className="t-fast rounded-sm bg-accent px-3 py-2 text-sm font-bold text-accent-fg hover:opacity-90">
               Apply
             </button>
           </div>
@@ -296,7 +296,7 @@ function Duel({
   const sum = aAhead + bAhead;
   const share = sum > 0 ? Math.round((aAhead / sum) * 100) : null;
   return (
-    <article className="rounded-lg border border-line bg-surface p-4">
+    <article className="rounded-sm border border-line bg-surface p-4">
       <h3 className="font-bold">{title}</h3>
       <p className="mb-3 text-xs text-muted">{note}</p>
       {total === 0 ? (
@@ -342,7 +342,7 @@ function TeammateSeason({
   const heading = `${season.year}, ${season.races} ${season.races === 1 ? "race" : "races"} as team mates`;
   if (season.lap_times === null || season.lap_times.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-line p-4">
+      <div className="rounded-sm border border-dashed border-line p-4">
         <h3 className="font-bold">{heading}</h3>
         <p className="mt-1 text-sm text-muted">{season.lap_times_reason ?? "No lap-time data for this season."}</p>
       </div>

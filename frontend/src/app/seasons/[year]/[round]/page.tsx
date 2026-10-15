@@ -8,8 +8,8 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { DetailPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
 import { Badge, CircuitLink, Nationality } from "@/components/ui/entity-links";
-import { QualifyingResultsTable, RaceResultsTable } from "@/components/round/results-tables";
-import { getRound, getRoundResults, type QualifyingResults, type RaceResults } from "@/lib/api/queries";
+import { PracticeResultsTable, QualifyingResultsTable, RaceResultsTable } from "@/components/round/results-tables";
+import { getRound, getRoundResults, type PracticeResults, type QualifyingResults, type RaceResults } from "@/lib/api/queries";
 import { formatDate, formatLength } from "@/lib/format";
 import { roundHref, seasonHref } from "@/lib/routes";
 import { availableTabs, pickTab } from "@/lib/sessions";
@@ -54,8 +54,10 @@ async function RoundDetail({ params, searchParams }: Props) {
   const tabs = availableTabs(round.sessions);
   const active = pickTab(requested, tabs, round.sessions);
   const defaultTab = pickTab(undefined, tabs, round.sessions);
-  const views = visibleViews(round.year);
-  const view = pickView(first((await searchParams).view), round.year);
+  // Analysis, strategy and replay exist for race, sprint and qualifying only.
+  const analytic = active && ["RACE", "SPRINT", "Q"].includes(active.type) ? (active.type as "RACE" | "SPRINT" | "Q") : null;
+  const views = analytic ? visibleViews(round.year) : [];
+  const view = analytic ? pickView(first((await searchParams).view), round.year) : "results";
   const base = roundHref(round.year, round.round);
   const sessionInfo = active ? round.sessions.find((s) => s.type === active.type) : undefined;
   const results = active ? await getRoundResults(round.year, round.round, active.type) : null;
@@ -78,7 +80,7 @@ async function RoundDetail({ params, searchParams }: Props) {
           url: absoluteUrl(roundHref(round.year, round.round)),
         }}
       />
-      <div className="mb-6">
+      <div className="mb-8">
         <Breadcrumbs
           items={[
             { label: "Seasons", href: "/seasons" },
@@ -86,7 +88,7 @@ async function RoundDetail({ params, searchParams }: Props) {
             { label: round.name },
           ]}
         />
-        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+        <h1 className="display text-5xl sm:text-7xl">
           {round.year} {round.name}
         </h1>
         <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted">
@@ -115,7 +117,7 @@ async function RoundDetail({ params, searchParams }: Props) {
       </div>
 
       {tabs.length > 0 && (
-        <nav aria-label="Sessions" className="mb-4 flex gap-1 border-b border-line">
+        <nav aria-label="Sessions" className="mb-5 flex flex-wrap gap-1 border-b border-line">
           {tabs.map((t) => {
             const current = t.key === active?.key;
             return (
@@ -123,8 +125,8 @@ async function RoundDetail({ params, searchParams }: Props) {
                 key={t.key}
                 href={viewHref(base, { session: t.key === defaultTab?.key ? null : t.key, view })}
                 aria-current={current ? "page" : undefined}
-                className={`t-fast -mb-px border-b-2 px-4 py-2.5 text-sm font-bold ${
-                  current ? "border-accent text-fg" : "border-transparent text-muted hover:text-fg"
+                className={`t-fast -mb-px border-b-4 px-4 py-3 text-[0.9375rem] font-bold ${
+                  current ? "border-flag text-fg" : "border-transparent text-muted hover:text-fg"
                 }`}
               >
                 {t.label}
@@ -140,8 +142,8 @@ async function RoundDetail({ params, searchParams }: Props) {
               key={v.key}
               href={viewHref(base, { session: active && active.key !== defaultTab?.key ? active.key : null, view: v.key })}
               aria-current={v.key === view ? "page" : undefined}
-              className={`t-fast rounded-md border px-3 py-1.5 text-sm font-semibold ${
-                v.key === view ? "border-accent bg-accent-soft text-accent" : "border-line text-muted hover:text-fg"
+              className={`t-fast rounded-sm border px-3.5 py-2 text-sm font-semibold ${
+                v.key === view ? "border-fg bg-fg text-bg" : "border-line text-muted hover:border-fg hover:text-fg"
               }`}
             >
               {v.label}
@@ -149,14 +151,14 @@ async function RoundDetail({ params, searchParams }: Props) {
           ))}
         </nav>
       )}
-      {round.year < 2023 && (
+      {analytic && round.year < 2023 && (
         <p className="mb-4 text-sm text-muted">Detailed analytics are available from the 2023 season.</p>
       )}
 
-      {active && (view === "analysis" || view === "strategy") ? (
-        <AnalyticsPanel key={`${view}-${active.type}`} view={view} year={round.year} round={round.round} session={active.type} />
-      ) : active && view === "replay" ? (
-        <ReplayPanel key={active.type} year={round.year} round={round.round} session={active.type} roundName={round.name} label={active.label} />
+      {analytic && (view === "analysis" || view === "strategy") ? (
+        <AnalyticsPanel key={`${view}-${analytic}`} view={view} year={round.year} round={round.round} session={analytic} />
+      ) : analytic && view === "replay" ? (
+        <ReplayPanel key={analytic} year={round.year} round={round.round} session={analytic} roundName={round.name} label={active?.label ?? ""} />
       ) : !active || results === null || results.results.length === 0 ? (
         <EmptyState
           title={round.is_cancelled ? "This round was cancelled" : "No results yet"}
@@ -170,15 +172,21 @@ async function RoundDetail({ params, searchParams }: Props) {
       ) : (
         <section aria-labelledby="results-h">
           <div className="mb-3 flex flex-wrap items-center gap-3">
-            <h2 id="results-h" className="text-xl font-extrabold tracking-tight">
+            <h2 id="results-h" className="text-2xl font-bold tracking-tight">
               {active.label} results
             </h2>
             {sessionInfo && sessionInfo.status !== "results_final" && <Badge tone="accent">Preliminary</Badge>}
           </div>
-          {active.type === "Q" ? (
+          {active.type === "Q" || active.type === "SQ" ? (
             <QualifyingResultsTable
               results={(results as QualifyingResults).results}
-              caption={`${round.year} ${round.name} qualifying results`}
+              prefix={active.type === "SQ" ? "SQ" : "Q"}
+              caption={`${round.year} ${round.name} ${active.label.toLowerCase()} results`}
+            />
+          ) : active.type.startsWith("FP") ? (
+            <PracticeResultsTable
+              results={(results as PracticeResults).results}
+              caption={`${round.year} ${round.name} ${active.label.toLowerCase()} results`}
             />
           ) : (
             <RaceResultsTable

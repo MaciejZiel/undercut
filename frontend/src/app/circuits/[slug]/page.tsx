@@ -46,7 +46,7 @@ function OsmMap({ lat, lng, name }: { lat: number; lng: number; name: string }) 
         src={src}
         loading="lazy"
         referrerPolicy="no-referrer"
-        className="h-72 w-full rounded-lg border border-line bg-surface-2"
+        className="h-72 w-full rounded-sm border border-line bg-surface-2"
       />
       <p className="mt-2 text-sm text-muted">
         <a

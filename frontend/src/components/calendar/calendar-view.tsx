@@ -33,7 +33,7 @@ export function CalendarView({ year, rounds }: { year: number; rounds: Entry[] }
               type="button"
               aria-pressed={mode === m.value}
               onClick={() => setMode(m.value)}
-              className={`t-fast rounded-md border px-3 py-1.5 text-sm font-semibold ${
+              className={`t-fast rounded-sm border px-3 py-1.5 text-sm font-semibold ${
                 mode === m.value ? "border-accent bg-accent-soft text-accent" : "border-line bg-surface hover:bg-surface-2"
               }`}
             >
@@ -68,7 +68,7 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
       <article
         aria-labelledby={headId}
         aria-current={highlight ? "step" : undefined}
-        className={`rounded-lg border bg-surface p-4 sm:p-5 ${highlight ? "border-accent ring-2 ring-accent" : "border-line"} ${cancelled ? "text-muted" : ""}`}
+        className={`rounded-sm border bg-surface p-4 sm:p-5 ${highlight ? "border-accent ring-2 ring-accent" : "border-line"} ${cancelled ? "text-muted" : ""}`}
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
@@ -97,7 +97,7 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
           {!cancelled && entry.round != null && (
             <a
               href={icsHref(year, entry.round)}
-              className="t-fast rounded-md border border-line px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
+              className="t-fast rounded-sm border border-line px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
             >
               Add to calendar
               <span className="sr-only">: {entry.name}</span>

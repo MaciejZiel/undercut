@@ -48,7 +48,7 @@ export default function AboutPage() {
           <h2 id="notice-h" className={h2}>
             Unofficial and non-commercial
           </h2>
-          <p className="rounded-lg border border-line bg-surface p-4">
+          <p className="rounded-sm border border-line bg-surface p-4">
             Undercut is an unofficial fan site. It is not affiliated with, endorsed by or connected to Formula One
             Group, Formula 1, the FIA or any team or driver. It is non-commercial: there are no ads, no payments and
             no sponsored content. It does not use official logos, trademarks or driver photos.

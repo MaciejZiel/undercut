@@ -155,7 +155,7 @@ export function DriverCombobox({
           setOpen(true);
         }}
         onKeyDown={onKeyDown}
-        className={`w-full rounded-md border bg-surface px-3 py-2 text-sm disabled:opacity-60 ${error ? "border-danger" : "border-line"}`}
+        className={`w-full rounded-sm border bg-surface px-3 py-2 text-sm disabled:opacity-60 ${error ? "border-danger" : "border-line"}`}
       />
       {open && (
         <ul
@@ -164,7 +164,7 @@ export function DriverCombobox({
           aria-label={label}
           // mousedown must not blur the input before the click registers
           onMouseDown={(e) => e.preventDefault()}
-          className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-line bg-surface py-1 shadow-lg"
+          className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-sm border border-line bg-surface py-1 shadow-lg"
         >
           {shown.length === 0 && <li className="px-3 py-2 text-sm text-muted">No driver matches.</li>}
           {shown.map((d, i) => {

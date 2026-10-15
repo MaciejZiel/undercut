@@ -7,7 +7,7 @@ import { ErrorState } from "@/components/states/error-state";
 import { EmptyState } from "@/components/states/empty-state";
 import { AnalyticsError } from "./data";
 
-const btn = "t-fast rounded-md border border-line px-3 py-1.5 text-sm font-semibold text-muted hover:text-fg";
+const btn = "t-fast rounded-sm border border-line px-3 py-1.5 text-sm font-semibold text-muted hover:text-fg";
 
 /**
  * Shared chrome of every analytics chart: title, "Show as table" and "Full screen" buttons, a
@@ -48,7 +48,7 @@ export function ChartFrame({
       className={
         full
           ? "fixed inset-0 z-50 flex flex-col overflow-auto bg-bg p-4"
-          : "rounded-lg border border-line bg-surface p-3"
+          : "rounded-sm border border-line bg-surface p-3"
       }
       aria-label={title}
     >
@@ -103,13 +103,13 @@ export function AnalyticsChart({
       alive = false;
     };
   }, []);
-  if (!ready) return <div className="skeleton size-full rounded-md" aria-hidden="true" />;
+  if (!ready) return <div className="skeleton size-full rounded-sm" aria-hidden="true" />;
   return <EChart option={option} label={label} height="100%" />;
 }
 
 export function ChartSkeleton({ label = "Loading chart" }: { label?: string }) {
   return (
-    <div role="status" aria-live="polite" className="skeleton h-[320px] w-full rounded-lg md:h-[420px]">
+    <div role="status" aria-live="polite" className="skeleton h-[320px] w-full rounded-sm md:h-[420px]">
       <span className="sr-only">{label}…</span>
     </div>
   );

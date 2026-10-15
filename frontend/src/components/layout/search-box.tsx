@@ -141,7 +141,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          className="t-fast h-10 w-full rounded-md border border-line bg-surface pl-9 pr-8 text-sm placeholder:text-muted hover:border-muted"
+          className="t-fast h-10 w-full rounded-sm border border-line bg-surface pl-9 pr-8 text-sm placeholder:text-muted hover:border-muted"
         />
         <kbd
           aria-hidden="true"
@@ -154,7 +154,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
           role="listbox"
           aria-label="Search suggestions"
           hidden={!showPanel}
-          className="absolute left-0 right-0 top-full z-40 mt-1 max-h-[70vh] min-w-72 overflow-y-auto rounded-lg border border-line bg-surface p-1 shadow-lg sm:left-auto sm:w-96"
+          className="absolute left-0 right-0 top-full z-40 mt-1 max-h-[70vh] min-w-72 overflow-y-auto rounded-sm border border-line bg-surface p-1 shadow-lg sm:left-auto sm:w-96"
         >
           {status === "loading" && groups.length === 0 && (
             <p role="presentation" className="px-3 py-2 text-sm text-muted">
@@ -193,7 +193,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
                       e.preventDefault();
                       go(item.href);
                     }}
-                    className={`flex cursor-pointer items-baseline justify-between gap-3 rounded-md px-3 py-2 text-sm ${
+                    className={`flex cursor-pointer items-baseline justify-between gap-3 rounded-sm px-3 py-2 text-sm ${
                       selected ? "bg-accent-soft" : "hover:bg-surface-2"
                     }`}
                   >

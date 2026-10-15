@@ -48,14 +48,17 @@ export function ConstructorLink({
   slug,
   name,
   color,
+  dot = true,
 }: {
   slug: string;
   name: string;
   color?: string | null;
+  /** Off where the row already shows the team colour. */
+  dot?: boolean;
 }) {
   return (
     <span className="inline-flex items-center gap-2">
-      <TeamDot color={color} />
+      {dot && <TeamDot color={color} />}
       <Link href={constructorHref(slug)} className={linkClass}>
         {name}
       </Link>
@@ -83,10 +86,10 @@ export function Badge({ children, tone = "neutral" }: { children: ReactNode; ton
   const tones = {
     neutral: "bg-surface-2 text-muted",
     danger: "bg-surface-2 text-danger",
-    accent: "bg-accent-soft text-accent",
+    accent: "bg-flag text-on-flag",
   };
   return (
-    <span className={`inline-block rounded px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide ${tones[tone]}`}>
+    <span className={`inline-block rounded-sm px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide ${tones[tone]}`}>
       {children}
     </span>
   );

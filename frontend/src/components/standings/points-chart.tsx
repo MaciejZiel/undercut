@@ -31,7 +31,7 @@ async function fetchProgress(kind: StandingsKind, season: number): Promise<Progr
 }
 
 const toggleBase =
-  "t-fast rounded-md border px-3 py-1.5 text-sm font-semibold";
+  "t-fast rounded-sm border px-3 py-1.5 text-sm font-semibold";
 
 export function PointsChart({ kind, season }: { kind: StandingsKind; season: number }) {
   const query = useQuery({
@@ -40,7 +40,7 @@ export function PointsChart({ kind, season }: { kind: StandingsKind; season: num
   });
 
   if (query.isPending) {
-    return <div className="skeleton h-[22rem] w-full rounded-lg" role="status" aria-label="Loading chart" />;
+    return <div className="skeleton h-[22rem] w-full rounded-sm" role="status" aria-label="Loading chart" />;
   }
   if (query.isError) {
     return (
@@ -139,7 +139,7 @@ function ChartPanel({ data, kind, season }: { data: Progress; kind: StandingsKin
       ) : asTable ? (
         <ProgressTable data={data} selected={selected} metric={metric} caption={label} />
       ) : (
-        <div className="rounded-lg border border-line bg-surface p-3">
+        <div className="rounded-sm border border-line bg-surface p-3">
           <EChart option={option} label={label} height={360} />
         </div>
       )}

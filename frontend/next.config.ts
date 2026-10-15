@@ -6,11 +6,17 @@ const nextConfig: NextConfig = {
   output: "standalone",
   cacheComponents: true,
   partialPrefetching: true,
+  // Development only: without this the dev server and Django redirect /api/.../ back and forth.
+  skipTrailingSlashRedirect: process.env.NODE_ENV !== "production",
   // Development only: production routes /api to Django in the reverse proxy.
   async rewrites() {
     if (process.env.NODE_ENV === "production") return [];
     const target = process.env.API_INTERNAL_URL ?? "http://127.0.0.1:8000";
-    return [{ source: "/api/:path*", destination: `${target}/api/:path*` }];
+    // Django's URLs end in a slash and Next drops it from :path*, so the slash is matched explicitly.
+    return [
+      { source: "/api/:path*/", destination: `${target}/api/:path*/` },
+      { source: "/api/:path*", destination: `${target}/api/:path*` },
+    ];
   },
   async headers() {
     return [

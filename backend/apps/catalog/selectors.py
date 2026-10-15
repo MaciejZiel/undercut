@@ -1151,23 +1151,44 @@ def _top_standings(kind: str) -> dict:
     if latest is None:
         return {"season": None, "after_round": None, "entries": []}
     rows = standings.standings_rows(kind, latest.season_id, latest.after_round)[:DASHBOARD_TOP]
-    colors = season_colors(latest.year) if kind == "constructors" else {}
-    return {
-        "season": latest.year,
-        "after_round": latest.after_round,
-        "entries": [
+    colors = season_colors(latest.year)
+    teams = (
+        _drivers_teams(latest.year, [r["entity"]["id"] for r in rows]) if kind == "drivers" else {}
+    )
+    entries = []
+    for row in rows:
+        entity_id = row["entity"]["id"]
+        if kind == "constructors":
+            color, team_name = colors.get(entity_id), None
+        else:
+            constructor_id, team_name = teams.get(entity_id, (None, None))
+            color = colors.get(constructor_id) if constructor_id is not None else None
+        entries.append(
             {
                 "position": row["position"],
                 "slug": row["entity"]["slug"],
                 "name": row["entity"]["name"],
                 "code": row["entity"]["code"],
-                "color": colors.get(row["entity"]["id"]),
+                "color": color,
+                "team_name": team_name,
                 "points": row["points"],
                 "wins": row["wins"],
             }
-            for row in rows
-        ],
-    }
+        )
+    return {"season": latest.year, "after_round": latest.after_round, "entries": entries}
+
+
+def _drivers_teams(year: int, driver_ids: list[int]) -> dict[int, tuple[int, str]]:
+    """driver id -> (constructor id, name) from each driver's latest result that season."""
+    latest: dict[int, tuple[int, str]] = {}
+    results = (
+        Result.objects.filter(driver_id__in=driver_ids, session__round__season__year=year)
+        .select_related("constructor")
+        .order_by("-session__round__date", "-session_id")
+    )
+    for result in results:
+        latest.setdefault(result.driver_id, (result.constructor_id, result.constructor.name))
+    return latest
 
 
 def this_day_in_f1(today: dt.date) -> dict | None:

@@ -1,17 +1,11 @@
 import Link from "next/link";
 
+/** Wordmark: condensed capitals with a slanted yellow tick, the shape of a pit-lane marker. */
 export function Logo() {
   return (
-    <Link
-      href="/"
-      aria-label="Undercut, home"
-      className="group flex items-center gap-2 rounded-md py-1 font-extrabold tracking-tight"
-    >
-      <svg viewBox="0 0 28 28" width="26" height="26" aria-hidden="true" focusable="false">
-        <path d="M3 4h7l5 14 5-14h5L18 24h-6L3 4z" fill="var(--fg)" />
-        <path d="M2 20 26 10v4L2 24z" fill="var(--accent)" />
-      </svg>
-      <span className="text-xl leading-none">Undercut</span>
+    <Link href="/" aria-label="Undercut, home" className="group flex items-baseline gap-2.5 rounded-sm py-1">
+      <span aria-hidden="true" className="slant-bar inline-block h-2.5 w-[22px] translate-y-px bg-flag" />
+      <span className="display text-[1.75rem] font-black leading-none tracking-[0.01em]">Undercut</span>
     </Link>
   );
 }

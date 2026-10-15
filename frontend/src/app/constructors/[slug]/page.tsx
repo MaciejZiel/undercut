@@ -71,7 +71,7 @@ async function ConstructorDetail({ params }: { params: PageProps<"/constructors/
           <h2 id="line-up-h" className="mb-3 text-xl font-extrabold tracking-tight">
             {team.current_season ? `${team.current_season} line-up` : "Line-up"}
           </h2>
-          <ul className="flex flex-wrap gap-x-6 gap-y-2 rounded-lg border border-line bg-surface p-4">
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 rounded-sm border border-line bg-surface p-4">
             {team.current_drivers.map((d) => (
               <li key={d.slug}>
                 <DriverLink slug={d.slug} name={d.name} />

@@ -13,7 +13,7 @@ export default function CatalogPage() {
           <li key={l.href}>
             <Link
               href={l.href}
-              className="t-fast flex h-full min-h-28 flex-col justify-end rounded-lg border border-line bg-surface p-4 hover:border-accent"
+              className="t-fast flex h-full min-h-28 flex-col justify-end rounded-sm border border-line bg-surface p-4 hover:border-accent"
             >
               <span className="text-lg font-bold">{l.label}</span>
               <span className="text-sm text-muted">{l.hint}</span>

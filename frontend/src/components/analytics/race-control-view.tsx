@@ -22,7 +22,7 @@ function MessageList({ data }: { data: RaceControl }) {
   const [category, setCategory] = useState<string | null>(null);
   const shown = filterMessages(data.messages, category);
   return (
-    <section aria-labelledby="rc-h" className="rounded-lg border border-line bg-surface p-3">
+    <section aria-labelledby="rc-h" className="rounded-sm border border-line bg-surface p-3">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <h3 id="rc-h" className="mr-auto text-base font-extrabold tracking-tight">
           Race control messages
@@ -32,7 +32,7 @@ function MessageList({ data }: { data: RaceControl }) {
           <select
             value={category ?? ""}
             onChange={(e) => setCategory(e.target.value || null)}
-            className="rounded-md border border-line bg-surface px-2 py-1"
+            className="rounded-sm border border-line bg-surface px-2 py-1"
           >
             <option value="">All</option>
             {data.categories.map((c) => (

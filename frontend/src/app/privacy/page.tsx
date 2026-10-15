@@ -33,7 +33,7 @@ export default function PrivacyPage() {
         breadcrumbs={[{ label: "Privacy" }]}
       />
       <div className="flex max-w-3xl flex-col gap-10">
-        <p role="note" className="rounded-lg border border-accent bg-accent-soft p-4 font-semibold">
+        <p role="note" className="rounded-sm border border-accent bg-accent-soft p-4 font-semibold">
           This policy is a template and still has to be reviewed by the site owner before it is relied upon.
         </p>
 

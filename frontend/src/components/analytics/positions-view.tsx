@@ -42,7 +42,7 @@ function PositionsPanel({ data }: { data: Positions }) {
               aria-pressed={on}
               onClick={() => setHighlight(on ? null : d.code)}
               title={`${d.full_name}, ${d.constructor_name}`}
-              className={`t-fast inline-flex w-full items-center gap-2 rounded-md border px-2 py-1 text-sm font-semibold ${
+              className={`t-fast inline-flex w-full items-center gap-2 rounded-sm border px-2 py-1 text-sm font-semibold ${
                 on ? "border-accent bg-accent-soft text-fg" : "border-line text-fg"
               } ${faded ? "opacity-40" : ""}`}
             >
@@ -72,7 +72,7 @@ function PositionsPanel({ data }: { data: Positions }) {
 /** Table alternative: one row per lap, one column per driver. */
 export function PositionsTable({ data }: { data: Positions }) {
   return (
-    <div className="max-h-[32rem] overflow-auto rounded-lg">
+    <div className="max-h-[32rem] overflow-auto rounded-sm">
       <DataTable caption="Position of every driver at the end of each lap" minWidth={`${6 + data.drivers.length * 3}rem`}>
         <thead>
           <tr>

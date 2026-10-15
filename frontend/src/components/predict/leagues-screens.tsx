@@ -84,7 +84,7 @@ function LeaguesBody() {
             <ul className="grid gap-3 sm:grid-cols-2">
               {list.map((l) => (
                 <li key={l.invite_code}>
-                  <Link href={leagueHref(l.invite_code)} className="t-fast block rounded-lg border border-line bg-surface p-4 hover:bg-surface-2">
+                  <Link href={leagueHref(l.invite_code)} className="t-fast block rounded-sm border border-line bg-surface p-4 hover:bg-surface-2">
                     <span className="block font-bold">{l.name}</span>
                     <span className="text-sm text-muted">
                       {l.member_count} {l.member_count === 1 ? "member" : "members"}
@@ -100,7 +100,7 @@ function LeaguesBody() {
       <div className="space-y-6">
         <form
           noValidate
-          className="space-y-3 rounded-lg border border-line bg-surface p-4"
+          className="space-y-3 rounded-sm border border-line bg-surface p-4"
           onSubmit={(e: FormEvent) => {
             e.preventDefault();
             setCreateError(null);
@@ -116,7 +116,7 @@ function LeaguesBody() {
         </form>
         <form
           noValidate
-          className="space-y-3 rounded-lg border border-line bg-surface p-4"
+          className="space-y-3 rounded-sm border border-line bg-surface p-4"
           onSubmit={(e: FormEvent) => {
             e.preventDefault();
             setJoinError(null);
@@ -158,7 +158,7 @@ function JoinBody({ code }: { code: string }) {
     onError: (e) => setError({ message: describeError(e, "Could not join this league."), already: (e as { code?: string }).code === "already_member" }),
   });
   return (
-    <div className="mx-auto max-w-md space-y-4 rounded-lg border border-line bg-surface p-5">
+    <div className="mx-auto max-w-md space-y-4 rounded-sm border border-line bg-surface p-5">
       <p>
         You were invited to a league with code <strong className="timing">{code}</strong>.
       </p>
@@ -209,7 +209,7 @@ function CopyInvite({ code }: { code: string }) {
   }
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <code className="timing rounded-md bg-surface-2 px-2 py-1 text-sm">{code}</code>
+      <code className="timing rounded-sm bg-surface-2 px-2 py-1 text-sm">{code}</code>
       <button type="button" onClick={copy} className={secondaryButton}>
         Copy invite link
       </button>
@@ -292,7 +292,7 @@ function LeagueView({ league }: { league: LeagueDetail }) {
         <h3 id="lg-members-h" className="mb-3 text-xl font-extrabold tracking-tight">
           Members
         </h3>
-        <ul className="divide-y divide-line rounded-lg border border-line bg-surface">
+        <ul className="divide-y divide-line rounded-sm border border-line bg-surface">
           {league.members.map((m) => (
             <li key={m.user_id} className="flex items-center justify-between gap-3 px-4 py-2.5">
               <span>

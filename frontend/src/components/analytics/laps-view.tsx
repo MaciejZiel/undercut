@@ -21,7 +21,7 @@ import { AnalyticsChart, ChartFrame, RequestState } from "./chart-frame";
 import { useAnalytics } from "./hooks";
 import { buildLapsOption } from "./options";
 
-const chip = "t-fast inline-flex items-center gap-2 rounded-md border px-2.5 py-1 text-sm font-semibold";
+const chip = "t-fast inline-flex items-center gap-2 rounded-sm border px-2.5 py-1 text-sm font-semibold";
 
 export function LapsView({ refs }: { refs: AnalyticsRef }) {
   // The driver list (and who finished on top) comes from the positions request, shared with the Positions view.
@@ -82,7 +82,7 @@ function LapsPanel({ refs, positions }: { refs: AnalyticsRef; positions: Positio
         Hide in/out and safety-car laps
       </label>
       {codes.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-line p-6 text-center text-muted">Pick at least one driver to draw the chart.</p>
+        <p className="rounded-sm border border-dashed border-line p-6 text-center text-muted">Pick at least one driver to draw the chart.</p>
       ) : (
         <LapsData refs={refs} codes={codes} hideSlow={hideSlow} />
       )}
@@ -135,7 +135,7 @@ function LapsOutput({ data }: { data: Laps }) {
 export function LapMatrixTable({ data }: { data: Laps }) {
   const rows = lapMatrix(data);
   return (
-    <div className="max-h-[32rem] overflow-auto rounded-lg">
+    <div className="max-h-[32rem] overflow-auto rounded-sm">
       <DataTable caption="Lap times by lap" minWidth="20rem">
         <thead>
           <tr>
