@@ -8,7 +8,7 @@ export function StandingsSwitch({ drivers, constructors, season, afterRound }: {
   const id = useId();
   return (
     <div>
-      <div className="flex items-end justify-between gap-4 border-b border-line">
+      <div className="mb-3 flex items-end justify-between gap-4">
         <div role="group" aria-label="Championship" className="flex gap-6">
           {(["drivers", "constructors"] as const).map((k) => (
             <button
@@ -17,17 +17,17 @@ export function StandingsSwitch({ drivers, constructors, season, afterRound }: {
               aria-pressed={kind === k}
               aria-controls={`${id}-panel`}
               onClick={() => setKind(k)}
-              className={`t-fast -mb-px min-h-11 border-b-[3px] px-0.5 text-sm font-bold ${
-                kind === k ? "border-accent text-accent" : "border-transparent text-muted hover:text-accent"
+              className={`t-fast min-h-9 border-b-2 text-[0.8125rem] font-bold ${
+                kind === k ? "border-accent text-fg" : "border-transparent text-muted hover:text-fg"
               }`}
             >
               {k === "drivers" ? "Drivers" : "Constructors"}
             </button>
           ))}
         </div>
-        {afterRound ? <span className="pb-3 text-xs text-muted">After round {afterRound}</span> : null}
+        {afterRound ? <span className="eyebrow pb-2">After round {afterRound}</span> : null}
       </div>
-      <div id={`${id}-panel`} className="pt-4">
+      <div id={`${id}-panel`} key={kind} className="fade-in">
         {kind === "drivers" ? drivers : constructors}
       </div>
       {season ? <span className="sr-only">Season {season}</span> : null}

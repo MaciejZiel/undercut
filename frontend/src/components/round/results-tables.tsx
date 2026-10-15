@@ -55,7 +55,7 @@ function leadLapGap(r: S["RaceResult"], winner: S["RaceResult"] | undefined): nu
 }
 
 /** The gap column: the winner's time, the gap with a bar drawn to scale, laps down, or why the car stopped. */
-function GapCell({ r, winner, maxGap }: { r: S["RaceResult"]; winner: S["RaceResult"] | undefined; maxGap: number }) {
+function GapCell({ r, winner, maxGap, index }: { r: S["RaceResult"]; winner: S["RaceResult"] | undefined; maxGap: number; index: number }) {
   const text = formatRaceGap(r, winner);
   const gap = leadLapGap(r, winner);
   if (r.position === 1 && text) return <span>{text}</span>;
@@ -65,8 +65,8 @@ function GapCell({ r, winner, maxGap }: { r: S["RaceResult"]; winner: S["RaceRes
         <span>{text}</span>
         <span
           aria-hidden="true"
-          className="mt-1 block h-[3px] rounded-[1px] bg-accent/40"
-          style={{ width: `${Math.max(2, Math.round((gap / maxGap) * 100))}%`, minWidth: "2px" }}
+          className="grow-x mt-1 block h-[3px] rounded-[1px] bg-accent/40"
+          style={{ width: `${Math.max(2, Math.round((gap / maxGap) * 100))}%`, minWidth: "2px", "--i": Math.min(index, 12) } as React.CSSProperties}
         />
       </span>
     );
@@ -101,13 +101,13 @@ export function RaceResultsTable({ results, caption }: { results: S["RaceResult"
         </tr>
       </thead>
       <tbody>
-        {results.map((r) => (
+        {results.map((r, index) => (
           <Tr key={r.driver.slug}>
             <Td align="right" className="c-pos timing font-bold">
               {orDash(formatPosition(r.position, r.position_text), "Not classified")}
             </Td>
             <RowTh color={r.team.color} className="c-name">
-              <DriverLink slug={r.driver.slug} name={r.driver.name} />
+              <DriverLink slug={r.driver.slug} name={r.driver.name} stretch />
               {r.fastest_lap === true && <FastestLapMark />}
             </RowTh>
             <Td className="c-sub">
@@ -115,7 +115,7 @@ export function RaceResultsTable({ results, caption }: { results: S["RaceResult"
               {r.grid != null && r.grid > 0 && <span className="sm:hidden"> · from P{r.grid}</span>}
             </Td>
             <Td align="right" className="c-gap timing whitespace-nowrap">
-              <GapCell r={r} winner={winner} maxGap={maxGap} />
+              <GapCell r={r} winner={winner} maxGap={maxGap} index={index} />
             </Td>
             <Td align="right" className="c-hide">
               {orDash(r.grid === 0 ? "Pit lane" : r.grid)}
@@ -172,7 +172,7 @@ export function QualifyingResultsTable({
                   {orDash(r.position)}
                 </Td>
                 <RowTh color={r.team.color}>
-                  <DriverLink slug={r.driver.slug} name={r.driver.name} />
+                  <DriverLink slug={r.driver.slug} name={r.driver.name} stretch />
                   {r.eliminated_in && (
                     <span title={`Eliminated in ${r.eliminated_in}`} className="ml-2 text-xs font-bold text-muted">
                       out in {r.eliminated_in}
@@ -234,7 +234,7 @@ export function PracticeResultsTable({ results, caption }: { results: S["Practic
               {orDash(r.position, "No time set")}
             </Td>
             <RowTh color={r.team.color}>
-              <DriverLink slug={r.driver.slug} name={r.driver.name} />
+              <DriverLink slug={r.driver.slug} name={r.driver.name} stretch />
             </RowTh>
             <Td>
               <ConstructorLink {...r.team} dot={false} />

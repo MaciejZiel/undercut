@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, Manrope } from "next/font/google";
+import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -9,9 +9,9 @@ import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import { Suspense } from "react";
 import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/seo";
 
-// DM Serif Display sets titles and big figures (.display, .heading, .numeral); Manrope does everything else.
-const dmSerif = DM_Serif_Display({ variable: "--font-dm-serif", subsets: ["latin", "latin-ext"], weight: "400", display: "swap" });
-const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "latin-ext"], display: "swap" });
+// Archivo does the text, the headlines (at weight 800 and 900) and the figures; Plex Mono is only for small captions.
+const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin", "latin-ext"], display: "swap" });
+const plexMono = IBM_Plex_Mono({ variable: "--font-plex-mono", subsets: ["latin", "latin-ext"], weight: ["400", "500"], display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // suppressHydrationWarning: the inline script sets data-theme before hydration.
-    <html lang="en" className={`${dmSerif.variable} ${manrope.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${archivo.variable} ${plexMono.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>

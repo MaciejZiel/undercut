@@ -1,9 +1,8 @@
 import Link from "next/link";
 import type { components } from "@/lib/api/client";
 import { circuitHref, roundHref } from "@/lib/routes";
-import { formatDate, formatInteger, formatLapTime, formatLength } from "@/lib/format";
-import { icsHref } from "@/components/calendar/time";
-import { DownloadIcon } from "@/components/ui/icons";
+import { formatInteger, formatLapTime, formatLength } from "@/lib/format";
+import { AddToCalendar } from "@/components/calendar/add-to-calendar";
 import { TrackOutline } from "@/components/catalog/track-outline";
 import { Countdown } from "./countdown";
 import { WeekendSchedule } from "./weekend-schedule";
@@ -11,7 +10,16 @@ import { WeekendSchedule } from "./weekend-schedule";
 type Session = components["schemas"]["CalendarSession"];
 type CircuitDetail = components["schemas"]["CircuitDetail"];
 
-/** The next race weekend: the name, the place with a photograph, and the schedule in the viewer's time zone. */
+const stagger = (i: number) => ({ "--i": i }) as React.CSSProperties;
+
+/** "25 OCT" from an ISO date, always UTC so the server and the browser agree. */
+function dayMonth(iso: string): string {
+  const d = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return "";
+  return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }).format(d).toUpperCase();
+}
+
+/** The next race weekend: the place set huge, the date, the clock and every session in the viewer's time zone. */
 export function NextRaceCard({
   year,
   round,
@@ -34,58 +42,92 @@ export function NextRaceCard({
   circuitDetail?: CircuitDetail | null;
 }) {
   const place = [circuit.locality, circuit.country].filter(Boolean).join(", ");
+  // The headline is the place people say ("Austin"), the race name sits under it.
+  const headline = circuit.locality ?? name.replace(/ Grand Prix.*$/, "");
   return (
-    <article aria-labelledby="next-race-h" className="grid grid-cols-1 gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1.88fr)_minmax(20rem,1fr)] lg:gap-x-12">
-      <div className="flex flex-col">
-        <p className="flex flex-wrap items-baseline gap-x-4 text-sm font-bold text-accent">
-          Next race
-          <span className="font-medium text-muted">
-            Round {round} · {year}
+    <article aria-labelledby="next-race-h" className="grid grid-cols-1 border-b border-fg lg:grid-cols-[minmax(0,1fr)_23.5rem]">
+      <div className="relative flex flex-col overflow-hidden py-7 lg:pr-9">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="bg-accent px-2 py-1 text-[0.625rem] font-bold tracking-[0.1em] text-accent-fg">UP NEXT</span>
+          <span className="eyebrow">
+            Round {round} / {year}
           </span>
-        </p>
-        <h2 id="next-race-h" className="display mt-3 text-[2.75rem] sm:text-6xl">
-          <Link href={roundHref(year, round)} className="underline-offset-8 hover:underline">
-            {name}
+        </div>
+        <span
+          aria-hidden="true"
+          className="numeral pointer-events-none absolute right-0 top-14 hidden select-none text-[clamp(6rem,15vw,9.5rem)] tracking-[-0.07em] text-ghost sm:block lg:right-9"
+        >
+          {round}
+        </span>
+        {circuitDetail?.outline && (
+          <TrackOutline
+            outline={circuitDetail.outline}
+            name={circuit.name}
+            lapMs={circuitDetail.lap_record_ms}
+            className="absolute bottom-24 right-4 hidden max-h-[17rem] w-[22rem] sm:block lg:right-10"
+          />
+        )}
+        <h2 id="next-race-h" className="display relative mt-5 text-[clamp(3.5rem,11vw,6.75rem)]">
+          <Link href={roundHref(year, round)} className="hover:text-accent">
+            {headline}
           </Link>
+          .
         </h2>
-        <p className="mt-4 flex flex-wrap justify-between gap-x-6 gap-y-1 text-sm text-muted">
-          <span>
-            <Link href={circuitHref(circuit.slug)} className="font-semibold text-fg underline-offset-4 hover:text-accent hover:underline">
+        <p className="mt-2 text-lg font-semibold">{name}</p>
+        <div className="mt-7 flex flex-wrap items-end gap-x-8 gap-y-4">
+          {date && (
+            <div>
+              <p className="eyebrow mb-1">Race day</p>
+              <p className="numeral text-[1.75rem]">{dayMonth(date)}</p>
+            </div>
+          )}
+          <p className="text-[0.8125rem] leading-relaxed">
+            <Link href={circuitHref(circuit.slug)} className="font-semibold underline-offset-4 hover:text-accent hover:underline">
               {circuit.name}
             </Link>
-            {place ? `, ${place}` : ""}
-          </span>
-          {date && <span className="whitespace-nowrap">Race day {formatDate(date)}</span>}
-        </p>
-        {circuitDetail?.outline && (
-          <TrackOutline outline={circuitDetail.outline} name={circuit.name} className="mt-6 max-h-[22rem] w-full" />
-        )}
-        <CircuitFacts detail={circuitDetail} />
-      </div>
-      <aside aria-labelledby="weekend-h" className="flex flex-col rounded-xl bg-surface p-6 sm:p-7">
-        <h3 id="weekend-h" className="heading text-xl sm:text-[1.375rem]">
-          Race weekend
-        </h3>
-        <div className="mt-4 min-h-[3.25rem] border-b border-line pb-4">
-          {raceStartUtc ? (
-            <>
-              <p className="mb-1 text-xs font-semibold text-muted">Lights out in</p>
-              <Countdown target={raceStartUtc} />
-            </>
-          ) : (
-            <p className="text-sm text-muted">Start time to be confirmed</p>
-          )}
+            <br />
+            <span className="text-muted">{place}</span>
+          </p>
+          <Link
+            href={roundHref(year, round)}
+            className="t-fast ml-auto border-b-2 border-accent pb-1.5 text-[0.8125rem] font-bold hover:text-accent"
+          >
+            Explore the weekend ↗
+          </Link>
         </div>
-        <WeekendSchedule sessions={sessions} />
-        <a
-          href={icsHref(year, round)}
-          className="t-fast mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-bold text-accent-fg hover:bg-accent-hover"
+        <div className="mt-auto pt-8">
+          <CircuitFacts detail={circuitDetail} />
+        </div>
+      </div>
+      <aside
+        aria-labelledby="weekend-h"
+        className="rise border-t border-fg py-7 lg:border-l lg:border-t-0 lg:pl-7"
+        style={stagger(2)}
+      >
+        <h3 id="weekend-h" className="eyebrow">
+          Lights out in
+        </h3>
+        <div className="mt-3 min-h-[4.5rem]">
+          {raceStartUtc ? <Countdown target={raceStartUtc} clock /> : <p className="text-sm text-muted">Start time to be confirmed</p>}
+        </div>
+        <div className="mt-5">
+          <WeekendSchedule sessions={sessions} />
+        </div>
+        <div className="mt-2">
+          <div className="border-b border-line py-2.5">
+            <AddToCalendar year={year} round={round} label="Add the weekend to my calendar" />
+          </div>
+          <Link href="/calendar" className="t-fast flex items-baseline justify-between gap-3 border-b border-line py-2.5 text-[0.8125rem] hover:text-accent">
+            <b>Full schedule</b>
+            <span>View calendar ↗</span>
+          </Link>
+        </div>
+        <Link
+          href="/predict"
+          className="t-fast mt-5 flex items-center justify-between bg-fg px-4 py-3.5 text-[0.8125rem] font-bold text-bg hover:-translate-y-px hover:bg-accent hover:text-accent-fg"
         >
-          <DownloadIcon aria-hidden="true" />
-          Add the weekend to my calendar
-        </a>
-        <Link href="/calendar" className="mt-4 text-center text-sm font-bold text-accent underline underline-offset-4 hover:no-underline">
-          Full calendar
+          Make your podium picks
+          <span aria-hidden="true">↗</span>
         </Link>
       </aside>
     </article>
@@ -103,14 +145,14 @@ function CircuitFacts({ detail }: { detail: CircuitDetail | null }) {
   ].filter((i): i is { label: string; value: string; note?: string } => Boolean(i));
   if (items.length === 0) return null;
   return (
-    <dl aria-label={`${detail.name} facts`} className="mt-5 flex flex-wrap gap-x-10 gap-y-4 border-t border-line pt-4">
+    <dl aria-label={`${detail.name} facts`} className="mt-7 flex flex-wrap gap-x-10 gap-y-3 border-t border-line pt-4">
       {items.map((i) => (
         <div key={i.label} className="flex flex-col-reverse justify-end">
-          <dt className="mt-0.5 text-[0.8125rem] font-semibold text-muted">
+          <dt className="eyebrow mt-1">
             {i.label}
-            {i.note ? ` · ${i.note}` : ""}
+            {i.note ? ` / ${i.note}` : ""}
           </dt>
-          <dd className="numeral text-2xl">{i.value}</dd>
+          <dd className="numeral text-[1.375rem]">{i.value}</dd>
         </div>
       ))}
     </dl>

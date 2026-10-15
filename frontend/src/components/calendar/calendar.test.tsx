@@ -66,15 +66,20 @@ describe("CalendarView", () => {
     expect(within(articles[1]).getByRole("timer")).toBeInTheDocument();
     expect(within(articles[2]).getByText("Upcoming")).toBeInTheDocument();
     expect(within(articles[3]).getByText("Cancelled")).toBeInTheDocument();
-    expect(within(articles[3]).queryByRole("link", { name: /Add to calendar/ })).not.toBeInTheDocument();
+    expect(within(articles[3]).queryByText(/Add to calendar/)).not.toBeInTheDocument();
+    expect(within(articles[2]).getByText(/Add to calendar/)).toBeInTheDocument();
   });
 
-  it("links 'Add to calendar' to the ics endpoint as a plain link", () => {
+  it("offers Google Calendar, a webcal subscription and the file for 'Add to calendar'", () => {
     mockFetch({ "GET /api/v1/auth/me/": { body: ME_ANON } });
     renderWithProviders(<CalendarView year={2099} rounds={[entry({ round: 7 })]} />);
-    const link = screen.getByRole("link", { name: /Add to calendar/ });
-    expect(link).toHaveAttribute("href", "/api/v1/calendar/ics/?year=2099&round=7");
-    expect(link).not.toHaveAttribute("download");
+    const file = screen.getByRole("link", { name: "Download the file (.ics)" });
+    expect(file).toHaveAttribute("href", "/api/v1/calendar/ics/?year=2099&round=7");
+    expect(file).not.toHaveAttribute("download");
+    const google = screen.getByRole("link", { name: /Google Calendar/ });
+    expect(google.getAttribute("href")).toMatch(/^https:\/\/calendar\.google\.com\/calendar\/r\?cid=webcal/);
+    expect(decodeURIComponent(google.getAttribute("href") ?? "")).toContain("/api/v1/calendar/ics/?year=2099&round=7");
+    expect(screen.getByRole("link", { name: /Apple Calendar/ }).getAttribute("href")).toMatch(/^webcal:\/\//);
   });
 
   it("uses the account time zone and toggles to circuit local time", async () => {
@@ -118,6 +123,6 @@ describe("CalendarView", () => {
     expect(screen.getByRole("heading", { name: "March" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "April" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ann Fast" })).toHaveAttribute("href", "/drivers/ann");
-    expect(screen.queryByRole("link", { name: /Add to calendar/ })).toHaveAttribute("href", "/api/v1/calendar/ics/?year=2099&round=2");
+    expect(screen.getAllByRole("link", { name: "Download the file (.ics)" })).toHaveLength(1);
   });
 });

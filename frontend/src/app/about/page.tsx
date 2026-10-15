@@ -90,8 +90,7 @@ export default function AboutPage() {
           </h2>
           <ul className="flex list-disc flex-col gap-3 pl-5">
             <li>
-              Type: DM Serif Display (Colophon Foundry, for Google Fonts) and Manrope (Mikhail Sharanda and
-              contributors), both under the{" "}
+              Type: Archivo (Omnibus-Type) and IBM Plex Mono (IBM), both under the{" "}
               <a className={link} href="/licenses/OFL-1.1.txt">
                 SIL Open Font License 1.1
               </a>

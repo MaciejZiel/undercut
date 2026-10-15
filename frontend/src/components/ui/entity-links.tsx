@@ -5,26 +5,28 @@ import { flagFor } from "@/lib/nationality";
 import { Dash } from "./value";
 
 const linkClass = "t-fast font-semibold hover:text-accent hover:underline underline-offset-2";
+/** `stretch` makes the link cover its whole row (see .rowlink in globals.css); other links in the row stay clickable. */
+const cls = (stretch?: boolean) => (stretch ? `${linkClass} rowlink` : linkClass);
 
-export function DriverLink({ slug, name }: { slug: string; name: string }) {
+export function DriverLink({ slug, name, stretch }: { slug: string; name: string; stretch?: boolean }) {
   return (
-    <Link href={driverHref(slug)} className={linkClass}>
+    <Link href={driverHref(slug)} className={cls(stretch)}>
       {name}
     </Link>
   );
 }
 
-export function CircuitLink({ slug, name }: { slug: string; name: string }) {
+export function CircuitLink({ slug, name, stretch }: { slug: string; name: string; stretch?: boolean }) {
   return (
-    <Link href={circuitHref(slug)} className={linkClass}>
+    <Link href={circuitHref(slug)} className={cls(stretch)}>
       {name}
     </Link>
   );
 }
 
-export function RoundLink({ year, round, name }: { year: number; round: number; name: string }) {
+export function RoundLink({ year, round, name, stretch }: { year: number; round: number; name: string; stretch?: boolean }) {
   return (
-    <Link href={roundHref(year, round)} className={linkClass}>
+    <Link href={roundHref(year, round)} className={cls(stretch)}>
       {name}
     </Link>
   );
@@ -49,17 +51,19 @@ export function ConstructorLink({
   name,
   color,
   dot = true,
+  stretch,
 }: {
   slug: string;
   name: string;
   color?: string | null;
+  stretch?: boolean;
   /** Off where the row already shows the team colour. */
   dot?: boolean;
 }) {
   return (
     <span className="inline-flex items-center gap-2">
       {dot && <TeamBar color={color} />}
-      <Link href={constructorHref(slug)} className={linkClass}>
+      <Link href={constructorHref(slug)} className={cls(stretch)}>
         {name}
       </Link>
     </span>

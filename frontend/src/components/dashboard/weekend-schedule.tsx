@@ -32,7 +32,7 @@ function clock(date: Date, zone: string): { time: string; zone: string } {
   return { time: `${pick("hour")}:${pick("minute")}`, zone: pick("timeZoneName") };
 }
 
-/** The sessions of one weekend in the viewer's time zone; the race is set in blue and bold. */
+/** The sessions of one weekend in the viewer's time zone, one line each; the race is set in red and bold. */
 export function WeekendSchedule({ sessions }: { sessions: Session[] }) {
   const zone = useViewerZone();
   const now = useNow(30_000);
@@ -56,30 +56,24 @@ export function WeekendSchedule({ sessions }: { sessions: Session[] }) {
             const label = relativeLabel(s.startMs, s.endMs, now);
             const time = clock(date, zone);
             return (
-              <tr key={s.type} className="border-b border-line last:border-b-0">
-                <th scope="row" className="w-14 py-3 pr-3 text-left align-middle font-normal text-muted">
-                  <span className="block text-xs leading-tight">{part(date, zone, { weekday: "short" })}</span>
-                  <span className="block text-lg font-semibold leading-tight text-fg">{part(date, zone, { day: "numeric" })}</span>
+              <tr key={s.type} className="border-b border-line">
+                <th scope="row" className="eyebrow w-[4.25rem] py-2.5 pr-2 text-left align-baseline font-medium">
+                  {part(date, zone, { weekday: "short" })} {part(date, zone, { day: "numeric" })}
                 </th>
-                <td className={`py-3 pr-3 align-middle text-sm font-semibold ${race ? "text-accent" : ""}`}>
+                <td className={`py-2.5 pr-2 align-baseline text-[0.8125rem] font-bold ${race ? "text-accent" : ""}`}>
                   {sessionLabel(s.type)}
-                  {label === "on now" && (
-                    <span className="ml-2 rounded-sm bg-flag px-1.5 py-0.5 align-middle text-xs font-bold text-on-flag">On now</span>
-                  )}
+                  {label === "on now" && <span className="ml-2 bg-flag px-1.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-wider text-on-flag">On now</span>}
                 </td>
-                <td className="py-3 text-right align-middle">
-                  <span className={`block text-base font-extrabold leading-tight tabular-nums ${race ? "text-accent" : ""}`}>{time.time}</span>
-                  <span className="block text-xs leading-tight text-muted">
-                    {time.zone}
-                    {label && label !== "on now" ? ` · ${label}` : ""}
-                  </span>
+                <td className={`py-2.5 text-right align-baseline text-[0.9375rem] font-extrabold tabular-nums ${race ? "text-accent" : ""}`}>
+                  {time.time}
+                  <span className="ml-1.5 text-[0.6875rem] font-normal text-muted">{time.zone}</span>
                 </td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <p className="mt-3 text-xs text-muted">Times in your time zone ({zone.replace("_", " ")}).</p>
+      <p className="eyebrow mt-3 normal-case tracking-normal">Times in your time zone ({zone.replace("_", " ")}).</p>
     </section>
   );
 }

@@ -101,7 +101,7 @@ describe("TopFive", () => {
 describe("ThisDayCard", () => {
   it("names the winner and links the round", () => {
     render(<ThisDayCard item={{ year: 1988, round: 5, race: "Mexican Grand Prix", date: "1988-05-15", driver: driver("a"), team: { slug: "t", name: "McLaren", color: null } }} />);
-    expect(screen.getByText("This day in F1")).toBeInTheDocument();
+    expect(screen.getByText(/On this day/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "1988 Mexican Grand Prix" })).toHaveAttribute("href", "/seasons/1988/5");
   });
 });
@@ -123,7 +123,7 @@ const base: Dashboard = {
 describe("dashboard sections", () => {
   it("shows empty states when there is no data", async () => {
     getDashboard.mockResolvedValue(base);
-    const { NextRaceSection, LastRaceSection, ChampionshipSection, PredictionInvite, ThisDaySection } = await import("./sections");
+    const { NextRaceSection, LastRaceSection, ChampionshipSection, BottomSection } = await import("./sections");
     render(await NextRaceSection());
     expect(screen.getByText("No upcoming race")).toBeInTheDocument();
     cleanup();
@@ -133,8 +133,7 @@ describe("dashboard sections", () => {
     render(await ChampionshipSection());
     expect(screen.getByText("No standings yet")).toBeInTheDocument();
     cleanup();
-    expect(await PredictionInvite()).toBeNull();
-    expect(await ThisDaySection()).toBeNull();
+    expect(await BottomSection()).toBeNull();
   });
   it("shows the next race and the podium", async () => {
     getDashboard.mockResolvedValue({
@@ -163,7 +162,7 @@ describe("dashboard sections", () => {
     expect(screen.getByRole("link", { name: "N a" })).toBeInTheDocument();
     cleanup();
     renderWithProviders((await NextRaceSection()) as ReactElement);
-    expect(screen.getByRole("link", { name: "Add the weekend to my calendar" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Download the file (.ics)" })).toHaveAttribute(
       "href",
       "/api/v1/calendar/ics/?year=2025&round=4",
     );

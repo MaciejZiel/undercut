@@ -9,7 +9,8 @@ import { Countdown } from "@/components/dashboard/countdown";
 import { TeamBar } from "@/components/ui/entity-links";
 import { driverHref } from "@/lib/routes";
 import { Dash } from "@/components/ui/value";
-import { formatSessionTime, icsHref, safeZone, sessionLabel, statusLabel } from "./time";
+import { AddToCalendar } from "./add-to-calendar";
+import { formatSessionTime, safeZone, sessionLabel, statusLabel } from "./time";
 import { useViewerZone } from "./use-viewer-zone";
 
 type Entry = components["schemas"]["CalendarEntry"];
@@ -49,7 +50,7 @@ export function CalendarView({ year, rounds }: { year: number; rounds: Entry[] }
       <div>
         {groupByMonth(rounds).map((g) => (
           <section key={g.key} aria-labelledby={`month-${g.key}`} className="mt-8 first:mt-0">
-            <h3 id={`month-${g.key}`} className="mb-1 text-[0.8125rem] font-bold text-muted">
+            <h3 id={`month-${g.key}`} className="eyebrow mb-2">
               {g.label}
             </h3>
             <ol className="border-t border-line">
@@ -105,7 +106,7 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
         <div className="min-w-0">
           <h2 id={headId} className={`heading ${completed || cancelled ? "text-lg" : "text-xl sm:text-[1.375rem]"}`}>
             {entry.round != null && !cancelled ? (
-              <Link href={roundHref(year, entry.round)} className="hover:text-accent hover:underline">
+              <Link href={roundHref(year, entry.round)} className="rowlink hover:text-accent hover:underline">
                 {entry.name}
               </Link>
             ) : (
@@ -170,13 +171,9 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
           </p>
         )}
         {!cancelled && !completed && entry.round != null && (
-          <a
-            href={icsHref(year, entry.round)}
-            className="t-fast col-start-2 inline-flex min-h-10 items-center self-start justify-self-start text-sm font-bold text-accent underline underline-offset-4 hover:no-underline sm:col-start-3 sm:row-start-1"
-          >
-            Add to calendar
-            <span className="sr-only">: {entry.name}</span>
-          </a>
+          <div className="col-start-2 self-start justify-self-start text-accent sm:col-start-3 sm:row-start-1 sm:justify-self-end">
+            <AddToCalendar year={year} round={entry.round} label="Add to calendar" srName={entry.name} align="right" className="justify-start gap-1.5" />
+          </div>
         )}
       </article>
     </li>

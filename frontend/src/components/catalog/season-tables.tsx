@@ -24,7 +24,7 @@ export function SeasonsTable({ seasons }: { seasons: S["SeasonList"][] }) {
         {seasons.map((s) => (
           <Tr key={s.year}>
             <RowTh className="timing">
-              <Link href={seasonHref(s.year)} className="font-bold hover:text-accent hover:underline">
+              <Link href={seasonHref(s.year)} className="rowlink font-bold hover:text-accent hover:underline">
                 {s.year}
               </Link>
               {s.name && s.name !== String(s.year) && <span className="ml-2 text-muted">{s.name}</span>}
@@ -90,7 +90,7 @@ export function CalendarTable({
             <RowTh>
               <span className="flex flex-wrap items-center gap-2">
                 {r.round != null && !r.is_cancelled ? (
-                  <RoundLink year={year} round={r.round} name={r.name} />
+                  <RoundLink year={year} round={r.round} name={r.name} stretch />
                 ) : (
                   <span className={r.is_cancelled ? "line-through" : "font-semibold"}>{r.name}</span>
                 )}

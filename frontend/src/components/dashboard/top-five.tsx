@@ -13,6 +13,7 @@ const COPY = {
 } as const;
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+const stagger = (i: number) => ({ "--i": i }) as React.CSSProperties;
 
 /** A championship top five: position, a team-colour bar beside the name, points and the gap to the leader. */
 export function TopFive({ kind, standings }: { kind: StandingsKind; standings: TopStandings }) {
@@ -21,42 +22,45 @@ export function TopFive({ kind, standings }: { kind: StandingsKind; standings: T
   const leader = Math.max(...rows.map((r) => r.points), 1);
   return (
     <div>
-      <p className="flex items-baseline justify-between gap-4 border-b border-line pb-2 text-xs font-semibold text-muted">
+      <p className="eyebrow grid grid-cols-[2.25rem_1fr_auto] border-b border-fg pb-2">
+        <span>Pos</span>
         <span>{copy.noun}</span>
-        <span>Points</span>
+        <span>Pts</span>
       </p>
-      <ol
-        aria-label={`${copy.title} championship top five${standings.season ? `, ${standings.season}` : ""}`}
-      >
-        {rows.map((row) => {
+      <ol aria-label={`${copy.title} championship top five${standings.season ? `, ${standings.season}` : ""}`}>
+        {rows.map((row, index) => {
           const behind = leader - row.points;
           const color = row.color && HEX.test(row.color) ? row.color : null;
           return (
-            <li key={row.slug} className="grid grid-cols-[1.75rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-line py-3">
-              <span className="text-sm font-semibold text-muted">
+            <li
+              key={row.slug}
+              style={stagger(index + 3)}
+              className="rise grid min-h-[2.75rem] grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center border-b border-line py-2"
+            >
+              <span className="eyebrow">
                 <span className="sr-only">Position </span>
-                {row.position ?? <Dash />}
+                {row.position != null ? String(row.position).padStart(2, "0") : <Dash />}
               </span>
-              <span className="min-w-0 border-l-[3px] pl-3 leading-tight" style={{ borderColor: color ?? "var(--line-strong)" }}>
-                <span className="block truncate font-bold">
+              <span className="min-w-0 border-l-[3px] pl-2.5 leading-tight" style={{ borderColor: color ?? "var(--line-strong)" }}>
+                <span className="block truncate text-[0.8125rem] font-bold">
                   {kind === "drivers" ? (
-                    <DriverLink slug={row.slug} name={row.name} />
+                    <DriverLink slug={row.slug} name={row.name} stretch />
                   ) : (
-                    <ConstructorLink slug={row.slug} name={row.name} dot={false} />
+                    <ConstructorLink slug={row.slug} name={row.name} dot={false} stretch />
                   )}
                 </span>
-                {kind === "drivers" && row.team_name && <span className="block truncate text-sm text-muted">{row.team_name}</span>}
+                {kind === "drivers" && row.team_name && <span className="mt-0.5 block truncate text-[0.6875rem] text-muted">{row.team_name}</span>}
               </span>
               <span className="text-right leading-tight">
-                <span className="block text-lg font-extrabold tabular-nums">{formatPoints(row.points) ?? <Dash />}</span>
-                {behind > 0 && <span className="block text-xs tabular-nums text-muted">−{formatPoints(behind)}</span>}
+                <span className="block text-[1.1875rem] font-extrabold tabular-nums tracking-[-0.03em]">{formatPoints(row.points) ?? <Dash />}</span>
+                {behind > 0 && <span className="block text-[0.6875rem] tabular-nums text-muted">−{formatPoints(behind)}</span>}
               </span>
             </li>
           );
         })}
       </ol>
-      <Link href={copy.href} className="mt-5 inline-block text-sm font-bold text-accent underline underline-offset-4 hover:no-underline">
-        Full table
+      <Link href={copy.href} className="eyebrow mt-4 inline-block whitespace-nowrap hover:text-accent">
+        Full table ↗
       </Link>
     </div>
   );

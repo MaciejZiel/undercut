@@ -33,7 +33,7 @@ export function ConstructorsTable({
         {constructors.map((c) => (
           <Tr key={c.slug}>
             <RowTh>
-              <ConstructorLink slug={c.slug} name={c.name} />
+              <ConstructorLink slug={c.slug} name={c.name} stretch />
             </RowTh>
             <Td>
               <Nationality value={c.nationality} />
@@ -64,7 +64,7 @@ export function ConstructorSeasonsTable({ seasons }: { seasons: S["ConstructorSe
         {seasons.map((s) => (
           <Tr key={s.year}>
             <RowTh className="timing font-semibold">
-              <Link href={seasonHref(s.year)} className="hover:text-accent hover:underline">
+              <Link href={seasonHref(s.year)} className="rowlink hover:text-accent hover:underline">
                 {s.year}
               </Link>
             </RowTh>

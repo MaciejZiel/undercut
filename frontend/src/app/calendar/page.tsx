@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { LoadingSkeleton } from "@/components/states/loading-skeleton";
 import { CalendarView } from "@/components/calendar/calendar-view";
 import { getCalendar } from "@/components/calendar/data";
-import { icsHref } from "@/components/calendar/time";
+import { AddToCalendar } from "@/components/calendar/add-to-calendar";
 import { parseIntParam } from "@/lib/url";
 
 export const metadata: Metadata = {
@@ -49,9 +49,7 @@ async function CalendarContent({ searchParams }: { searchParams: PageProps<"/cal
     <>
       <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="heading text-xl sm:text-[1.375rem]">{calendar.year} season</h2>
-        <a href={icsHref(calendar.year)} className="text-sm font-semibold text-muted hover:text-accent hover:underline">
-          Add the whole season to your calendar
-        </a>
+        <AddToCalendar year={calendar.year} label="Add the whole season to my calendar" align="right" className="justify-end gap-1.5" />
       </div>
       <CalendarView year={calendar.year} rounds={calendar.rounds} />
     </>

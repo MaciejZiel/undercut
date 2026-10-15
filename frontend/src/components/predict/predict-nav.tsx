@@ -13,7 +13,7 @@ const TABS = [
 export function PredictNav() {
   const pathname = usePathname();
   return (
-    <nav aria-label="Predictions" className="mb-6 overflow-x-auto">
+    <nav aria-label="Predictions" className="mb-6 overflow-x-auto overflow-y-hidden">
       <ul className="flex gap-1 border-b border-line">
         {TABS.map((t) => {
           const active = t.href === "/predict" ? pathname === "/predict" || /^\/predict\/\d/.test(pathname) : pathname === t.href || pathname.startsWith(`${t.href}/`);

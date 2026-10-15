@@ -31,7 +31,7 @@ export function DataTable({
   );
 }
 
-const headClass = "whitespace-nowrap border-b border-line bg-surface px-3 py-3 text-xs font-bold text-muted first:rounded-tl-md last:rounded-tr-md";
+const headClass = "eyebrow whitespace-nowrap border-b border-fg px-3 py-3";
 
 export function Th({
   children,

@@ -2424,6 +2424,19 @@ components:
             maxItems: 2
             minItems: 2
           description: Closed racing line, [x, y] pairs; y grows downwards (SVG).
+        marker:
+          type: boolean
+          default: true
+          description: False when the start line is not known, so none should be drawn.
+        origin:
+          allOf:
+          - $ref: '#/components/schemas/OriginEnum'
+          default: openf1
+          description: |-
+            openf1: one lap of a race winner; geojson: current layout (f1-circuits, MIT).
+
+            * `openf1` - openf1
+            * `geojson` - geojson
       required:
       - height
       - points
@@ -3674,6 +3687,14 @@ components:
     NullEnum:
       enum:
       - null
+    OriginEnum:
+      enum:
+      - openf1
+      - geojson
+      type: string
+      description: |-
+        * `openf1` - openf1
+        * `geojson` - geojson
     PaginatedCircuitListList:
       type: object
       required:

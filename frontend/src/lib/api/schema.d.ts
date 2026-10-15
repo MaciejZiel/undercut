@@ -1181,6 +1181,19 @@ export interface components {
             height: number;
             /** @description Closed racing line, [x, y] pairs; y grows downwards (SVG). */
             points: number[][];
+            /**
+             * @description False when the start line is not known, so none should be drawn.
+             * @default true
+             */
+            marker: boolean;
+            /**
+             * @description openf1: one lap of a race winner; geojson: current layout (f1-circuits, MIT).
+             *
+             *     * `openf1` - openf1
+             *     * `geojson` - geojson
+             * @default openf1
+             */
+            origin: components["schemas"]["OriginEnum"];
         };
         CircuitRef: {
             slug: string;
@@ -1656,6 +1669,12 @@ export interface components {
         };
         /** @enum {unknown} */
         NullEnum: null;
+        /**
+         * @description * `openf1` - openf1
+         *     * `geojson` - geojson
+         * @enum {string}
+         */
+        OriginEnum: "openf1" | "geojson";
         PaginatedCircuitListList: {
             /** @example 123 */
             count: number;

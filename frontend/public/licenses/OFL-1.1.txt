@@ -1,7 +1,7 @@
 Fonts used by Undercut, both under the SIL Open Font License, Version 1.1:
 
-Copyright 2014 The DM Serif Project Authors (https://github.com/googlefonts/dm-fonts), DM Serif Display
-Copyright 2018 The Manrope Project Authors (https://github.com/googlefonts/manrope), Manrope
+Copyright 2019 The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo), Archivo
+Copyright 2017 IBM Corp. with Reserved Font Name "Plex" (https://github.com/IBM/plex), IBM Plex Mono
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

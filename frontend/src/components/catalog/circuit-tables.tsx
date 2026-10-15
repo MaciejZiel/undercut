@@ -33,7 +33,7 @@ export function CircuitsTable({
         {circuits.map((c) => (
           <Tr key={c.slug}>
             <RowTh>
-              <CircuitLink slug={c.slug} name={c.name} />
+              <CircuitLink slug={c.slug} name={c.name} stretch />
             </RowTh>
             <Td>{orDash(c.locality)}</Td>
             <Td>
@@ -71,7 +71,7 @@ export function CircuitWinnersTable({ winners }: { winners: S["CircuitWinner"][]
             </RowTh>
             <Td>
               {w.round != null ? (
-                <RoundLink year={w.year} round={w.round} name={w.round_name} />
+                <RoundLink year={w.year} round={w.round} name={w.round_name} stretch />
               ) : (
                 w.round_name
               )}

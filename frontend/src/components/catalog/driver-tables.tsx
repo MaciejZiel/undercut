@@ -40,7 +40,7 @@ export function DriversTable({
               {orDash(d.number)}
             </Td>
             <RowTh>
-              <DriverLink slug={d.slug} name={fullName(d)} />
+              <DriverLink slug={d.slug} name={fullName(d)} stretch />
             </RowTh>
             <Td>
               <Nationality value={d.nationality} />
@@ -72,7 +72,7 @@ export function DriverSeasonsTable({ seasons }: { seasons: S["DriverSeason"][] }
         {seasons.map((s) => (
           <Tr key={s.year}>
             <RowTh className="timing font-semibold">
-              <Link href={seasonHref(s.year)} className="hover:text-accent hover:underline">
+              <Link href={seasonHref(s.year)} className="rowlink hover:text-accent hover:underline">
                 {s.year}
               </Link>
             </RowTh>
@@ -116,7 +116,7 @@ export function DriverLastResultsTable({ results }: { results: S["DriverResult"]
           <Tr key={`${r.year}-${r.round}-${r.round_name}`}>
             <RowTh>
               {r.round != null ? (
-                <RoundLink year={r.year} round={r.round} name={`${r.year} ${r.round_name}`} />
+                <RoundLink year={r.year} round={r.round} name={`${r.year} ${r.round_name}`} stretch />
               ) : (
                 <span>
                   {r.year} {r.round_name}

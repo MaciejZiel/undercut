@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FilterAutoSubmit } from "./filter-auto-submit";
 
 export type FilterField =
   | {
@@ -48,6 +49,7 @@ export function FilterForm({
       aria-label="Filters"
       className="mb-5 grid grid-cols-1 items-end gap-3 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))]"
     >
+      <FilterAutoSubmit />
       {Object.entries(hidden).map(([k, v]) => (v ? <input key={k} type="hidden" name={k} value={v} /> : null))}
       {fields.map((f) => {
         const id = `filter-${f.name}`;

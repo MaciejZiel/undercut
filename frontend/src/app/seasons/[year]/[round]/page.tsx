@@ -130,7 +130,7 @@ async function RoundDetail({ params, searchParams }: Props) {
       )}
 
       {tabs.length > 0 && (
-        <nav aria-label="Sessions" className="mb-6 flex gap-1 overflow-x-auto border-b border-line">
+        <nav aria-label="Sessions" className="mb-6 flex gap-1 overflow-x-auto overflow-y-hidden border-b border-line">
           {tabs.map((t) => {
             const current = t.key === active?.key;
             return (
@@ -149,7 +149,7 @@ async function RoundDetail({ params, searchParams }: Props) {
         </nav>
       )}
       {views.length > 1 && (
-        <nav aria-label="Views" className="mb-6 flex gap-5 overflow-x-auto">
+        <nav aria-label="Views" className="mb-6 flex gap-5 overflow-x-auto overflow-y-hidden">
           {views.map((v) => (
             <Link
               key={v.key}

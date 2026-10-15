@@ -3,12 +3,11 @@ import type { ReactNode } from "react";
 import { connection } from "next/server";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
-import { getCircuit } from "@/lib/api/queries";
+import { getCircuit, getRoundResults, type RaceResults } from "@/lib/api/queries";
 import { getDashboard } from "./data";
 import { NextRaceCard } from "./next-race-card";
 import { PodiumCards } from "./podium-cards";
 import { ThisDayCard } from "./this-day-card";
-import { ArchiveLinks } from "./archive-links";
 import { StandingsSwitch } from "./standings-switch";
 import { TopFive } from "./top-five";
 
@@ -61,6 +60,13 @@ export async function LastRaceSection() {
     if (!last || last.podium.length === 0) {
       return <EmptyState title="No race results yet" description="The podium of the latest race will show up here." />;
     }
+    // Time, laps and points of the podium come from the results; the podium is still shown without them.
+    const results =
+      last.round != null
+        ? await getRoundResults(last.year, last.round, "RACE")
+            .then((r) => (r as RaceResults).results)
+            .catch(() => null)
+        : null;
     return (
       <PodiumCards
         year={last.year}
@@ -69,6 +75,7 @@ export async function LastRaceSection() {
         date={last.date}
         podium={last.podium}
         fastestLap={last.fastest_lap}
+        results={results}
       />
     );
   });
@@ -86,10 +93,17 @@ export async function ChampionshipSection() {
     }
     return (
       <section aria-labelledby="championship-h">
-        <p className="text-sm font-bold text-accent">{drivers.season ? `${drivers.season} season` : "Season"}</p>
-        <h2 id="championship-h" className="heading mb-5 mt-2 text-xl sm:text-[1.375rem]">
-          The championship
-        </h2>
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <p className="eyebrow mb-1.5">The championship{drivers.season ? ` / ${drivers.season}` : ""}</p>
+            <h2 id="championship-h" className="heading text-[1.5rem] sm:text-[1.625rem]">
+              Points on the board.
+            </h2>
+          </div>
+          <Link href="/standings/drivers" className="eyebrow whitespace-nowrap hover:text-accent">
+            Full standings ↗
+          </Link>
+        </div>
         <StandingsSwitch
           season={drivers.season}
           afterRound={drivers.after_round}
@@ -113,48 +127,67 @@ export async function ChampionshipSection() {
   });
 }
 
-/** An invitation to the prediction game for the coming race; the only warm colour on the page. */
-export async function PredictionInvite() {
+/** The bottom rule of the page: what happened on this day, and the invitation to call the next podium. */
+export async function BottomSection() {
   await connection();
-  return guarded("Could not load the prediction invitation", async () => {
-    const { next_race: next } = await getDashboard();
-    if (!next || next.round == null) return null;
+  return guarded("Could not load this day in F1", async () => {
+    const { this_day_in_f1: item, next_race: next } = await getDashboard();
+    const predict = next && next.round != null ? next : null;
+    if (!item && !predict) return null;
+    const both = Boolean(item && predict);
     return (
-      <section aria-labelledby="predict-h" className="flex flex-col gap-5 rounded-xl bg-flag p-6 text-on-flag sm:flex-row sm:items-center sm:justify-between sm:px-9 sm:py-7">
-        <div>
-          <h2 id="predict-h" className="heading text-xl sm:text-[1.375rem]">
-            Who is on your {next.name.replace(/ Grand Prix$/, "")} podium?
-          </h2>
-          <p className="mt-2 text-sm">Pick your top three before qualifying starts.</p>
-        </div>
-        <Link
-          href="/predict"
-          className="t-fast inline-flex min-h-11 shrink-0 items-center justify-center rounded-md bg-fg px-5 py-2.5 text-sm font-bold text-bg hover:opacity-90"
-        >
-          Make a prediction
-        </Link>
-      </section>
+      <div className={`grid grid-cols-1 border-t-[3px] border-fg ${both ? "lg:grid-cols-[minmax(0,1fr)_23.5rem]" : ""}`}>
+        {item && <ThisDayCard item={item} />}
+        {predict && (
+          <section
+            aria-labelledby="predict-h"
+            className={`py-6 ${both ? "border-t border-fg lg:border-l lg:border-t-0 lg:pl-7" : ""}`}
+          >
+            <p className="eyebrow">Your call / Round {predict.round}</p>
+            <h2 id="predict-h" className="heading mb-3 mt-2 text-[1.3125rem]">
+              Who takes the top step?
+            </h2>
+            <Link
+              href="/predict"
+              className="t-fast border-b-2 border-accent pb-1.5 text-[0.8125rem] font-bold hover:text-accent"
+            >
+              Join the prediction grid ↗
+            </Link>
+          </section>
+        )}
+      </div>
     );
   });
 }
 
-/** Renders nothing when no race was won on today's date in an earlier year. */
-export async function ThisDaySection() {
+/** The big masthead of the home page: the name, the season and today's date. */
+export async function Masthead() {
   await connection();
-  return guarded("Could not load this day in F1", async () => {
-    const { this_day_in_f1: item } = await getDashboard();
-    return item ? <ThisDayCard item={item} /> : null;
-  });
-}
-
-/** The archive entry point with the size of the archive from the cached call; the links work even when the call fails. */
-export async function ArchiveSection() {
-  await connection();
-  let counts: { seasons: number; races: number; drivers: number } | null = null;
+  let season: number | null = null;
   try {
-    counts = (await getDashboard()).counts;
+    season = (await getDashboard()).driver_standings.season ?? null;
   } catch {
-    counts = null;
+    season = null;
   }
-  return <ArchiveLinks counts={counts} />;
+  const today = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date());
+  return (
+    <div className="flex items-end justify-between gap-6 border-b-4 border-fg pb-4 pt-1">
+      <p aria-hidden="true" className="display flex shrink-0 items-start whitespace-nowrap text-[clamp(3.2rem,13.5vw,8.25rem)] leading-[0.88]">
+        undercut
+        <svg viewBox="0 0 24 24" className="ml-[0.04em] mt-[0.08em] size-[0.62em] fill-none stroke-accent" strokeWidth={2.6} strokeLinecap="square">
+          <path d="M5 19 19 5M8 5h11v11" />
+        </svg>
+      </p>
+      <p className="ml-auto hidden shrink-0 whitespace-nowrap pb-1 text-xs leading-relaxed 2xl:block">
+        Every lap has a story.
+        <br />
+        Follow the numbers.
+      </p>
+      <p className="eyebrow ml-auto hidden shrink-0 pb-1 text-right sm:block 2xl:ml-0">
+        {season ? `Season ${season}` : "Season"}
+        <br />
+        {today}
+      </p>
+    </div>
+  );
 }
