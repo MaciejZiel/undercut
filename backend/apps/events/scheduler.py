@@ -1,6 +1,7 @@
 """Recurring jobs. The scheduler only publishes events; handlers do the actual work."""
 
-from dataclasses import dataclass
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 
 from django.db import IntegrityError, transaction
@@ -41,17 +42,61 @@ SCHEDULE: list[Recurring] = [
 ]
 
 
-def run_due(now: datetime | None = None, schedule: list[Recurring] | None = None) -> int:
+@dataclass(frozen=True)
+class DueEvent:
+    """An occurrence a provider wants fired. (job, slot) is the dedupe key."""
+
+    job: str
+    slot: datetime
+    event_type: str
+    key: str = ""
+    payload: dict = field(default_factory=dict)
+
+
+Provider = Callable[[datetime], Iterable[DueEvent]]
+_providers: list[Provider] = []
+
+
+def register_provider(provider: Provider) -> Provider:
+    """Let a module schedule data-dependent jobs (e.g. "results due after a session ends").
+
+    Providers must be cheap and pure: they only decide what is due, handlers do the work.
+    """
+    if provider not in _providers:
+        _providers.append(provider)
+    return provider
+
+
+def clear_providers() -> None:
+    """For tests."""
+    _providers.clear()
+
+
+def _fire(due: DueEvent) -> bool:
+    try:
+        with transaction.atomic():
+            ScheduleSlot.objects.create(job=due.job, slot=due.slot)
+            publish(due.event_type, key=due.key, payload=due.payload)
+    except IntegrityError:
+        return False  # already fired for this slot
+    return True
+
+
+def run_due(
+    now: datetime | None = None,
+    schedule: list[Recurring] | None = None,
+    providers: list[Provider] | None = None,
+) -> int:
     """Publish an event for every job whose latest slot has not fired yet."""
     now = now or timezone.now()
     fired = 0
     for job in SCHEDULE if schedule is None else schedule:
         slot = job.latest_slot(now)
-        try:
-            with transaction.atomic():
-                ScheduleSlot.objects.create(job=job.name, slot=slot)
-                publish(job.event_type, key=f"{job.name}", payload={"slot": slot.isoformat()})
-        except IntegrityError:
-            continue  # already fired for this slot
-        fired += 1
+        fired += _fire(
+            DueEvent(
+                job.name, slot, job.event_type, key=job.name, payload={"slot": slot.isoformat()}
+            )
+        )
+    for provider in _providers if providers is None else providers:
+        fired += sum(_fire(due) for due in provider(now))
     return fired

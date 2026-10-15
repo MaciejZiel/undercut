@@ -27,3 +27,26 @@ class SyncRun(models.Model):
 
     def __str__(self) -> str:
         return f"{self.source}/{self.job} #{self.pk} [{self.status}]"
+
+
+class DriverNumberMap(models.Model):
+    """OpenF1 identifies drivers by car number, which differs between seasons.
+
+    Built automatically by the OpenF1 importer (name_acronym == Driver.code, then surname);
+    a row that already exists is never overwritten, so a human fix in the admin sticks.
+    """
+
+    season_year = models.PositiveSmallIntegerField()
+    driver_number = models.PositiveSmallIntegerField()
+    driver = models.ForeignKey("catalog.Driver", on_delete=models.CASCADE, related_name="+")
+
+    class Meta:
+        ordering = ["-season_year", "driver_number"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["season_year", "driver_number"], name="ingestion_drivernumber_uniq"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.season_year} #{self.driver_number} -> driver {self.driver_id}"

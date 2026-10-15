@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import SyncRun
+from .models import DriverNumberMap, SyncRun
 
 
 @admin.register(SyncRun)
@@ -23,3 +23,11 @@ class SyncRunAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+
+@admin.register(DriverNumberMap)
+class DriverNumberMapAdmin(admin.ModelAdmin):
+    list_display = ("season_year", "driver_number", "driver")
+    list_filter = ("season_year",)
+    search_fields = ("driver__family_name", "driver__code")
+    raw_id_fields = ("driver",)

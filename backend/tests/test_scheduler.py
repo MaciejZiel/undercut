@@ -47,3 +47,24 @@ def test_run_due_fires_again_on_the_next_slot():
     run_due(at(2026, 10, 15, 9), [DAILY])
     assert run_due(at(2026, 10, 16, 9), [DAILY]) == 1
     assert OutboxEvent.objects.count() == 2
+
+
+@pytest.mark.django_db
+def test_providers_fire_data_dependent_events_once_per_slot():
+    from apps.events.scheduler import DueEvent
+
+    slot = at(2026, 10, 15, 9)
+
+    def provider(_now):
+        yield DueEvent(
+            "results:42", slot, "SessionResultsDue", key="session:42", payload={"session_id": 42}
+        )
+
+    assert run_due(at(2026, 10, 15, 9, 5), schedule=[], providers=[provider]) == 1
+    assert run_due(at(2026, 10, 15, 9, 6), schedule=[], providers=[provider]) == 0
+    event = OutboxEvent.objects.get()
+    assert (event.type, event.key, event.payload) == (
+        "SessionResultsDue",
+        "session:42",
+        {"session_id": 42},
+    )

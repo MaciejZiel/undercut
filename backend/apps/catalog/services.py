@@ -85,6 +85,7 @@ class SessionData:
     type: str  # a `Session.Type` value
     start_utc: dt.datetime | None = None
     status: str = "scheduled"
+    end_utc: dt.datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -310,6 +311,8 @@ def upsert_session(round_id: int, data: SessionData) -> Outcome:
     values: dict = {"status": data.status}
     if data.start_utc is not None:  # never replace a known start time with "unknown"
         values["start_utc"] = data.start_utc
+    if data.end_utc is not None:
+        values["end_utc"] = data.end_utc
     return _sync(m.Session, {"round_id": round_id, "type": data.type}, values)
 
 
@@ -445,3 +448,137 @@ def import_round(bundle: RoundBundle) -> RoundOutcome:
         if item.qualifying:
             outcome.qualifying.add(upsert_qualifying(session.id, item.qualifying))
     return outcome
+
+
+# --------------------------------------------------------------------------- OpenF1 matching
+# Read helpers and key setters for the OpenF1 importer. Plain dataclasses in, plain dataclasses
+# out: the ingestion module never sees catalog models.
+
+
+@dataclass(frozen=True)
+class RoundRef:
+    id: int
+    year: int
+    number: int | None
+    name: str
+    date: dt.date
+    is_cancelled: bool
+    circuit_name: str
+    locality: str
+    country: str
+    openf1_meeting_key: int | None
+
+
+@dataclass(frozen=True)
+class SessionRef:
+    id: int
+    round_id: int
+    type: str
+    status: str
+    start_utc: dt.datetime | None
+    end_utc: dt.datetime | None
+    openf1_session_key: int | None
+
+
+@dataclass(frozen=True)
+class DriverRef:
+    id: int
+    code: str
+    given_name: str
+    family_name: str
+
+
+def season_rounds(year: int) -> list[RoundRef]:
+    """All rounds of a season (cancelled ones included), ordered by date."""
+    rows = m.Round.objects.filter(season__year=year).select_related("circuit").order_by("date")
+    return [
+        RoundRef(
+            id=r.pk,
+            year=year,
+            number=r.round,
+            name=r.name,
+            date=r.date,
+            is_cancelled=r.is_cancelled,
+            circuit_name=r.circuit.name,
+            locality=r.circuit.locality,
+            country=r.circuit.country,
+            openf1_meeting_key=r.openf1_meeting_key,
+        )
+        for r in rows
+    ]
+
+
+def round_sessions(round_id: int) -> list[SessionRef]:
+    rows = m.Session.objects.filter(round_id=round_id).order_by("start_utc", "type")
+    return [
+        SessionRef(
+            id=s.pk,
+            round_id=round_id,
+            type=s.type,
+            status=s.status,
+            start_utc=s.start_utc,
+            end_utc=s.end_utc,
+            openf1_session_key=s.openf1_session_key,
+        )
+        for s in rows
+    ]
+
+
+def set_openf1_meeting_key(round_id: int, meeting_key: int) -> bool:
+    """Store the OpenF1 meeting key. Returns False when nothing changed.
+
+    Raises ValueError when the key already belongs to another round or the round has a
+    different key: the importer reports it instead of overwriting a possibly manual fix.
+    """
+    obj = m.Round.objects.get(pk=round_id)
+    if obj.openf1_meeting_key == meeting_key:
+        return False
+    if obj.openf1_meeting_key is not None:
+        raise ValueError(f"round {round_id} already has meeting key {obj.openf1_meeting_key}")
+    if m.Round.objects.filter(openf1_meeting_key=meeting_key).exists():
+        raise ValueError(f"meeting key {meeting_key} already belongs to another round")
+    obj.openf1_meeting_key = meeting_key
+    obj.save(update_fields=["openf1_meeting_key"])
+    return True
+
+
+def set_openf1_session_key(session_id: int, session_key: int) -> bool:
+    """Same contract as `set_openf1_meeting_key`, for sessions."""
+    obj = m.Session.objects.get(pk=session_id)
+    if obj.openf1_session_key == session_key:
+        return False
+    if obj.openf1_session_key is not None:
+        raise ValueError(f"session {session_id} already has session key {obj.openf1_session_key}")
+    if m.Session.objects.filter(openf1_session_key=session_key).exists():
+        raise ValueError(f"session key {session_key} already belongs to another session")
+    obj.openf1_session_key = session_key
+    obj.save(update_fields=["openf1_session_key"])
+    return True
+
+
+def _driver_refs(qs) -> list[DriverRef]:
+    return [
+        DriverRef(id=d.pk, code=d.code, given_name=d.given_name, family_name=d.family_name)
+        for d in qs
+    ]
+
+
+def season_drivers(year: int) -> list[DriverRef]:
+    """Drivers with a race or qualifying result in the season (the candidates for matching)."""
+    ids = set(
+        m.Result.objects.filter(session__round__season__year=year).values_list(
+            "driver_id", flat=True
+        )
+    ) | set(
+        m.QualifyingResult.objects.filter(session__round__season__year=year).values_list(
+            "driver_id", flat=True
+        )
+    )
+    return _driver_refs(m.Driver.objects.filter(pk__in=ids).order_by("pk"))
+
+
+def drivers_by_code(code: str) -> list[DriverRef]:
+    """Every driver with this three-letter code, any season (empty code matches nothing)."""
+    if not code:
+        return []
+    return _driver_refs(m.Driver.objects.filter(code__iexact=code).order_by("pk"))
