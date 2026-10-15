@@ -1,0 +1,9 @@
+{% extends "account/email/base_message.html" %}
+{% block title %}No account found{% endblock %}
+{% block preheader %}We do not have an account for this address yet.{% endblock %}
+{% block heading %}No account found{% endblock %}
+{% block content %}
+<p style="margin:0 0 12px;">Someone tried to sign in or reset a password with <strong>{{ email }}</strong>, but we have no account for this address.</p>
+<p style="margin:0;">If it was you, you can create an account below. Otherwise you can ignore this message.</p>
+{% endblock %}
+{% block button %}{% include "account/email/_button.html" with url=signup_url label="Create an account" %}{% endblock %}

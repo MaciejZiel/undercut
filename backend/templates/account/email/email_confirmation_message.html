@@ -1,0 +1,12 @@
+{% extends "account/email/base_message.html" %}
+{% load account %}
+{% block title %}Confirm your e-mail{% endblock %}
+{% block preheader %}One click to confirm your address and unlock predictions.{% endblock %}
+{% block heading %}Confirm your e-mail{% endblock %}
+{% block content %}{% user_display user as user_display %}
+<p style="margin:0 0 12px;">Hi {{ user_display }},</p>
+<p style="margin:0 0 12px;">Thanks for joining Undercut. Confirm that this is your address to unlock the prediction game and race result e-mails.</p>
+{% if code %}<p style="margin:16px 0;font-size:28px;font-weight:bold;letter-spacing:6px;color:#5a2dc8;">{{ code }}</p>{% endif %}
+<p style="margin:0;color:#4a556b;font-size:14px;">If you did not create an account, you can safely ignore this message.</p>
+{% endblock %}
+{% block button %}{% if not code %}{% include "account/email/_button.html" with url=activate_url label="Confirm e-mail" %}{% endif %}{% endblock %}

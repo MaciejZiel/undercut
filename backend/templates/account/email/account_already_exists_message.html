@@ -1,0 +1,9 @@
+{% extends "account/email/base_message.html" %}
+{% block title %}You already have an account{% endblock %}
+{% block preheader %}Someone tried to sign up with your address.{% endblock %}
+{% block heading %}You already have an account{% endblock %}
+{% block content %}
+<p style="margin:0 0 12px;">Someone tried to sign up for Undercut with <strong>{{ email }}</strong>, but an account with this address already exists.</p>
+<p style="margin:0;">If that was you and you forgot your password, you can reset it below. Otherwise you can ignore this message.</p>
+{% endblock %}
+{% block button %}{% include "account/email/_button.html" with url=password_reset_url label="Reset my password" %}{% endblock %}

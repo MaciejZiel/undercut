@@ -1,0 +1,32 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>{% block title %}Undercut{% endblock %}</title>
+</head>
+<body style="margin:0;padding:0;background:#f3f4f8;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#f3f4f8;">{% block preheader %}{% endblock %}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f4f8;">
+<tr><td align="center" style="padding:24px 12px;">
+  <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;font-family:Arial,Helvetica,sans-serif;">
+    <tr><td style="background:#0f1320;border-radius:12px 12px 0 0;padding:20px 28px;">
+      <span style="font-size:20px;font-weight:bold;letter-spacing:3px;color:#b99cff;">UNDERCUT</span>
+      <span style="font-size:12px;color:#9ba8c1;letter-spacing:1px;">&nbsp;&nbsp;F1 STATS &amp; PREDICTIONS</span>
+    </td></tr>
+    <tr><td style="background:#ffffff;padding:32px 28px 28px;border-left:1px solid #d3d8e4;border-right:1px solid #d3d8e4;">
+      <h1 style="margin:0 0 16px;font-size:22px;line-height:28px;color:#0f1320;">{% block heading %}{% endblock %}</h1>
+      <div style="font-size:16px;line-height:24px;color:#0f1320;">{% block content %}{% endblock %}</div>
+      {% block button %}{% endblock %}
+      {% block small %}{% endblock %}
+    </td></tr>
+    <tr><td style="background:#e9ebf2;border:1px solid #d3d8e4;border-top:0;border-radius:0 0 12px 12px;padding:18px 28px;font-size:12px;line-height:18px;color:#4a556b;">
+      You are receiving this e-mail because of an action on {{ current_site.domain }}.<br>
+      Undercut is an unofficial fan project and is not affiliated with Formula 1.
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</body>
+</html>
