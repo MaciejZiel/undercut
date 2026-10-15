@@ -25,7 +25,7 @@ export function MobileTabBar() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={`t-fast relative flex h-[4.25rem] flex-col items-center justify-center gap-1 text-[0.6875rem] font-semibold ${
-                  active ? "text-fg" : "text-muted"
+                  active ? "bg-accent-soft text-accent" : "text-muted"
                 }`}
               >
                 {active && (

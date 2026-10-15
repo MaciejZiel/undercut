@@ -43,6 +43,18 @@ Contrast ratios calculated using WCAG relative sRGB luminance; rounded to two de
 
 The action is a restrained brick vermilion, not a luminous racing-red wash. Green gives the publication a stable identity while team colours remain small data marks. Dark mode uses lifted green surfaces rather than black and neon. Borders separate groups; they are not required to identify controls, whose background and labels remain visible.
 
+| Text pair | Contrast |
+| --- | --- |
+| Light text / surface | 14.43:1 |
+| Light secondary / page | 5.61:1 |
+| Light secondary / secondary surface | 5.17:1 |
+| Light action / white | 6.01:1 |
+| Dark text / surface | 11.61:1 |
+| Dark secondary / secondary surface | 6.01:1 |
+| Dark action / surface | 7.54:1 |
+| Dark button text / action | 8.99:1 |
+| Masthead and race row | 9.82:1 |
+
 ## Type
 
 IBM Plex Sans for body, navigation, names and tables: human, open and readable at 14–16 px. Barlow Condensed at 600/700 for page titles and prominent figures only, in sentence case. Its narrower proportions fit long race and driver names without all-capital shouting. IBM Plex Mono at 400/500 for lap times, gaps and clocks only. All supplied through next/font, with no runtime external font hosts.

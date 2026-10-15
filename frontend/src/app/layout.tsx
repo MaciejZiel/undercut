@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import { Barlow_Condensed, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -9,8 +9,8 @@ import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import { Suspense } from "react";
 import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/seo";
 
-// Archivo's width axis gives the condensed display style (see .display in globals.css).
-const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], axes: ["wdth"], display: "swap" });
+const plexSans = IBM_Plex_Sans({ variable: "--font-plex-sans", subsets: ["latin"], display: "swap" });
+const barlow = Barlow_Condensed({ variable: "--font-barlow", subsets: ["latin"], weight: ["600", "700"], display: "swap" });
 const plexMono = IBM_Plex_Mono({ variable: "--font-plex-mono", subsets: ["latin"], weight: ["400", "500"], display: "swap" });
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // suppressHydrationWarning: the inline script sets data-theme before hydration.
-    <html lang="en" className={`${archivo.variable} ${plexMono.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${plexSans.variable} ${barlow.variable} ${plexMono.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
@@ -37,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <Providers>
           <SiteHeader />
-          <main id="main" tabIndex={-1} className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 outline-none">
+          <main id="main" tabIndex={-1} className="mx-auto w-full max-w-7xl flex-1 px-5 py-8 md:px-8 md:py-10 outline-none">
             {/* Breadcrumb-ready: pages render <PageHeader breadcrumbs={...} /> at the top. */}
             <Suspense fallback={null}>{children}</Suspense>
           </main>

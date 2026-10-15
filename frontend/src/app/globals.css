@@ -1,59 +1,58 @@
 @import "tailwindcss";
 
-/*
- * Look: a timing tower, not a card grid. The interface is concrete grey and ink; colour belongs to
- * the teams (their rows are recognisable before you read them). The one accent is the yellow flag,
- * used as a fill for "this is happening / this is the one" and never as text colour.
- * `--accent` is ink on purpose: links, primary buttons and highlights read as ink, the flag is separate.
- */
+/* Race journal: forest masthead, white reading surfaces, vermilion actions. */
 :root {
   color-scheme: light;
-  --bg: #e9ecee;
-  --surface: #f5f6f7;
-  --surface-2: #dfe3e6;
-  --line: #c5ccd1;
-  --fg: #0d1215;
-  --fg-muted: #46525a;
-  --accent: #0d1215;
-  --accent-fg: #f5f6f7;
-  --accent-soft: #d6dce0;
-  --flag: #ffd21f;
-  --on-flag: #0d1215;
-  --danger: #b3261e;
-  --focus: #0d1215;
+  --bg: #f2f5f2;
+  --surface: #ffffff;
+  --surface-2: #e5ede7;
+  --line: #c5d2c9;
+  --fg: #182e24;
+  --fg-muted: #52665a;
+  --accent: #ad3e27;
+  --accent-fg: #ffffff;
+  --accent-soft: #f9e9e3;
+  --flag: #234b3a;
+  --on-flag: #ffffff;
+  --danger: #b12d30;
+  --focus: #ad3e27;
+  --masthead: #234b3a;
 }
 
-/* Dark palette: follows the system unless the visitor picked light. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0e1316;
-    --surface: #151b1f;
-    --surface-2: #1d252a;
-    --line: #2a343b;
-    --fg: #e9edef;
-    --fg-muted: #97a3aa;
-    --accent: #e9edef;
-    --accent-fg: #0e1316;
-    --accent-soft: #263037;
-    --danger: #ff8a80;
-    --focus: #e9edef;
+    --bg: #17271f;
+    --surface: #20352b;
+    --surface-2: #2b4437;
+    --line: #496153;
+    --fg: #edf3ed;
+    --fg-muted: #b5c8ba;
+    --accent: #ffb29c;
+    --accent-fg: #17271f;
+    --accent-soft: #503c32;
+    --flag: #bfd4bd;
+    --on-flag: #17271f;
+    --danger: #ffaaa8;
+    --focus: #ffb29c;
   }
 }
 
 :root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #0e1316;
-  --surface: #151b1f;
-  --surface-2: #1d252a;
-  --line: #2a343b;
-  --fg: #e9edef;
-  --fg-muted: #97a3aa;
-  --accent: #e9edef;
-  --accent-fg: #0e1316;
-  --accent-soft: #263037;
-  --danger: #ff8a80;
-  --focus: #e9edef;
+    color-scheme: dark;
+    --bg: #17271f;
+    --surface: #20352b;
+    --surface-2: #2b4437;
+    --line: #496153;
+    --fg: #edf3ed;
+    --fg-muted: #b5c8ba;
+    --accent: #ffb29c;
+    --accent-fg: #17271f;
+    --accent-soft: #503c32;
+    --flag: #bfd4bd;
+    --on-flag: #17271f;
+    --danger: #ffaaa8;
+    --focus: #ffb29c;
 }
 
 @theme inline {
@@ -69,7 +68,7 @@
   --color-flag: var(--flag);
   --color-on-flag: var(--on-flag);
   --color-danger: var(--danger);
-  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
   --breakpoint-xs: 22.5rem;
 }
@@ -94,21 +93,18 @@ body {
   }
 }
 
-/* Condensed Archivo for race names, page titles and big numerals (the width axis does the work). */
+/* Sentence-case names, compact enough for long race titles. */
 .display {
-  font-variation-settings: "wdth" 68;
-  font-weight: 800;
-  letter-spacing: -0.005em;
-  line-height: 0.92;
-  text-transform: uppercase;
+  font-family: var(--font-barlow), ui-sans-serif, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
   text-wrap: balance;
 }
 
-/* Big figures: the condensed face without capitals, so words and numbers both work. */
 .numeral {
-  font-variation-settings: "wdth" 70;
-  font-weight: 800;
-  letter-spacing: -0.005em;
+  font-family: var(--font-barlow), ui-sans-serif, sans-serif;
+  font-weight: 600;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
@@ -119,12 +115,9 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Small label above a value. Sentence case would be quieter, capitals keep the timing-sheet voice. */
 .label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.8125rem;
+  font-weight: 500;
   color: var(--fg-muted);
 }
 
@@ -165,9 +158,9 @@ table {
   display: block;
 }
 
-/* Slanted indicator used for the active nav item: a pit-wall timing bar. */
+/* Retained utility for existing navigation indicators. */
 .slant-bar {
-  clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  border-radius: 1px;
 }
 
 .skeleton {
@@ -193,5 +186,37 @@ table {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* A constant masthead gives light and dark pages the same recognisable entrance.
+   Only the navigation row is inverse; popovers retain their theme's text colours. */
+.masthead {
+  background: var(--masthead);
+  color: #fff;
+  border-bottom: 3px solid #d47759;
+}
+.masthead .nav-link { color: #d9e5dc; }
+.masthead .nav-link:hover,
+.masthead .nav-link[aria-current] { color: #fff; }
+.masthead .nav-link[aria-current]::after { background: #fff; }
+.masthead .header-tools > button,
+.masthead .header-tools > a { color: #fff; border-color: #789583; }
+.masthead :focus-visible { outline-color: #fff; }
+.masthead input:focus-visible,
+.masthead [role="listbox"] :focus-visible,
+.masthead .catalog-panel :focus-visible { outline-color: var(--focus); }
+
+@layer base {
+  body { line-height: 1.5; }
+  h1 { font-family: var(--font-barlow), ui-sans-serif, sans-serif; }
+  button:not(:disabled), summary, select { cursor: pointer; }
+  button, input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select {
+    min-height: 2.5rem;
+  }
+  input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color: var(--accent); }
+  ::selection { background: var(--flag); color: var(--on-flag); }
+  @media (pointer: coarse) {
+    button, select, input:not([type="checkbox"]):not([type="radio"]):not([type="range"]) { min-height: 2.75rem; }
   }
 }

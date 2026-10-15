@@ -39,3 +39,7 @@
 | https://github.com/cpburnz/python-pathspec | pathspec (dev, transitive dependency of mypy) | MPL-2.0 (copyleft) | https://www.mozilla.org/MPL/2.0/ |
 | https://github.com/microsoft/pyright | pyright (CI only, run with npm) | MIT | https://github.com/microsoft/pyright/blob/main/LICENSE.txt |
 | https://github.com/google/osv-scanner | osv-scanner (CI only, binary) | Apache-2.0 | https://github.com/google/osv-scanner/blob/main/LICENSE |
+
+| https://github.com/google/fonts/tree/main/ofl/ibmplexsans | IBM Plex Sans (next/font) | OFL-1.1 | https://github.com/google/fonts/blob/main/ofl/ibmplexsans/OFL.txt |
+| https://github.com/google/fonts/tree/main/ofl/barlowcondensed | Barlow Condensed (next/font) | OFL-1.1 | https://github.com/google/fonts/blob/main/ofl/barlowcondensed/OFL.txt |
+| https://github.com/google/fonts/tree/main/ofl/ibmplexmono | IBM Plex Mono (next/font) | OFL-1.1 | https://github.com/google/fonts/blob/main/ofl/ibmplexmono/OFL.txt |

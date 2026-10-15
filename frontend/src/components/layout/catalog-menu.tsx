@@ -64,7 +64,7 @@ export function CatalogMenu({ linkClass }: { linkClass: (active: boolean) => str
       <ul
         id={panelId}
         hidden={!open}
-        className="absolute left-0 top-full z-30 mt-2 w-64 rounded-sm border border-line bg-surface p-1.5 shadow-lg"
+        className="catalog-panel absolute left-0 top-full z-30 mt-2 w-64 rounded-sm border border-line bg-surface p-1.5 text-fg"
       >
         {CATALOG_LINKS.map((l) => (
           <li key={l.href}>

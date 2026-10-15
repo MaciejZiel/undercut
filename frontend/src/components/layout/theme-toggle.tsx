@@ -12,7 +12,7 @@ export function ThemeToggle() {
       onClick={() => applyTheme(currentTheme() === "dark" ? "light" : "dark")}
       aria-label="Switch between light and dark theme"
       title="Switch theme"
-      className="t-fast grid size-10 place-items-center rounded-sm text-muted hover:bg-surface-2 hover:text-fg"
+      className="t-fast grid size-10 place-items-center rounded-sm text-current hover:bg-white/10"
     >
       <MoonIcon className="show-in-light" />
       <SunIcon className="show-in-dark" />

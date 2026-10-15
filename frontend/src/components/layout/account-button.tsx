@@ -41,7 +41,7 @@ export function AccountButton() {
       <Link
         href="/login"
         aria-label="Account: sign in"
-        className="t-fast grid size-10 place-items-center rounded-full border border-line bg-surface text-muted hover:text-fg"
+        className="t-fast grid size-10 place-items-center rounded-full border border-line bg-transparent text-current hover:bg-white/10"
       >
         <UserIcon />
       </Link>
@@ -76,7 +76,7 @@ export function AccountButton() {
   const itemClass = "t-fast block w-full rounded-sm px-3 py-2 text-left text-sm hover:bg-surface-2 focus:bg-surface-2";
 
   return (
-    <div ref={wrapper} className="relative" onKeyDown={onKeyDown}>
+    <div ref={wrapper} className="relative text-fg" onKeyDown={onKeyDown}>
       <button
         ref={trigger}
         type="button"
@@ -85,7 +85,7 @@ export function AccountButton() {
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
         onClick={() => setOpen((v) => !v)}
-        className="t-fast grid size-10 place-items-center rounded-full bg-accent-soft text-sm font-extrabold text-accent"
+        className="t-fast grid size-10 place-items-center rounded-full border border-white/50 bg-transparent text-sm font-bold text-white"
       >
         {initials(name)}
       </button>
@@ -94,7 +94,7 @@ export function AccountButton() {
           id={menuId}
           role="menu"
           aria-label="Account"
-          className="absolute right-0 top-12 z-40 w-56 rounded-sm border border-line bg-surface p-1 shadow-lg"
+          className="absolute right-0 top-12 z-40 w-56 rounded-sm border border-line bg-surface p-1"
         >
           <p className="truncate px-3 py-2 text-xs text-muted">{name}</p>
           {ITEMS.map((item) => (
