@@ -47,7 +47,7 @@ class RoundLinkSerializer(serializers.Serializer):
 class CareerStatsSerializer(serializers.Serializer):
     """Career totals; all values are null when the module has no race results.
 
-    TODO: ``titles`` is always null until the standings module can supply champions.
+    ``titles`` are championships won (constructors from 1958), see the standings module.
     """
 
     starts = serializers.IntegerField(allow_null=True)
@@ -66,7 +66,7 @@ class CareerStatsSerializer(serializers.Serializer):
 
 
 class DriverListSerializer(serializers.Serializer):
-    """Row of the driver list. TODO: ``titles`` is null until the standings module exists."""
+    """Row of the driver list; ``titles`` is the number of world championships."""
 
     slug = serializers.CharField()
     given_name = serializers.CharField()
@@ -76,7 +76,7 @@ class DriverListSerializer(serializers.Serializer):
     nationality = NullableCharField()
     starts = serializers.IntegerField()
     wins = serializers.IntegerField()
-    titles = serializers.IntegerField(allow_null=True, default=None)
+    titles = serializers.IntegerField()
     team = serializers.SerializerMethodField(help_text="Current or last team on race day.")
 
     @extend_schema_field(TeamRefSerializer(allow_null=True))
@@ -96,7 +96,8 @@ class DriverSeasonSerializer(serializers.Serializer):
     points = serializers.FloatField(allow_null=True)
     wins = serializers.IntegerField()
     championship_position = serializers.IntegerField(
-        allow_null=True, help_text="Null until the standings module exists."
+        allow_null=True,
+        help_text="Position in the newest table of the season (final once the season is over).",
     )
 
 
@@ -114,7 +115,7 @@ class DriverResultSerializer(serializers.Serializer):
 
 
 class DriverDetailSerializer(serializers.Serializer):
-    """Driver page. TODO: ``stats.titles`` is null until the standings module exists."""
+    """Driver page."""
 
     slug = serializers.CharField()
     given_name = serializers.CharField()
@@ -133,14 +134,14 @@ class DriverDetailSerializer(serializers.Serializer):
 
 
 class ConstructorListSerializer(serializers.Serializer):
-    """Row of the constructor list. TODO: ``titles`` is null until the standings module exists."""
+    """Row of the constructor list; ``titles`` counts constructors' championships (from 1958)."""
 
     slug = serializers.CharField()
     name = serializers.CharField()
     nationality = NullableCharField()
     starts = serializers.IntegerField()
     wins = serializers.IntegerField()
-    titles = serializers.IntegerField(allow_null=True, default=None)
+    titles = serializers.IntegerField()
 
 
 class SeasonDriverSerializer(DriverRefSerializer):
@@ -153,13 +154,14 @@ class ConstructorSeasonRowSerializer(serializers.Serializer):
     points = serializers.FloatField(allow_null=True)
     wins = serializers.IntegerField()
     championship_position = serializers.IntegerField(
-        allow_null=True, help_text="Null until the standings module exists."
+        allow_null=True,
+        help_text="Position in the newest table of the season (final once the season is over).",
     )
     drivers = SeasonDriverSerializer(many=True)
 
 
 class ConstructorDetailSerializer(serializers.Serializer):
-    """Constructor page. TODO: ``stats.titles`` is null until the standings module exists."""
+    """Constructor page."""
 
     slug = serializers.CharField()
     name = serializers.CharField()
@@ -222,7 +224,7 @@ class CircuitDetailSerializer(serializers.Serializer):
 
 
 class SeasonListSerializer(serializers.Serializer):
-    """Row of the season list. TODO: champions are null until the standings module exists."""
+    """Row of the season list; champions are null until the season is finished."""
 
     year = serializers.IntegerField()
     name = NullableCharField()

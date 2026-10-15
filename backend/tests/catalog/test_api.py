@@ -82,10 +82,11 @@ def test_driver_list_filters(client):
     assert slugs(q="hamil") == {ham.slug}
 
 
-def test_driver_list_champion_filter_not_available(client):
-    response = get(client, "/api/v1/drivers/", champion="true")
-    assert response.status_code == 400
-    assert "champion" in response.json()
+def test_driver_list_champion_filter_without_standings_finds_nobody(client):
+    driver = f.DriverFactory()
+    assert get(client, "/api/v1/drivers/", champion="true").json()["results"] == []
+    everyone = get(client, "/api/v1/drivers/", champion="false").json()["results"]
+    assert [r["slug"] for r in everyone] == [driver.slug]
 
 
 def test_driver_search_ignores_diacritics_and_case(client):
@@ -116,7 +117,7 @@ def test_driver_list_row_nulls(client):
     f.DriverFactory(family_name="Nobody")
     row = get(client, "/api/v1/drivers/").json()["results"][0]
     assert row["team"] is None
-    assert row["titles"] is None
+    assert row["titles"] == 0  # no standings imported means no titles, never null
     assert row["code"] is None
     assert row["number"] is None
     assert row["nationality"] is None
@@ -160,7 +161,7 @@ def test_driver_detail_stats_seasons_and_last_results(client):
         "poles": 2,
         "fastest_laps": 1,
         "points": 31.0,
-        "titles": None,
+        "titles": 0,
     }
     seasons = {s["year"]: s for s in body["seasons"]}
     assert [s["year"] for s in body["seasons"]] == [2024, 1990]
@@ -236,7 +237,7 @@ def test_constructor_list_filters_ordering(client):
     assert rows[0]["slug"] in {a.slug, b.slug}
     by_slug = {r["slug"]: r for r in rows}
     assert by_slug[b.slug]["starts"] == 1  # two cars, one race
-    assert by_slug[b.slug]["titles"] is None
+    assert by_slug[b.slug]["titles"] == 0
     assert by_slug[a.slug]["wins"] == 1
     assert {
         r["slug"] for r in get(client, "/api/v1/constructors/", season=2000).json()["results"]
@@ -265,7 +266,7 @@ def test_constructor_detail(client):
     assert body["stats"]["podiums"] == 2
     assert body["stats"]["points"] == 53.0
     assert body["stats"]["poles"] == 1
-    assert body["stats"]["titles"] is None
+    assert body["stats"]["titles"] == 0
     assert [s["year"] for s in body["seasons"]] == [2024, 1990]
     assert body["seasons"][0]["color"] == "#ff0000"
     assert body["seasons"][1]["color"] is None

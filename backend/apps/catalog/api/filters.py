@@ -26,8 +26,7 @@ class DriverFiltersSerializer(serializers.Serializer):
     champion = serializers.BooleanField(
         required=False,
         allow_null=True,
-        help_text="Only world champions. Not available until standings are integrated: "
-        "true answers 400.",
+        help_text="true: only world champions; false: only drivers without a title.",
     )
     active = serializers.BooleanField(
         required=False, allow_null=True, help_text="Raced in the latest season with results."
@@ -38,13 +37,6 @@ class DriverFiltersSerializer(serializers.Serializer):
     ordering = serializers.ChoiceField(
         required=False, choices=_ordering_choices(DRIVER_ORDERINGS), default="family_name"
     )
-
-    def validate_champion(self, value):
-        if value:
-            raise serializers.ValidationError(
-                "The champion filter is not available until standings are integrated."
-            )
-        return value
 
 
 class ConstructorFiltersSerializer(serializers.Serializer):

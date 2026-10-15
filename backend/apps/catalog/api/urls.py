@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import calendar, compare, dashboard, matrix, views
 
 urlpatterns = [
     path("drivers/", views.DriverListView.as_view(), name="driver-list"),
@@ -22,4 +22,9 @@ urlpatterns = [
         name="round-results",
     ),
     path("search/", views.SearchView.as_view(), name="search"),
+    path("calendar/", calendar.CalendarView.as_view(), name="calendar"),
+    path("calendar/ics/", calendar.CalendarIcsView.as_view(), name="calendar-ics"),
+    path("dashboard/", dashboard.DashboardView.as_view(), name="dashboard"),
+    path("compare/", compare.CompareView.as_view(), name="compare"),
+    path("seasons/<int:year>/matrix/", matrix.SeasonMatrixView.as_view(), name="season-matrix"),
 ]

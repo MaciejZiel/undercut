@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import titles, views
 
 urlpatterns = [
     path("standings/drivers/", views.DriverStandingsView.as_view(), name="standings-drivers"),
@@ -19,4 +19,5 @@ urlpatterns = [
         views.ConstructorProgressView.as_view(),
         name="standings-constructors-progress",
     ),
+    path("standings/title-race/", titles.TitleRaceView.as_view(), name="standings-title-race"),
 ]

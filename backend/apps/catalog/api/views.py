@@ -57,6 +57,7 @@ class DriverListView(PublicListView):
             nationality=data.get("nationality"),
             constructor=data.get("constructor"),
             active=data.get("active"),
+            champion=data.get("champion"),
             q=data.get("q"),
             ordering=data["ordering"],
         )
@@ -67,9 +68,10 @@ class DriverDetailView(PublicDetailView):
         tags=["drivers"], summary="Driver career", responses=serializers.DriverDetailSerializer
     )
     def get(self, request, slug):
-        driver = selectors.driver_list().filter(slug=slug).first()
+        driver = selectors.driver_list(with_titles=False).filter(slug=slug).first()
         if driver is None:
             get_object_or_404(Driver, slug=slug)  # raises the 404
+        summary = selectors.driver_title_summary(driver)
         data = {
             "slug": driver.slug,
             "given_name": driver.given_name,
@@ -83,8 +85,8 @@ class DriverDetailView(PublicDetailView):
                 driver.last_constructor_name,
                 driver.last_constructor_color,
             ),
-            "stats": selectors.driver_career_stats(driver),
-            "seasons": selectors.driver_seasons(driver),
+            "stats": selectors.driver_career_stats(driver, summary),
+            "seasons": selectors.driver_seasons(driver, summary),
             "last_results": selectors.driver_last_results(driver),
         }
         return Response(serializers.DriverDetailSerializer(data).data)
@@ -119,12 +121,13 @@ class ConstructorDetailView(PublicDetailView):
     )
     def get(self, request, slug):
         constructor = get_object_or_404(Constructor, slug=slug)
-        seasons, current_drivers, latest = selectors.constructor_seasons(constructor)
+        summary = selectors.constructor_title_summary(constructor)
+        seasons, current_drivers, latest = selectors.constructor_seasons(constructor, summary)
         data = {
             "slug": constructor.slug,
             "name": constructor.name,
             "nationality": constructor.nationality or None,
-            "stats": selectors.constructor_career_stats(constructor),
+            "stats": selectors.constructor_career_stats(constructor, summary),
             "seasons": seasons,
             "current_season": latest,
             "current_drivers": current_drivers,
@@ -189,6 +192,15 @@ class SeasonListView(PublicListView):
 
     def get_queryset(self):
         return selectors.season_list()
+
+    def paginate_queryset(self, queryset):
+        page = super().paginate_queryset(queryset)
+        if page:
+            champions = selectors.season_champions(season.year for season in page)
+            for season in page:
+                for key, value in champions.get(season.year, {}).items():
+                    setattr(season, key, value)
+        return page
 
 
 class SeasonDetailView(PublicDetailView):

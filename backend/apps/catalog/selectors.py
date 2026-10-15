@@ -8,26 +8,35 @@ Conventions:
 - "points" add RACE and SPRINT sessions.
 - Pole positions come from grid == 1 on race sessions before POLE_QUALIFYING_FROM_YEAR and from
   qualifying position 1 afterwards.
-- Titles are not derivable from this module (they need the standings module): always None.
+- Titles come from the standings module's selectors (position 1 after the last round of a
+  finished season); they are never derived here.
 """
 
 from __future__ import annotations
 
+import datetime as dt
 from collections import defaultdict
+from datetime import timedelta
 from decimal import Decimal
 
 from django.db.models import (
+    Case,
     Count,
     Exists,
     F,
+    IntegerField,
     Max,
     OuterRef,
     Q,
     QuerySet,
     Subquery,
     Sum,
+    Value,
+    When,
 )
 from django.utils import timezone
+
+from apps.standings import selectors as standings
 
 from .models import (
     Circuit,
@@ -55,13 +64,13 @@ DRIVER_ORDERINGS = {
     "family_name": ("family_name", "given_name"),
     "wins": ("wins", "family_name"),
     "starts": ("starts", "family_name"),
-    # Titles need the standings module; until then this falls back to the name order.
-    "titles": ("family_name", "given_name"),
+    "titles": ("titles", "family_name", "given_name"),
 }
 CONSTRUCTOR_ORDERINGS = {
     "name": ("name",),
     "wins": ("wins", "name"),
     "starts": ("starts", "name"),
+    "titles": ("titles", "name"),
 }
 CIRCUIT_ORDERINGS = {
     "name": ("name",),
@@ -113,6 +122,17 @@ def color_map(years, constructor_ids) -> dict[tuple[int, int], str | None]:
     }
 
 
+def _titles_annotation(counts: dict[int, int]):
+    """Per-row title count as SQL (a CASE over the few champions), so it can be sorted on."""
+    if not counts:
+        return Value(0, output_field=IntegerField())
+    return Case(
+        *[When(pk=pk, then=Value(n)) for pk, n in counts.items()],
+        default=Value(0),
+        output_field=IntegerField(),
+    )
+
+
 def latest_result_year() -> int | None:
     return Result.objects.aggregate(year=Max("session__round__season__year"))["year"]
 
@@ -126,16 +146,21 @@ def driver_list(
     nationality: str | None = None,
     constructor: str | None = None,
     active: bool | None = None,
+    champion: bool | None = None,
     q: str | None = None,
     ordering: str = "family_name",
+    with_titles: bool = True,
 ) -> QuerySet:
+    """Drivers with counters. `with_titles=False` skips the standings lookup (titles = 0)."""
     race = Q(results__session__type=RACE)
+    titles = standings.title_counts("drivers") if with_titles else {}
     last_race = Result.objects.filter(driver=OuterRef("pk"), session__type=RACE).order_by(
         "-session__round__date", "-session_id"
     )
     queryset = Driver.objects.annotate(
         starts=Count("results", filter=race),
         wins=Count("results", filter=race & Q(results__position=1)),
+        titles=_titles_annotation(titles),
         last_constructor_id=Subquery(last_race.values("constructor_id")[:1]),
         last_constructor_slug=Subquery(last_race.values("constructor__slug")[:1]),
         last_constructor_name=Subquery(last_race.values("constructor__name")[:1]),
@@ -159,6 +184,8 @@ def driver_list(
         queryset = queryset.filter(
             Exists(Result.objects.filter(driver=OuterRef("pk"), constructor__slug=constructor))
         )
+    if champion is not None:
+        queryset = queryset.filter(pk__in=titles) if champion else queryset.exclude(pk__in=titles)
     if nationality:
         queryset = queryset.filter(nationality__iexact=nationality)
     if q:
@@ -172,7 +199,15 @@ def driver_list(
     return _ordered(queryset, DRIVER_ORDERINGS, ordering)
 
 
-def driver_career_stats(driver: Driver) -> dict:
+def driver_title_summary(driver: Driver) -> dict:
+    """{"titles": n, "positions": {year: position}} of one driver (one query)."""
+    return standings.entity_summary("drivers", driver.pk)
+
+
+def driver_career_stats(driver: Driver, summary: dict | None = None) -> dict:
+    """Career totals; `summary` may carry a precomputed `driver_title_summary(driver)`."""
+    if summary is None:
+        summary = driver_title_summary(driver)
     race = Result.objects.filter(driver=driver, session__type=RACE).aggregate(
         starts=Count("id"),
         wins=Count("id", filter=Q(position=1)),
@@ -210,12 +245,14 @@ def driver_career_stats(driver: Driver) -> dict:
         "poles": race["grid_poles"] + qualifying_poles,
         "fastest_laps": race["fastest_laps"],
         "points": _number(points),
-        "titles": None,
+        "titles": summary["titles"],
     }
 
 
-def driver_seasons(driver: Driver) -> list[dict]:
+def driver_seasons(driver: Driver, summary: dict | None = None) -> list[dict]:
     """Season-by-season table, newest first; teams are the ones on race day."""
+    if summary is None:
+        summary = driver_title_summary(driver)
     year_field = "session__round__season__year"
     rows = {
         row[year_field]: row
@@ -243,14 +280,14 @@ def driver_seasons(driver: Driver) -> list[dict]:
                 colors.get((year, row["constructor_id"])),
             )
         )
+    positions = summary["positions"]
     return [
         {
             "year": year,
             "teams": teams[year],
             "points": _number(rows[year]["points"]),
             "wins": rows[year]["wins"],
-            # Final championship position needs the standings module.
-            "championship_position": None,
+            "championship_position": positions.get(year),
         }
         for year in sorted(rows, reverse=True)
     ]
@@ -300,6 +337,7 @@ def constructor_list(
     queryset = Constructor.objects.annotate(
         starts=Count("results__session", filter=race, distinct=True),
         wins=Count("results", filter=race & Q(results__position=1)),
+        titles=_titles_annotation(standings.title_counts("constructors")),
     )
     if season is not None:
         queryset = queryset.filter(
@@ -316,7 +354,14 @@ def constructor_list(
     return _ordered(queryset, CONSTRUCTOR_ORDERINGS, ordering)
 
 
-def constructor_career_stats(constructor: Constructor) -> dict:
+def constructor_title_summary(constructor: Constructor) -> dict:
+    """{"titles": n, "positions": {year: position}} of one constructor (one query)."""
+    return standings.entity_summary("constructors", constructor.pk)
+
+
+def constructor_career_stats(constructor: Constructor, summary: dict | None = None) -> dict:
+    if summary is None:
+        summary = constructor_title_summary(constructor)
     race = Result.objects.filter(constructor=constructor, session__type=RACE).aggregate(
         starts=Count("session", distinct=True),
         wins=Count("session", distinct=True, filter=Q(position=1)),
@@ -361,12 +406,16 @@ def constructor_career_stats(constructor: Constructor) -> dict:
         "poles": race["grid_poles"] + qualifying_poles,
         "fastest_laps": race["fastest_laps"],
         "points": _number(points),
-        "titles": None,
+        "titles": summary["titles"],
     }
 
 
-def constructor_seasons(constructor: Constructor) -> tuple[list[dict], list[dict], int | None]:
+def constructor_seasons(
+    constructor: Constructor, summary: dict | None = None
+) -> tuple[list[dict], list[dict], int | None]:
     """Return (season table newest first, drivers of the latest season, latest season year)."""
+    if summary is None:
+        summary = constructor_title_summary(constructor)
     year_field = "session__round__season__year"
     base = Result.objects.filter(constructor=constructor, session__type__in=[RACE, SPRINT])
     rows = {
@@ -403,6 +452,7 @@ def constructor_seasons(constructor: Constructor) -> tuple[list[dict], list[dict
                 "number": row["driver__permanent_number"],
             }
         )
+    positions = summary["positions"]
     table = [
         {
             "year": year,
@@ -410,8 +460,7 @@ def constructor_seasons(constructor: Constructor) -> tuple[list[dict], list[dict
             "points": _number(rows[year]["points"]),
             "wins": rows[year]["wins"],
             "drivers": drivers[year],
-            # Constructors' championship position needs the standings module.
-            "championship_position": None,
+            "championship_position": positions.get(year),
         }
         for year in sorted(rows, reverse=True)
     ]
@@ -812,3 +861,511 @@ def race_outcomes(round_ids) -> dict[int, dict]:
 def race_outcome(round_id: int) -> dict:
     """Single-round form of `race_outcomes`."""
     return race_outcomes([round_id])[round_id]
+
+
+# --- Champions on the season list ------------------------------------------------------------
+
+
+def season_champions(years) -> dict[int, dict]:
+    """Year -> {"driver_champion": driver ref or None, "constructor_champion": team ref or None}.
+
+    Champions come from the standings selectors (finished seasons only). Five queries.
+    """
+    wanted = set(years)
+    driver_champs = {y: i for y, i in standings.champions("drivers").items() if y in wanted}
+    team_champs = {y: i for y, i in standings.champions("constructors").items() if y in wanted}
+    drivers = Driver.objects.in_bulk(set(driver_champs.values()))
+    teams = Constructor.objects.in_bulk(set(team_champs.values()))
+    colors = color_map(team_champs, team_champs.values()) if team_champs else {}
+    result = {}
+    for year in driver_champs.keys() | team_champs.keys():
+        team = teams.get(team_champs.get(year))
+        driver = drivers.get(driver_champs.get(year))
+        result[year] = {
+            "driver_champion": None if driver is None else driver_ref(driver),
+            "constructor_champion": None
+            if team is None
+            else team_ref(team.slug, team.name, colors.get((year, team.pk))),
+        }
+    return result
+
+
+# --- Calendar (FR-102) -----------------------------------------------------------------------
+
+RACE_OVER_AFTER = timedelta(hours=4)  # a race that started this long ago counts as completed
+FINAL_STATUSES = (Session.Status.FINISHED, Session.Status.RESULTS_FINAL)
+
+
+def calendar_year() -> int | None:
+    """The current season: the latest one that has rounds."""
+    return (
+        Season.objects.filter(rounds__isnull=False)
+        .order_by("-year")
+        .values_list("year", flat=True)
+        .first()
+    )
+
+
+def _is_completed(rnd: Round, race: Session | None, has_winner: bool, now: dt.datetime) -> bool:
+    if has_winner or (race is not None and race.status in FINAL_STATUSES):
+        return True
+    if race is not None and race.start_utc is not None:
+        return race.start_utc + RACE_OVER_AFTER <= now
+    day_after = dt.datetime.combine(rnd.date + timedelta(days=1), dt.time.min, dt.UTC)
+    return day_after <= now
+
+
+def calendar(year: int, now: dt.datetime | None = None) -> dict:
+    """Every round of a season with sessions, circuit and a status label. Five queries.
+
+    Status is "cancelled", "completed" (race finished, has a winner, or started over four hours
+    ago), "next" (the first round that is not completed; it also covers a race in progress) or
+    "upcoming". `race_start_utc` is the countdown target.
+    """
+    now = now or timezone.now()
+    rounds = list(
+        Round.objects.filter(season__year=year)
+        .select_related("circuit")
+        .prefetch_related("sessions")
+        .order_by("date", "round")
+    )
+    winners = {
+        r.session.round_id: r
+        for r in Result.objects.filter(
+            session__round__season__year=year, session__type=RACE, position=1
+        ).select_related("driver", "constructor", "session")
+    }
+    colors = season_colors(year)
+    entries = []
+    next_found = False
+    for rnd in rounds:
+        sessions = sorted(
+            rnd.sessions.all(),
+            key=lambda s: (s.start_utc is None, s.start_utc or now, s.type),
+        )
+        race = next((s for s in sessions if s.type == RACE), None)
+        win = winners.get(rnd.pk)
+        if rnd.is_cancelled:
+            status = "cancelled"
+        elif _is_completed(rnd, race, win is not None, now):
+            status = "completed"
+        elif not next_found:
+            status, next_found = "next", True
+        else:
+            status = "upcoming"
+        entries.append(
+            {
+                "round": rnd.round,
+                "name": rnd.name,
+                "date": rnd.date,
+                "status": status,
+                "is_next": status == "next",
+                "has_sprint": any(s.type == SPRINT for s in sessions),
+                "race_start_utc": None if race is None else race.start_utc,
+                "circuit": {
+                    "slug": rnd.circuit.slug,
+                    "name": rnd.circuit.name,
+                    "country": rnd.circuit.country or None,
+                    "locality": rnd.circuit.locality or None,
+                    "timezone": rnd.circuit.timezone or None,
+                },
+                "sessions": [
+                    {
+                        "type": s.type,
+                        "start_utc": s.start_utc,
+                        "end_utc": s.end_utc,
+                        "status": s.status,
+                    }
+                    for s in sessions
+                ],
+                "winner": None
+                if win is None
+                else {
+                    "driver": driver_ref(win.driver),
+                    "team": team_ref(
+                        win.constructor.slug, win.constructor.name, colors.get(win.constructor_id)
+                    ),
+                },
+            }
+        )
+    next_entry = next((e for e in entries if e["is_next"]), None)
+    return {
+        "year": year,
+        "next_round": None
+        if next_entry is None
+        else {
+            "round": next_entry["round"],
+            "name": next_entry["name"],
+            "race_start_utc": next_entry["race_start_utc"],
+        },
+        "rounds": entries,
+    }
+
+
+# --- Dashboard (FR-105, FR-106) --------------------------------------------------------------
+
+DASHBOARD_TOP = 5
+
+
+def _podium_entry(result: Result, colors: dict) -> dict:
+    return {
+        "position": result.position,
+        "driver": driver_ref(result.driver),
+        "team": team_ref(
+            result.constructor.slug,
+            result.constructor.name,
+            colors.get(result.constructor_id),
+        ),
+    }
+
+
+def last_completed_race() -> dict | None:
+    """Newest race with results: podium (top 3, team on race day) and fastest lap. Two queries
+    plus one for colours."""
+    latest = (
+        Result.objects.filter(session__type=RACE)
+        .order_by("-session__round__date", "-session_id")
+        .values_list(
+            "session_id",
+            "session__round__season__year",
+            "session__round__round",
+            "session__round__name",
+            "session__round__date",
+            "session__round__circuit__slug",
+            "session__round__circuit__name",
+            "session__round__circuit__country",
+        )
+        .first()
+    )
+    if latest is None:
+        return None
+    session_id, year, number, name, date, circuit_slug, circuit_name, country = latest
+    rows = list(
+        Result.objects.filter(session_id=session_id)
+        .filter(Q(position__lte=3) | Q(fastest_lap_rank=1))
+        .select_related("driver", "constructor")
+        .order_by(F("position").asc(nulls_last=True))
+    )
+    colors = season_colors(year)
+    fastest = next((r for r in rows if r.fastest_lap_rank == 1), None)
+    return {
+        "year": year,
+        "round": number,
+        "name": name,
+        "date": date,
+        "circuit": {"slug": circuit_slug, "name": circuit_name, "country": country or None},
+        "podium": [
+            _podium_entry(r, colors) for r in rows if r.position is not None and r.position <= 3
+        ],
+        "fastest_lap": None
+        if fastest is None
+        else {
+            "driver": driver_ref(fastest.driver),
+            "team": _podium_entry(fastest, colors)["team"],
+            "time_ms": fastest.best_lap_ms,
+        },
+    }
+
+
+def _top_standings(kind: str) -> dict:
+    latest = standings.latest_position(kind)
+    if latest is None:
+        return {"season": None, "after_round": None, "entries": []}
+    rows = standings.standings_rows(kind, latest.season_id, latest.after_round)[:DASHBOARD_TOP]
+    colors = season_colors(latest.year) if kind == "constructors" else {}
+    return {
+        "season": latest.year,
+        "after_round": latest.after_round,
+        "entries": [
+            {
+                "position": row["position"],
+                "slug": row["entity"]["slug"],
+                "name": row["entity"]["name"],
+                "code": row["entity"]["code"],
+                "color": colors.get(row["entity"]["id"]),
+                "points": row["points"],
+                "wins": row["wins"],
+            }
+            for row in rows
+        ],
+    }
+
+
+def this_day_in_f1(today: dt.date) -> dict | None:
+    """A race won on today's day and month in an earlier year.
+
+    The pick is deterministic: candidates are ordered by date and the one at index
+    `today.toordinal() % len(candidates)` is taken, so it changes daily but is stable within a
+    day. Two queries.
+    """
+    candidates = list(
+        Result.objects.filter(
+            session__type=RACE,
+            position=1,
+            session__round__is_cancelled=False,
+            session__round__date__month=today.month,
+            session__round__date__day=today.day,
+            session__round__date__year__lt=today.year,
+        )
+        .select_related("driver", "constructor", "session__round")
+        .order_by("session__round__date", "session_id")
+    )
+    if not candidates:
+        return None
+    pick = candidates[today.toordinal() % len(candidates)]
+    rnd = pick.session.round
+    year = rnd.date.year
+    colors = color_map({year}, {pick.constructor_id})
+    return {
+        "year": year,
+        "round": rnd.round,
+        "race": rnd.name,
+        "date": rnd.date,
+        "driver": driver_ref(pick.driver),
+        "team": team_ref(
+            pick.constructor.slug, pick.constructor.name, colors.get((year, pick.constructor_id))
+        ),
+    }
+
+
+def dashboard(now: dt.datetime | None = None) -> dict:
+    """Everything the home page needs; every part is null or empty on an empty database."""
+    now = now or timezone.now()
+    year = calendar_year()
+    next_race = None
+    if year is not None:
+        entry = next((e for e in calendar(year, now)["rounds"] if e["is_next"]), None)
+        if entry is not None:
+            next_race = {"year": year, **entry}
+    today = now.date()
+    return {
+        "next_race": next_race,
+        "last_race": last_completed_race(),
+        "driver_standings": _top_standings("drivers"),
+        "constructor_standings": _top_standings("constructors"),
+        "this_day_in_f1": this_day_in_f1(today),
+        "counts": {
+            "seasons": Season.objects.count(),
+            "races": Round.objects.filter(is_cancelled=False, date__lte=today).count(),
+            "drivers": Driver.objects.count(),
+        },
+    }
+
+
+# --- Compare (FR-405) ------------------------------------------------------------------------
+
+NOT_CLASSIFIED = {"R", "D", "W", "F", "N", "E"}
+SAME_TEAM_LAP_COMPARISON_FROM = 2023
+
+
+def _classified(position: int | None, position_text: str) -> bool:
+    return position is not None and position_text not in NOT_CLASSIFIED
+
+
+def head_to_head(a: Driver, b: Driver, year: int | None = None) -> dict:
+    """Head-to-head of two drivers over races both entered (three queries).
+
+    Race: both classified, the better finishing position is ahead. Qualifying: qualifying
+    position from POLE_QUALIFYING_FROM_YEAR (1994), grid position (pit lane 0 ignored) before.
+    `teammate_seasons` lists seasons from 2023 in which both raced for the same constructor.
+    """
+    race_rows = Result.objects.filter(session__type=RACE, driver_id__in=[a.pk, b.pk])
+    quali_rows = QualifyingResult.objects.filter(
+        session__type=QUALIFYING,
+        driver_id__in=[a.pk, b.pk],
+        session__round__season__year__gte=POLE_QUALIFYING_FROM_YEAR,
+    )
+    if year is not None:
+        race_rows = race_rows.filter(session__round__season__year=year)
+        quali_rows = quali_rows.filter(session__round__season__year=year)
+    by_round: dict[int, dict[int, tuple]] = defaultdict(dict)
+    round_year: dict[int, int] = {}
+    for (
+        round_id,
+        season_year,
+        driver_id,
+        ctor_id,
+        ctor_slug,
+        position,
+        text,
+        grid,
+    ) in race_rows.values_list(
+        "session__round_id",
+        "session__round__season__year",
+        "driver_id",
+        "constructor_id",
+        "constructor__slug",
+        "position",
+        "position_text",
+        "grid",
+    ):
+        by_round[round_id][driver_id] = (ctor_id, ctor_slug, position, text, grid)
+        round_year[round_id] = season_year
+    quali: dict[int, dict[int, int | None]] = defaultdict(dict)
+    for round_id, driver_id, position in quali_rows.values_list(
+        "session__round_id", "driver_id", "position"
+    ):
+        quali[round_id][driver_id] = position
+
+    together = same_team = 0
+    race = {"both_finished": 0, "a_ahead": 0, "b_ahead": 0}
+    qualifying = {"compared": 0, "a_ahead": 0, "b_ahead": 0}
+    team_years: dict[int, dict[str, int]] = defaultdict(dict)
+    for round_id, drivers in by_round.items():
+        if a.pk not in drivers or b.pk not in drivers:
+            continue
+        together += 1
+        ra, rb = drivers[a.pk], drivers[b.pk]
+        if ra[0] == rb[0]:
+            same_team += 1
+            seen = team_years[round_year[round_id]]
+            seen[ra[1]] = seen.get(ra[1], 0) + 1
+        if _classified(ra[2], ra[3]) and _classified(rb[2], rb[3]) and ra[2] != rb[2]:
+            race["both_finished"] += 1
+            race["a_ahead" if ra[2] < rb[2] else "b_ahead"] += 1
+        if round_year[round_id] >= POLE_QUALIFYING_FROM_YEAR:
+            qa, qb = quali[round_id].get(a.pk), quali[round_id].get(b.pk)
+        else:
+            qa, qb = ra[4] or None, rb[4] or None
+        if qa is not None and qb is not None and qa != qb:
+            qualifying["compared"] += 1
+            qualifying["a_ahead" if qa < qb else "b_ahead"] += 1
+    teammate_seasons = [
+        {"year": season_year, "team_slug": slug, "races": count}
+        for season_year, teams in sorted(team_years.items())
+        if season_year >= SAME_TEAM_LAP_COMPARISON_FROM
+        for slug, count in sorted(teams.items())
+    ]
+    return {
+        "races_together": together,
+        "same_team_races": same_team,
+        "race": race,
+        "qualifying": qualifying,
+        "teammate_seasons": teammate_seasons,
+    }
+
+
+def compare_drivers(a: Driver, b: Driver, year: int | None = None) -> dict:
+    return {
+        "season": year,
+        "a": {"driver": driver_ref(a), "stats": driver_career_stats(a)},
+        "b": {"driver": driver_ref(b), "stats": driver_career_stats(b)},
+        "head_to_head": head_to_head(a, b, year),
+    }
+
+
+# --- Season matrix (FR-304) ------------------------------------------------------------------
+
+
+def _result_category(position: int | None, text: str, points) -> str:
+    if not _classified(position, text):
+        return "dnf"
+    if position == 1:
+        return "win"
+    if position <= 3:
+        return "podium"
+    return "points" if points and points > 0 else "no_points"
+
+
+def season_matrix(season: Season) -> dict:
+    """Drivers x rounds grid of race finishing positions (six queries at most).
+
+    Cells are aligned to `rounds`; None means the driver did not take part. Categories: win,
+    podium (2-3), points, no_points (classified outside the points) and dnf (retired,
+    disqualified, withdrew or not classified). Drivers are ordered by the newest championship
+    table, falling back to race points.
+    """
+    rounds = list(
+        Round.objects.filter(season=season, is_cancelled=False, round__isnull=False)
+        .order_by("round")
+        .values("round", "name", "date", "circuit__country")
+    )
+    index = {r["round"]: i for i, r in enumerate(rounds)}
+    rows = (
+        Result.objects.filter(session__round__season=season, session__type=RACE)
+        .order_by("session__round__round")
+        .values_list(
+            "driver_id",
+            "driver__slug",
+            "driver__given_name",
+            "driver__family_name",
+            "driver__code",
+            "constructor_id",
+            "constructor__slug",
+            "constructor__name",
+            "session__round__round",
+            "position",
+            "position_text",
+            "points",
+        )
+    )
+    drivers: dict[int, dict] = {}
+    for (
+        driver_id,
+        slug,
+        given,
+        family,
+        code,
+        ctor_id,
+        ctor_slug,
+        ctor_name,
+        number,
+        position,
+        text,
+        points,
+    ) in rows:
+        if number not in index:
+            continue
+        entry = drivers.setdefault(
+            driver_id,
+            {
+                "slug": slug,
+                "name": f"{given} {family}".strip(),
+                "code": code or None,
+                "family": family,
+                "total": Decimal(0),
+                "cells": [None] * len(rounds),
+                "ctor": None,
+            },
+        )
+        entry["total"] += points
+        entry["ctor"] = (ctor_id, ctor_slug, ctor_name)
+        entry["cells"][index[number]] = {
+            "position": position if _classified(position, text) else None,
+            "category": _result_category(position, text, points),
+        }
+    positions = standings.season_positions("drivers", season.pk)
+    colors = season_colors(season.year)
+    ordered = sorted(
+        drivers.items(),
+        key=lambda kv: (
+            positions.get(kv[0]) is None,
+            positions.get(kv[0]) or 0,
+            -kv[1]["total"],
+            kv[1]["family"],
+        ),
+    )
+    return {
+        "year": season.year,
+        "rounds": [
+            {
+                "round": r["round"],
+                "name": r["name"],
+                "date": r["date"],
+                "country": r["circuit__country"] or None,
+            }
+            for r in rounds
+        ],
+        "drivers": [
+            {
+                "slug": e["slug"],
+                "name": e["name"],
+                "code": e["code"],
+                "position": positions.get(driver_id),
+                "points": float(e["total"]),
+                "team": team_ref(e["ctor"][1], e["ctor"][2], colors.get(e["ctor"][0])),
+                "cells": e["cells"],
+            }
+            for driver_id, e in ordered
+        ],
+    }
