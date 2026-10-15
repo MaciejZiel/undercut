@@ -127,3 +127,14 @@ def podium_counts(season_id: int, upto_round: int) -> tuple[dict[str, int], dict
         .values_list("constructor__jolpica_id", "n")
     )
     return drivers, teams
+
+
+def qualifying_started(now: dt.datetime, *, within: dt.timedelta) -> list[tuple[int, dt.datetime]]:
+    """(round id, start) of qualifying sessions that started within the last `within`."""
+    sessions = m.Session.objects.filter(
+        type=m.Session.Type.Q,
+        start_utc__lte=now,
+        start_utc__gte=now - within,
+        round__is_cancelled=False,
+    ).values_list("round_id", "start_utc")
+    return list(sessions)
