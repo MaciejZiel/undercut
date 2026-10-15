@@ -66,8 +66,12 @@ class CareerStatsSerializer(serializers.Serializer):
 
 
 class DriverListSerializer(serializers.Serializer):
-    """Row of the driver list; ``titles`` is the number of world championships."""
+    """Row of the driver list; ``titles`` is the number of world championships.
 
+    ``id`` is exposed because the prediction API identifies drivers by it.
+    """
+
+    id = serializers.IntegerField()
     slug = serializers.CharField()
     given_name = serializers.CharField()
     family_name = serializers.CharField()

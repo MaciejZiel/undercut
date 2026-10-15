@@ -580,3 +580,13 @@ def test_detail_endpoints_constant_query_count(client, django_assert_max_num_que
     ):
         with django_assert_max_num_queries(10):
             assert client.get(url).status_code == 200
+
+
+def test_driver_list_exposes_ids_so_a_season_grid_can_be_picked(client):
+    rnd = make_round(2024, 1)
+    ver = f.DriverFactory(family_name="Verstappen")
+    race_result(rnd, ver, f.ConstructorFactory(), position=1)
+
+    rows = get(client, "/api/v1/drivers/", season=2024, page_size=100).json()["results"]
+
+    assert [(r["id"], r["slug"]) for r in rows] == [(ver.id, ver.slug)]

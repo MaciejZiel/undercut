@@ -102,6 +102,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/calendar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Season calendar with sessions and status
+         * @description Anonymous GET-only access; no session lookup, so responses are cacheable.
+         */
+        get: operations["v1_calendar_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/calendar/ics/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * iCalendar export of a round or a season
+         * @description Anonymous GET-only access; no session lookup, so responses are cacheable.
+         */
+        get: operations["v1_calendar_ics_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/circuits/": {
         parameters: {
             query?: never;
@@ -142,6 +182,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/compare/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Compare two drivers
+         * @description Anonymous GET-only access; no session lookup, so responses are cacheable.
+         */
+        get: operations["v1_compare_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/constructors/": {
         parameters: {
             query?: never;
@@ -174,6 +234,26 @@ export interface paths {
          * @description Anonymous GET-only access; no session lookup, so responses are cacheable.
          */
         get: operations["v1_constructors_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dashboard/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Home page data
+         * @description Anonymous GET-only access; no session lookup, so responses are cacheable.
+         */
+        get: operations["v1_dashboard_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -796,6 +876,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/seasons/{year}/matrix/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Drivers x rounds results grid
+         * @description Anonymous GET-only access; no session lookup, so responses are cacheable.
+         */
+        get: operations["v1_seasons_matrix_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/standings/constructors/": {
         parameters: {
             query?: never;
@@ -885,6 +985,39 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Calendar: {
+            year: number | null;
+            next_round: components["schemas"]["NextRound"] | null;
+            rounds: components["schemas"]["CalendarEntry"][];
+        };
+        CalendarCircuit: {
+            slug: string;
+            name: string;
+            country: string | null;
+            locality: string | null;
+            /** @description IANA name of the circuit. */
+            timezone: string | null;
+        };
+        CalendarEntry: {
+            round: number | null;
+            name: string;
+            /** Format: date */
+            date: string;
+            /** @description completed, next, upcoming or cancelled. */
+            status: string;
+            is_next: boolean;
+            has_sprint: boolean;
+            /**
+             * Format: date-time
+             * @description Countdown target; null when the race time is unknown.
+             */
+            race_start_utc: string | null;
+            circuit: components["schemas"]["CalendarCircuit"];
+            /** @description Only sessions that exist. */
+            sessions: components["schemas"]["CalendarSession"][];
+            /** @description Null until results exist. */
+            winner: components["schemas"]["CalendarWinner"] | null;
+        };
         CalendarRound: {
             round: number | null;
             name: string;
@@ -896,10 +1029,23 @@ export interface components {
             /** @description Null for upcoming rounds. */
             winner: components["schemas"]["RoundWinner"] | null;
         };
+        CalendarSession: {
+            /** @description FP1, FP2, FP3, SQ, SPRINT, Q or RACE. */
+            type: string;
+            /** Format: date-time */
+            start_utc: string | null;
+            /** Format: date-time */
+            end_utc: string | null;
+            status: string;
+        };
+        CalendarWinner: {
+            driver: components["schemas"]["DriverRef"];
+            team: components["schemas"]["TeamRef"];
+        };
         /**
          * @description Career totals; all values are null when the module has no race results.
          *
-         *     TODO: ``titles`` is always null until the standings module can supply champions.
+         *     ``titles`` are championships won (constructors from 1958), see the standings module.
          */
         CareerStats: {
             starts: number | null;
@@ -915,6 +1061,15 @@ export interface components {
             points: number | null;
             titles?: number | null;
         };
+        /**
+         * @description * `win` - win
+         *     * `podium` - podium
+         *     * `points` - points
+         *     * `no_points` - no_points
+         *     * `dnf` - dnf
+         * @enum {string}
+         */
+        CategoryEnum: "win" | "podium" | "points" | "no_points" | "dnf";
         CircuitDetail: {
             slug: string;
             name: string;
@@ -961,6 +1116,16 @@ export interface components {
             driver: components["schemas"]["DriverRef"];
             team: components["schemas"]["TeamRef"];
         };
+        Compare: {
+            season: number | null;
+            a: components["schemas"]["CompareSide"];
+            b: components["schemas"]["CompareSide"];
+            head_to_head: components["schemas"]["HeadToHead"];
+        };
+        CompareSide: {
+            driver: components["schemas"]["DriverRef"];
+            stats: components["schemas"]["CareerStats"];
+        };
         /**
          * @description * `SOFT` - SOFT
          *     * `MEDIUM` - MEDIUM
@@ -981,7 +1146,7 @@ export interface components {
          * @enum {string}
          */
         CompoundLetterEnum: "S" | "M" | "H" | "I" | "W" | "?";
-        /** @description Constructor page. TODO: ``stats.titles`` is null until the standings module exists. */
+        /** @description Constructor page. */
         ConstructorDetail: {
             slug: string;
             name: string;
@@ -992,14 +1157,14 @@ export interface components {
             current_season: number | null;
             current_drivers: components["schemas"]["SeasonDriver"][];
         };
-        /** @description Row of the constructor list. TODO: ``titles`` is null until the standings module exists. */
+        /** @description Row of the constructor list; ``titles`` counts constructors' championships (from 1958). */
         ConstructorList: {
             slug: string;
             name: string;
             readonly nationality: string | null;
             starts: number;
             wins: number;
-            titles?: number | null;
+            titles: number;
         };
         ConstructorSeasonRow: {
             year: number;
@@ -1007,7 +1172,7 @@ export interface components {
             /** Format: double */
             points: number | null;
             wins: number;
-            /** @description Null until the standings module exists. */
+            /** @description Position in the newest table of the season (final once the season is over). */
             championship_position: number | null;
             drivers: components["schemas"]["SeasonDriver"][];
         };
@@ -1026,14 +1191,50 @@ export interface components {
             /** @description Can at best equal the best rival's points; the countback would decide. */
             tie_break_needed: boolean;
         };
+        Counts: {
+            seasons: number;
+            /** @description Rounds held so far, cancelled excluded. */
+            races: number;
+            drivers: number;
+        };
         Csrf: {
             csrf_token: string;
+        };
+        Dashboard: {
+            next_race: components["schemas"]["DashboardNextRace"] | null;
+            last_race: components["schemas"]["LastRace"] | null;
+            driver_standings: components["schemas"]["TopStandings"];
+            constructor_standings: components["schemas"]["TopStandings"];
+            /** @description A race won on today's day and month in an earlier year. */
+            this_day_in_f1: components["schemas"]["ThisDay"] | null;
+            counts: components["schemas"]["Counts"];
+        };
+        DashboardNextRace: {
+            round: number | null;
+            name: string;
+            /** Format: date */
+            date: string;
+            /** @description completed, next, upcoming or cancelled. */
+            status: string;
+            is_next: boolean;
+            has_sprint: boolean;
+            /**
+             * Format: date-time
+             * @description Countdown target; null when the race time is unknown.
+             */
+            race_start_utc: string | null;
+            circuit: components["schemas"]["CalendarCircuit"];
+            /** @description Only sessions that exist. */
+            sessions: components["schemas"]["CalendarSession"][];
+            /** @description Null until results exist. */
+            winner: components["schemas"]["CalendarWinner"] | null;
+            year: number;
         };
         DeleteAccount: {
             /** @description The account's display name, typed to confirm. */
             display_name: string;
         };
-        /** @description Driver page. TODO: ``stats.titles`` is null until the standings module exists. */
+        /** @description Driver page. */
         DriverDetail: {
             slug: string;
             given_name: string;
@@ -1049,8 +1250,13 @@ export interface components {
             seasons: components["schemas"]["DriverSeason"][];
             last_results: components["schemas"]["DriverResult"][];
         };
-        /** @description Row of the driver list. TODO: ``titles`` is null until the standings module exists. */
+        /**
+         * @description Row of the driver list; ``titles`` is the number of world championships.
+         *
+         *     ``id`` is exposed because the prediction API identifies drivers by it.
+         */
         DriverList: {
+            id: number;
             slug: string;
             given_name: string;
             family_name: string;
@@ -1059,7 +1265,7 @@ export interface components {
             readonly nationality: string | null;
             starts: number;
             wins: number;
-            titles?: number | null;
+            titles: number;
             /** @description Current or last team on race day. */
             readonly team: components["schemas"]["TeamRef"] | null;
         };
@@ -1090,7 +1296,7 @@ export interface components {
             /** Format: double */
             points: number | null;
             wins: number;
-            /** @description Null until the standings module exists. */
+            /** @description Position in the newest table of the season (final once the season is over). */
             championship_position: number | null;
         };
         /**
@@ -1109,6 +1315,11 @@ export interface components {
         Error: {
             detail: string;
             code: string;
+        };
+        FastestLap: {
+            driver: components["schemas"]["DriverRef"];
+            team: components["schemas"]["TeamRef"];
+            time_ms: number | null;
         };
         FavoriteConstructor: {
             slug: string;
@@ -1133,6 +1344,14 @@ export interface components {
             constructors: components["schemas"]["FavoriteConstructor"][];
             limits: components["schemas"]["FavoriteLimits"];
         };
+        HeadToHead: {
+            races_together: number;
+            same_team_races: number;
+            race: components["schemas"]["RaceHeadToHead"];
+            qualifying: components["schemas"]["QualifyingHeadToHead"];
+            /** @description Same team, from 2023. */
+            teammate_seasons: components["schemas"]["TeammateSeason"][];
+        };
         HistoryRow: {
             round: components["schemas"]["PredictionRound"] | null;
             pick: components["schemas"]["Pick"];
@@ -1149,6 +1368,14 @@ export interface components {
             median_ms: number | null;
             /** Format: double */
             stdev_ms: number | null;
+        };
+        LapTimeRace: {
+            round: number;
+            name: string;
+            a_median_lap_ms: number | null;
+            b_median_lap_ms: number | null;
+            /** @description a minus b. */
+            delta_ms: number | null;
         };
         Laps: {
             session: components["schemas"]["SessionHeader"];
@@ -1171,6 +1398,17 @@ export interface components {
             sector2_ms: (number | null)[];
             sector3_ms: (number | null)[];
             summary: components["schemas"]["LapSummary"];
+        };
+        LastRace: {
+            year: number;
+            round: number | null;
+            name: string;
+            /** Format: date */
+            date: string;
+            circuit: components["schemas"]["CircuitRef"];
+            podium: components["schemas"]["PodiumEntry"][];
+            /** @description Null when unknown. */
+            fastest_lap: components["schemas"]["FastestLap"] | null;
         };
         Leaderboard: {
             season: number | null;
@@ -1214,6 +1452,49 @@ export interface components {
             invite_code: string;
             is_owner: boolean;
             member_count: number;
+        };
+        Matrix: {
+            year: number;
+            rounds: components["schemas"]["MatrixRound"][];
+            /** @description Championship order. */
+            drivers: components["schemas"]["MatrixDriver"][];
+        };
+        MatrixCell: {
+            /** @description Classified finishing position, null when not classified. */
+            position: number | null;
+            /**
+             * @description podium is P2-P3; dnf covers retired, disqualified and not classified.
+             *
+             *     * `win` - win
+             *     * `podium` - podium
+             *     * `points` - points
+             *     * `no_points` - no_points
+             *     * `dnf` - dnf
+             */
+            category: components["schemas"]["CategoryEnum"];
+        };
+        MatrixDriver: {
+            slug: string;
+            name: string;
+            code: string | null;
+            /** @description Championship position in the newest table. */
+            position: number | null;
+            /**
+             * Format: double
+             * @description Race points scored in the listed rounds.
+             */
+            points: number;
+            /** @description Team in the driver's latest race of the season. */
+            team: components["schemas"]["TeamRef"];
+            /** @description Aligned to `rounds`; a null item means the driver did not take part. */
+            cells: components["schemas"]["MatrixCell"][];
+        };
+        MatrixRound: {
+            round: number;
+            name: string;
+            /** Format: date */
+            date: string;
+            country: string | null;
         };
         Me: {
             is_authenticated: boolean;
@@ -1273,6 +1554,12 @@ export interface components {
          * @enum {string}
          */
         NeutralisationKindEnum: "SC" | "VSC";
+        NextRound: {
+            round: number | null;
+            name: string;
+            /** Format: date-time */
+            race_start_utc: string | null;
+        };
         NotFound: {
             detail: string;
             /** @description Whether detailed analytics exist for the season (2023 onwards). */
@@ -1415,6 +1702,12 @@ export interface components {
             stops: components["schemas"]["PitStop"][];
             ranking: components["schemas"]["PitRanking"][];
         };
+        PodiumEntry: {
+            position: number;
+            driver: components["schemas"]["DriverRef"];
+            /** @description Team on race day with its season colour. */
+            team: components["schemas"]["TeamRef"];
+        };
         Positions: {
             session: components["schemas"]["SessionHeader"];
             laps: number[];
@@ -1456,6 +1749,12 @@ export interface components {
             /** @description Championship position per round, aligned to `rounds`. */
             positions: (number | null)[];
         };
+        QualifyingHeadToHead: {
+            a_ahead: number;
+            b_ahead: number;
+            /** @description Qualifying position from 1994, grid position before. */
+            compared: number;
+        };
         QualifyingResult: {
             position: number | null;
             driver: components["schemas"]["DriverRef"];
@@ -1487,6 +1786,12 @@ export interface components {
             sector: number | null;
             driver_code: string | null;
             message: string;
+        };
+        RaceHeadToHead: {
+            a_ahead: number;
+            b_ahead: number;
+            /** @description Races where both were classified and not level on position. */
+            both_finished: number;
         };
         RaceResult: {
             position: number | null;
@@ -1706,7 +2011,7 @@ export interface components {
             code: string | null;
             number: number | null;
         };
-        /** @description Row of the season list. TODO: champions are null until the standings module exists. */
+        /** @description Row of the season list; champions are null until the season is finished. */
         SeasonList: {
             year: number;
             readonly name: string | null;
@@ -1750,6 +2055,17 @@ export interface components {
             /** @description Rounds that have a table for this season. */
             rounds: number[];
             results: components["schemas"]["StandingRow"][];
+        };
+        StandingsEntry: {
+            position: number | null;
+            slug: string;
+            name: string;
+            code: string | null;
+            /** @description Constructors only. */
+            color: string | null;
+            /** Format: double */
+            points: number;
+            wins: number;
         };
         StatEntry: {
             driver: components["schemas"]["PickDriver"] | null;
@@ -1796,6 +2112,25 @@ export interface components {
             /** @description #rrggbb or null (neutral colour). */
             color: string | null;
         };
+        TeammateSeason: {
+            year: number;
+            team_slug: string;
+            /** @description Races both started for this team. */
+            races: number;
+            /** @description Null when there is no lap data, see the reason. */
+            lap_times: components["schemas"]["LapTimeRace"][] | null;
+            lap_times_reason: string | null;
+        };
+        ThisDay: {
+            year: number;
+            round: number | null;
+            race: string;
+            /** Format: date */
+            date: string;
+            /** @description The winner. */
+            driver: components["schemas"]["DriverRef"];
+            team: components["schemas"]["TeamRef"];
+        };
         TitleRace: {
             season: number | null;
             after_round: number | null;
@@ -1816,6 +2151,12 @@ export interface components {
             contenders: components["schemas"]["Contender"][];
             /** @description Drivers in the table without a chance. */
             eliminated: number;
+        };
+        TopStandings: {
+            season: number | null;
+            after_round: number | null;
+            /** @description Top five. */
+            entries: components["schemas"]["StandingsEntry"][];
         };
         /**
          * @description * `RACE` - RACE
@@ -2063,6 +2404,52 @@ export interface operations {
             };
         };
     };
+    v1_calendar_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Season year (default: the latest season with rounds). */
+                year?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Calendar"];
+                };
+            };
+        };
+    };
+    v1_calendar_ics_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Only this round (default: all). */
+                round?: number;
+                /** @description Season year (default: the latest season with rounds). */
+                year?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/calendar": string;
+                };
+            };
+        };
+    };
     v1_circuits_list: {
         parameters: {
             query?: {
@@ -2117,6 +2504,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CircuitDetail"];
+                };
+            };
+        };
+    };
+    v1_compare_retrieve: {
+        parameters: {
+            query: {
+                /** @description Slug of the first driver. */
+                a: string;
+                /** @description Slug of the second driver. */
+                b: string;
+                /** @description Limit the head-to-head to this season. */
+                season?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Compare"];
                 };
             };
         };
@@ -2180,12 +2593,31 @@ export interface operations {
             };
         };
     };
+    v1_dashboard_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Dashboard"];
+                };
+            };
+        };
+    };
     v1_drivers_list: {
         parameters: {
             query?: {
                 /** @description Raced in the latest season with results. */
                 active?: boolean | null;
-                /** @description Only world champions. Not available until standings are integrated: true answers 400. */
+                /** @description true: only world champions; false: only drivers without a title. */
                 champion?: boolean | null;
                 /** @description Constructor slug. */
                 constructor?: string;
@@ -3352,6 +3784,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SeasonDetail"];
+                };
+            };
+        };
+    };
+    v1_seasons_matrix_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Matrix"];
                 };
             };
         };
