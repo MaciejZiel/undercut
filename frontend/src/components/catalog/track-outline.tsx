@@ -111,17 +111,21 @@ export function TrackOutline({
         <g className="racer" aria-hidden="true">
           {carsFor(seed).map((car) => {
             const lap = Math.max(3, (lapMs ?? 88_000) / 1000 / speed);
+            const dur = `${(lap * car.pace).toFixed(2)}s`;
+            const begin = `${(2.6 - car.offset * lap).toFixed(2)}s`;
             return (
-              <circle key={car.color} r={side * 0.012} fill={car.color} stroke="var(--bg)" strokeWidth={side * 0.003} opacity={0}>
+              <g key={car.color} opacity={0}>
                 <set attributeName="opacity" to={1} begin="2.6s" fill="freeze" />
-                <animateMotion
-                  path={path}
-                  dur={`${(lap * car.pace).toFixed(2)}s`}
-                  begin={`${(2.6 - car.offset * lap).toFixed(2)}s`}
-                  repeatCount="indefinite"
-                  calcMode="linear"
-                />
-              </circle>
+                {/* A short tail of the car's colour behind the head: a dash that slides along the line. */}
+                <path d={path} pathLength={1} fill="none" stroke={car.color} strokeWidth={side * 0.007} strokeLinecap="round" strokeDasharray="0.04 2" strokeDashoffset={0.04} opacity={0.55}>
+                  <animate attributeName="stroke-dashoffset" from="0.04" to="-0.96" dur={dur} begin={begin} repeatCount="indefinite" calcMode="linear" />
+                </path>
+                <g>
+                  <circle r={side * 0.02} fill={car.color} opacity={0.2} />
+                  <circle r={side * 0.0105} fill={car.color} stroke="var(--bg)" strokeWidth={side * 0.0035} />
+                  <animateMotion path={path} dur={dur} begin={begin} repeatCount="indefinite" calcMode="linear" />
+                </g>
+              </g>
             );
           })}
         </g>
