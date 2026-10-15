@@ -12,6 +12,11 @@ from apps.catalog.models import Circuit, Round, Season, Session
 pytestmark = pytest.mark.django_db
 
 
+@pytest.fixture(autouse=True)
+def _debug(settings):
+    settings.DEBUG = True  # the command refuses to run otherwise
+
+
 def seed(*args) -> dict:
     out = StringIO()
     call_command("seed_e2e", *args, stdout=out)
@@ -70,3 +75,11 @@ def test_lock_moves_qualifying_into_the_past_and_can_be_undone():
 
     assert seed()["locked"] is False
     assert Session.objects.get(round=rnd, type=Session.Type.Q).start_utc > timezone.now()
+
+
+def test_refuses_to_run_outside_debug(settings):
+    settings.DEBUG = False
+    round_ = make_round(2024, 5)
+    with pytest.raises(CommandError, match="DJANGO_DEBUG"):
+        seed()
+    assert not Session.objects.filter(round=round_).exists()

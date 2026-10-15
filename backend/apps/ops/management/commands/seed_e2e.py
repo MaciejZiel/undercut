@@ -15,6 +15,7 @@ The last line of the output is JSON with the keys year, round, qualifying_start 
 import json
 from datetime import timedelta
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
@@ -61,6 +62,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if not settings.DEBUG:
+            # It rewrites session times of a real round: never on a production database.
+            raise CommandError("seed_e2e only runs with DJANGO_DEBUG=true (the e2e stack).")
         locked = options["lock"]
         now = timezone.now()
         with transaction.atomic():
