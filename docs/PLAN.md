@@ -56,6 +56,23 @@ Przykładowy łańcuch zdarzeń: `SessionResultsFinalized` → klasyfikacje, pun
 - Dane z Jolpica-F1 i OpenF1 (CC BY-NC-SA 4.0): bez monetyzacji, atrybucja na stronie „Źródła” i w stopce.
 - Nazwa i logo bez „F1” w formie sugerującej oficjalność.
 
+## Status (aktualizowany)
+
+| Etap | Stan |
+|---|---|
+| 0. Szkielet | zrobione (CI, Compose, moduły, kontrakty importów) |
+| 1. Zdarzenia | zrobione (outbox z dostarczaniem per handler, scheduler z dostawcami zadań) |
+| 2. Dane | zrobione: import historii 1950-dziś (30 s) z klasyfikacjami, synchronizacja z API po sesjach, korekty, kalendarz z godzinami sesji |
+| 3. Katalog i klasyfikacje | zrobione (API i strony), tytuły, kalkulator tytułu, porównanie, macierz, pulpit, kalendarz `.ics` w trakcie na froncie |
+| Wdrożenie | pliki gotowe (`deploy/termux/`), **czeka na zgodę właściciela** |
+| 4. Analityka | zrobione: import OpenF1, API, widoki; niezweryfikowane na weekendzie na żywo |
+| 5. Konta i typowanie | zrobione: allauth, ulubieni, typowanie, ligi, e-mail po wyścigu; Google OAuth wymaga kluczy |
+| 6. Replay | zrobione (API i odtwarzacz); mapa toru i live timing świadomie odłożone |
+| 7. Szlif | w toku: SEO, strony „Źródła" i „Prywatność", kopie zapasowe i test odtworzenia, E2E i Lighthouse po wdrożeniu |
+
+Zweryfikowane na prawdziwych danych: liczba mistrzów świata, tytuły konstruktorów, klasyfikacje
+wybranych sezonów, moment rozstrzygnięcia tytułu 2024, bezpośrednie starcia.
+
 ## Do zrobienia przed etapem 0
 - [x] Repo publiczne.
 - [x] Domena: bez zakupu, subdomena `undercut.maciejzielinski.dev` (rekord A na droplet, TLS z Caddy).
