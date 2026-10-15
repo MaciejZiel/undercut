@@ -225,3 +225,72 @@ REVALIDATE_SECRET = env("REVALIDATE_SECRET", default="")
 SITE_URL = env("SITE_URL", default="https://undercut.maciejzielinski.dev").rstrip("/")
 # Public base of the API, for the one-click unsubscribe link (defaults to the site itself).
 API_PUBLIC_URL = env("API_PUBLIC_URL", default=SITE_URL).rstrip("/")
+
+
+# === Production operations (apps.ops): logging, Sentry, security review =========================
+INSTALLED_APPS += ["apps.ops"]
+# First in the chain, so the request id exists for every later middleware and log line.
+MIDDLEWARE = ["apps.ops.middleware.RequestIdMiddleware", *MIDDLEWARE]
+
+# Logging: JSON lines on stdout when DEBUG is off (the supervisors append stdout to
+# ~/services/logs/undercut-*.log), plain text in development. LOG_FORMAT=json|text overrides.
+LOG_FORMAT = env("LOG_FORMAT", default="text" if DEBUG else "json")
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {"()": "apps.ops.logging.RequestIdFilter"},
+        "redact": {"()": "apps.ops.logging.RedactionFilter"},
+    },
+    "formatters": {
+        "json": {"()": "apps.ops.logging.JsonFormatter"},
+        "text": {"format": "%(asctime)s %(levelname)s %(name)s [%(request_id)s] %(message)s"},
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "json" if LOG_FORMAT == "json" else "text",
+            # Order matters: request_id first, then redaction of the final message.
+            "filters": ["request_id", "redact"],
+        },
+    },
+    "root": {"handlers": ["console"], "level": env("LOG_LEVEL", default="INFO")},
+    "loggers": {
+        # Our middleware writes the access line; Django's own 4xx/5xx request log would double it.
+        "django.request": {"level": "ERROR"},
+    },
+}
+
+# Sentry: off unless SENTRY_DSN is set. The package is not a dependency (it pulls in certifi,
+# MPL-2.0, which needs written approval); install it by hand on the server if wanted. Without it
+# the app only logs a warning. No personal data, no tracing unless a rate is set.
+from apps.ops.sentry import init_sentry  # noqa: E402
+
+init_sentry(
+    env("SENTRY_DSN", default=""),
+    environment=env("SENTRY_ENVIRONMENT", default="production" if not DEBUG else "development"),
+    traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
+)
+
+# Security review (run `manage.py check --deploy` after changing any of this).
+# - SECURE_PROXY_SSL_HEADER, secure cookies, HSTS, nosniff and referrer policy are set above when
+#   DEBUG is off. The header is trustworthy because gunicorn listens on loopback only and nginx
+#   always sets X-Forwarded-Proto.
+# - SECURE_SSL_REDIRECT stays off on purpose: TLS ends at Cloudflare, nginx speaks plain HTTP on
+#   loopback, and a redirect would break the local health checks. HTTPS is enforced at the edge.
+# - HSTS does not include subdomains: maciejzielinski.dev hosts other, unrelated apps.
+# - ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS come from DJANGO_ALLOWED_HOSTS and
+#   DJANGO_CSRF_TRUSTED_ORIGINS (empty by default, so nothing is accepted by accident).
+# - The session cookie is HttpOnly. The CSRF cookie must stay readable by the frontend, so it is
+#   not HttpOnly (Django's default).
+# - /admin/ is reachable only from localhost or Tailscale (nginx-server.conf); keep it that way.
+SESSION_COOKIE_HTTPONLY = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
+X_FRAME_OPTIONS = "DENY"
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
+# Same ceiling as nginx's client_max_body_size.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 256 * 1024
+# Deliberate: see the notes above (no subdomain HSTS, no preload, TLS redirect done at the edge).
+SILENCED_SYSTEM_CHECKS = ["security.W005", "security.W008", "security.W021"]

@@ -3,6 +3,7 @@ import time
 from django.core.management.base import BaseCommand
 
 from apps.events.scheduler import run_due
+from apps.ops.heartbeat import SCHEDULER, beat
 
 
 class Command(BaseCommand):
@@ -14,6 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         while True:
+            beat(SCHEDULER)
             fired = run_due()
             if fired:
                 self.stdout.write(f"Published {fired} scheduled event(s).")

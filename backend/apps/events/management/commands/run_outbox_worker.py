@@ -3,6 +3,7 @@ import time
 from django.core.management.base import BaseCommand
 
 from apps.events.worker import process_batch
+from apps.ops.heartbeat import OUTBOX_WORKER, beat
 
 
 class Command(BaseCommand):
@@ -14,6 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         while True:
+            beat(OUTBOX_WORKER)
             handled = process_batch()
             if options["once"]:
                 self.stdout.write(f"Handled {handled} event(s).")

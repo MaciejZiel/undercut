@@ -88,6 +88,8 @@ If the build complains about the Android API level, `export ANDROID_API_LEVEL=36
    nohup ~/services/run-undercut-worker.sh    >/dev/null 2>&1 &
    nohup ~/services/run-undercut-scheduler.sh >/dev/null 2>&1 &
    nohup ~/services/run-undercut-frontend.sh  >/dev/null 2>&1 &
+   # scheduled jobs (backups, pipeline check): start the cron daemon once, see "Backups and monitoring"
+   pgrep -x crond >/dev/null || crond
    ```
 
    To start them now without rebooting, run the same four lines once.
@@ -99,7 +101,8 @@ If the build complains about the Android API level, `export ANDROID_API_LEVEL=36
     `undercut`, domain `maciejzielinski.dev`, service `HTTP localhost:8080`.
 11. **Create the admin user** [PRODUCTION]: load the env (`set -a; . ~/.config/undercut/env; set +a`) and run
     `backend/.venv/bin/python backend/manage.py createsuperuser` from `~/undercut/backend`.
-12. **Verify**: `curl -s http://127.0.0.1:8110/api/health/` (loopback on the server), then
+12. **Verify**: `curl -s http://127.0.0.1:8110/api/health/` and `/api/ready/` (loopback on the server; `127.0.0.1` must be in
+    `DJANGO_ALLOWED_HOSTS`, as in `env.example`), `sh deploy/termux/check-pipeline.sh`, then
     `curl -sI -H 'Host: undercut.maciejzielinski.dev' http://127.0.0.1:8080/` and the public URL. Check the logs for errors.
 
 ## Update checklist
@@ -136,9 +139,37 @@ If the build complains about the Android API level, `export ANDROID_API_LEVEL=36
    the backup step (`pg_restore -d undercut --clean --if-exists ~/backups/undercut-<sha>.dump`, with the API, worker and scheduler stopped by PID first).
    [PRODUCTION]
 
+## Backups and monitoring
+
+Scripts (all in `deploy/termux/`, none print secrets, none run on their own until cron is set up):
+
+| Script | What it does |
+|---|---|
+| `backup.sh` | `pg_dump -Fc undercut` to `~/backups/undercut-<UTC timestamp>.dump` (mode 600), refuses below 2 GB free, keeps 7 daily and 4 weekly dumps, deletes only files named `undercut-YYYYMMDDTHHMMSSZ.dump` |
+| `restore-test.sh` | restores the newest dump into the scratch database `undercut_restore_test`, prints row counts, drops the scratch database, prints PASSED or FAILED. Run on request only |
+| `check-pipeline.sh` | loads the env file and runs `manage.py check_pipeline` (exit 1 = needs attention) |
+
+Suggested cron setup [PRODUCTION] (`pkg install cronie`, then `crond` from `~/.termux/boot/start-services`, see step 8;
+`crontab -e`; cron uses the device time zone, the times below assume UTC, adjust if not):
+
+```cron
+# nightly backup at 02:30, before the 03:00 demo reset and the 05:00 calendar sync
+30 2 * * * $HOME/undercut/deploy/termux/backup.sh >> $HOME/services/logs/undercut-backup.log 2>&1
+# pipeline check every 5 minutes; the log line shows rc=1 and the problem when something is wrong
+*/5 * * * * $HOME/undercut/deploy/termux/check-pipeline.sh >> $HOME/services/logs/undercut-check.log 2>&1
+```
+
+Keep the machine awake for cron (`termux-wake-lock`, as the other services already need). The restore test and the
+meaning of every alert are in `docs/operations.md`. NFR-602: run `restore-test.sh` once on the server after the first
+backup and note the date and result in `docs/operations.md`.
+
 ## Notes
 
 - Scripts print no env values. Do not run `env` or `set -x` on the server with the env file loaded.
 - Behind the proxy the API sees `127.0.0.1` as client address; nginx rate limits key on `CF-Connecting-IP`
   and pass it as `X-Forwarded-For`.
-- Backups: `pg_dump -d undercut -Fc > ~/backups/undercut.dump`.
+- Hand-made dumps named `undercut-<sha>.dump` (update checklist) are never deleted by `backup.sh`; remove them yourself.
+- `/admin/` and `/_internal/` are blocked for traffic that came through the tunnel (`nginx-server.conf`, `nginx-http.conf`).
+  The admin is reachable only for requests made on the server itself or arriving over Tailscale without the Cloudflare
+  header; the request must carry `Host: undercut.maciejzielinski.dev` (a browser needs a proxy or hosts-file entry that
+  sets it). Until Tailscale is wired to port 8080, use `createsuperuser`/`shell` on the server instead of the web admin.
