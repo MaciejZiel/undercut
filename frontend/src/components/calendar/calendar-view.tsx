@@ -6,7 +6,8 @@ import type { components } from "@/lib/api/client";
 import { formatDayMonth } from "@/lib/format";
 import { circuitHref, roundHref } from "@/lib/routes";
 import { Countdown } from "@/components/dashboard/countdown";
-import { Badge } from "@/components/ui/entity-links";
+import { TeamBar } from "@/components/ui/entity-links";
+import { driverHref } from "@/lib/routes";
 import { Dash } from "@/components/ui/value";
 import { formatSessionTime, icsHref, safeZone, sessionLabel, statusLabel } from "./time";
 import { useViewerZone } from "./use-viewer-zone";
@@ -45,13 +46,38 @@ export function CalendarView({ year, rounds }: { year: number; rounds: Entry[] }
           {mode === "viewer" ? `Times shown in ${viewerZone}.` : "Times shown in each circuit's local time."}
         </p>
       </div>
-      <ol className="border-t border-line">
-        {rounds.map((entry, i) => (
-          <RoundCard key={`${entry.round ?? "x"}-${i}`} year={year} entry={entry} mode={mode} viewerZone={viewerZone} />
+      <div>
+        {groupByMonth(rounds).map((g) => (
+          <section key={g.key} aria-labelledby={`month-${g.key}`} className="mt-8 first:mt-0">
+            <h3 id={`month-${g.key}`} className="mb-1 text-[0.8125rem] font-bold text-muted">
+              {g.label}
+            </h3>
+            <ol className="border-t border-line">
+              {g.entries.map(({ entry, index }) => (
+                <RoundCard key={`${entry.round ?? "x"}-${index}`} year={year} entry={entry} mode={mode} viewerZone={viewerZone} />
+              ))}
+            </ol>
+          </section>
         ))}
-      </ol>
+      </div>
     </div>
   );
+}
+
+/** Rounds grouped under their month, in calendar order. The month comes from the ISO date, so no time zone shifts it. */
+function groupByMonth(rounds: Entry[]) {
+  const groups: { key: string; label: string; entries: { entry: Entry; index: number }[] }[] = [];
+  rounds.forEach((entry, index) => {
+    const key = entry.date.slice(0, 7);
+    let g = groups[groups.length - 1];
+    if (!g || g.key !== key) {
+      const label = new Intl.DateTimeFormat("en-GB", { month: "long", timeZone: "UTC" }).format(new Date(`${key}-01T00:00:00Z`));
+      g = { key, label, entries: [] };
+      groups.push(g);
+    }
+    g.entries.push({ entry, index });
+  });
+  return groups;
 }
 
 function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Entry; mode: Mode; viewerZone: string }) {
@@ -62,7 +88,6 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
   const zone = mode === "circuit" && circuitZone ? circuitZone : viewerZone;
   const fallback = mode === "circuit" && !circuitZone;
   const headId = `round-${entry.round ?? "x"}-${entry.date}`;
-  const tone = cancelled ? "danger" : entry.status === "next" ? "accent" : "neutral";
 
   return (
     <li className="border-b border-line">
@@ -78,7 +103,7 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
           <span className="mt-1 block text-sm font-bold text-fg">{formatDayMonth(entry.date) ?? <Dash />}</span>
         </p>
         <div className="min-w-0">
-          <h2 id={headId} className={`heading ${completed || cancelled ? "text-xl" : "text-2xl"}`}>
+          <h2 id={headId} className={`heading ${completed || cancelled ? "text-lg" : "text-xl sm:text-[1.375rem]"}`}>
             {entry.round != null && !cancelled ? (
               <Link href={roundHref(year, entry.round)} className="hover:text-accent hover:underline">
                 {entry.name}
@@ -94,8 +119,10 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
               </Link>
               {entry.circuit.country ? `, ${entry.circuit.country}` : ""}
             </span>
-            <Badge tone={tone}>{statusLabel(entry.status)}</Badge>
-            {entry.has_sprint && <Badge>Sprint</Badge>}
+            <span className={completed ? "sr-only" : `font-bold ${cancelled ? "text-danger" : entry.status === "next" ? "text-accent" : ""}`}>
+              {statusLabel(entry.status)}
+            </span>
+            {entry.has_sprint && <span className="font-bold">Sprint</span>}
           </p>
           {highlight && (
             <div className="mt-4">
@@ -131,10 +158,21 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
             </div>
           )}
         </div>
+        {completed && entry.winner && (
+          <p className="col-start-2 flex items-center text-sm sm:col-start-3 sm:row-start-1">
+            <TeamBar color={entry.winner.team.color} />
+            <span className="ml-2">
+              <span className="text-muted">Won by </span>
+              <Link href={driverHref(entry.winner.driver.slug)} className="font-bold hover:text-accent hover:underline">
+                {entry.winner.driver.name}
+              </Link>
+            </span>
+          </p>
+        )}
         {!cancelled && !completed && entry.round != null && (
           <a
             href={icsHref(year, entry.round)}
-            className="t-fast col-start-2 inline-flex min-h-10 items-center self-start justify-self-start rounded-md border border-line-strong px-3.5 text-sm font-bold text-accent hover:border-accent hover:bg-bg sm:col-start-3 sm:row-start-1"
+            className="t-fast col-start-2 inline-flex min-h-10 items-center self-start justify-self-start text-sm font-bold text-accent underline underline-offset-4 hover:no-underline sm:col-start-3 sm:row-start-1"
           >
             Add to calendar
             <span className="sr-only">: {entry.name}</span>
