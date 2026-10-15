@@ -1,0 +1,7 @@
+id,api_id,driver_id,role,season_id,team_id
+1,td1,1,,1,1
+2,td2,2,,1,2
+3,td3,3,,1,3
+4,td4,1,,2,1
+5,td5,2,,2,3
+6,td6,3,,2,3

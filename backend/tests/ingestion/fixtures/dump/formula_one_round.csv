@@ -1,0 +1,4 @@
+id,api_id,circuit_id,date,is_cancelled,name,number,race_number,season_id,wikipedia
+1,round_a,1,2022-07-03,f,British Grand Prix,1,1,1,
+2,round_b,2,2023-05-28,f,Monaco Grand Prix,1,1,2,
+3,round_c,3,2023-04-09,t,Saudi Arabian Grand Prix,,,2,

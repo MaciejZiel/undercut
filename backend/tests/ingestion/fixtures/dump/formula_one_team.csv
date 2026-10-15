@@ -1,0 +1,4 @@
+id,api_id,base_team_id,country_code,name,nationality,primary_color,reference,wikipedia
+1,team_a,,AUT,Red Bull,Austrian,3671C6,red_bull,
+2,team_b,,DEU,Mercedes,German,,mercedes,
+3,team_c,,ITA,Ferrari,Italian,E80020,ferrari,

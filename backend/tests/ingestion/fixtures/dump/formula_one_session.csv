@@ -1,0 +1,14 @@
+id,api_id,has_time_data,is_cancelled,number,point_system_id,round_id,scheduled_laps,timestamp,timezone,type
+1,s1,t,f,3,1,1,52,2022-07-03 14:00:00+00:00,Europe/London,R
+2,s2,t,f,1,1,1,,2022-07-02 14:00:00+00:00,Europe/London,Q1
+3,s3,t,f,2,1,1,,2022-07-02 14:25:00+00:00,Europe/London,Q2
+4,s4,t,f,3,1,1,,2022-07-02 14:50:00+00:00,Europe/London,Q3
+5,s5,t,f,3,1,2,78,2023-05-28 13:00:00+00:00,Europe/Monaco,R
+6,s6,t,f,2,1,2,31,2023-05-27 10:30:00+00:00,Europe/Monaco,SR
+7,s7,t,f,1,1,2,,2023-05-26 14:00:00+00:00,Europe/Monaco,Q1
+8,s8,t,f,2,1,2,,2023-05-26 14:25:00+00:00,Europe/Monaco,Q2
+9,s9,t,f,3,1,2,,2023-05-26 14:50:00+00:00,Europe/Monaco,Q3
+10,s10,t,f,5,1,2,,2023-05-26 09:30:00+00:00,Europe/Monaco,SQ1
+11,s11,t,f,6,1,2,,2023-05-26 09:55:00+00:00,Europe/Monaco,SQ2
+12,s12,t,f,7,1,2,,2023-05-26 10:20:00+00:00,Europe/Monaco,SQ3
+13,s13,f,f,1,1,2,,2023-05-26 00:00:00+00:00,Europe/Monaco,FP1

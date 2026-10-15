@@ -1,0 +1,4 @@
+id,altitude,api_id,country,country_code,latitude,locality,longitude,name,reference,wikipedia
+1,153,circuit_a,UK,GBR,52.0786,Silverstone,-1.01694,Silverstone Circuit,silverstone,
+2,7,circuit_b,Monaco,MCO,43.7347,Monte Carlo,7.42056,Circuit de Monaco,monaco,
+3,0,circuit_c,Saudi Arabia,SAU,21.6319,Jeddah,39.1044,Jeddah Corniche Circuit,jeddah,

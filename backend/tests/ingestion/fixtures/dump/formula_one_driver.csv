@@ -1,0 +1,5 @@
+id,abbreviation,api_id,country_code,date_of_birth,forename,nationality,permanent_car_number,reference,surname,wikipedia
+1,VER,driver_a,NLD,1997-09-30,Max,Dutch,1,max_verstappen,Verstappen,
+2,HAM,driver_b,GBR,1985-01-07,Lewis,British,44,hamilton,Hamilton,
+3,LEC,driver_c,MCO,1997-10-16,Charles,Monegasque,16,leclerc,Leclerc,
+4,,driver_d,ITA,1906-10-30,Nino,Italian,,farina,Farina,
