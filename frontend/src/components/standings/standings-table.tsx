@@ -14,7 +14,7 @@ function PositionCell({ row }: { row: StandingRow }) {
 export function GapCell({ row }: { row: StandingRow }) {
   if (row.position === 1) return <Dash label="Championship leader" />;
   const gap = formatPoints(Math.abs(row.gap_to_leader));
-  return gap === null ? <Dash /> : <span>-{gap}</span>;
+  return gap === null ? <Dash /> : <span>−{gap}</span>;
 }
 
 export function StandingsTable({

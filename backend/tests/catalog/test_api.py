@@ -607,3 +607,13 @@ def test_search_puts_the_driver_with_most_starts_first_and_gives_the_years(clien
     hits = get(client, "/api/v1/search/", q="lecl").json()["drivers"]
     assert [h["slug"] for h in hits] == [star.slug, old.slug]
     assert [h["years"] for h in hits] == ["2018–2026", "1950"]
+
+
+def test_search_ranks_matches_at_the_start_of_a_word_first(client):
+    inside = f.CircuitFactory(slug="spa", name="Circuit de Spa-Francorchamps", locality="Stavelot")
+    start = f.CircuitFactory(slug="hamburg", name="Hamburg Ring", locality="Hamburg")
+    f.DriverFactory(given_name="Graham", family_name="Hill")
+    duncan = f.DriverFactory(given_name="Duncan", family_name="Hamilton")
+    body = get(client, "/api/v1/search/", q="ham").json()
+    assert [c["slug"] for c in body["circuits"]] == [start.slug, inside.slug]
+    assert body["drivers"][0]["slug"] == duncan.slug

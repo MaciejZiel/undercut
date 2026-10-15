@@ -790,6 +790,11 @@ def _practice_results(session: Session, team) -> list[dict]:
 # --- Search ----------------------------------------------------------------------------------
 
 
+def _word_start_first(needle: str, rows: list, text) -> list:
+    """Matches where the needle begins a word come before those where it sits inside one."""
+    return sorted(rows, key=lambda row: not any(w.startswith(needle) for w in text(row).split()))
+
+
 def _year_span(first: int | None, last: int | None) -> str | None:
     if first is None or last is None:
         return None
@@ -807,7 +812,17 @@ def search(query: str) -> dict:
             first_year=Min("results__session__round__season__year"),
             last_year=Max("results__session__round__season__year"),
         )
-        .order_by("-starts", "family_name", "given_name")[:SEARCH_GROUP_LIMIT]
+        .annotate(
+            word_start=Case(
+                When(
+                    Q(search_name__startswith=needle) | Q(search_name__contains=f" {needle}"),
+                    then=0,
+                ),
+                default=1,
+                output_field=IntegerField(),
+            )
+        )
+        .order_by("word_start", "-starts", "family_name", "given_name")[:SEARCH_GROUP_LIMIT]
     )
     drivers = [
         driver_ref(d)
@@ -825,14 +840,20 @@ def search(query: str) -> dict:
             "slug", "name", "nationality"
         )
         if needle in make_search_name(name)
-    ][:SEARCH_GROUP_LIMIT]
+    ]
+    constructors = _word_start_first(needle, constructors, lambda c: make_search_name(c["name"]))[
+        :SEARCH_GROUP_LIMIT
+    ]
     circuits = [
         {"slug": slug, "name": name, "country": country or None}
         for slug, name, locality, country in Circuit.objects.order_by("name").values_list(
             "slug", "name", "locality", "country"
         )
         if needle in make_search_name(name, locality)
-    ][:SEARCH_GROUP_LIMIT]
+    ]
+    circuits = _word_start_first(needle, circuits, lambda c: make_search_name(c["name"]))[
+        :SEARCH_GROUP_LIMIT
+    ]
     rounds = []
     for year, number, name, date, circuit_name in (
         Round.objects.filter(round__isnull=False)

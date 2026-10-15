@@ -157,10 +157,12 @@ def test_ics_endpoint_round_and_year(client):
     assert "DTSTART:20300310T140000Z" in text
     assert "DTEND:20300310T160000Z" in text  # default two hours, end unknown
     assert "SUMMARY:Alpha GP - Race" in text
+    assert "X-WR-CALNAME:Alpha GP 2030" in text  # one round: its own calendar name
     assert "LOCATION:Spa\\, Francorchamps\\, Stavelot\\, Belgium" in text
     assert all(len(line.encode()) <= 75 for line in text.split("\r\n"))
     whole = client.get("/api/v1/calendar/ics/", {"year": 2030}).content.decode()
     assert whole.count("BEGIN:VEVENT") == 5  # cancelled round skipped
+    assert "X-WR-CALNAME:Undercut 2030" in whole
     uids = [line for line in whole.split("\r\n") if line.startswith("UID:")]
     assert len(uids) == len(set(uids))
     again = client.get("/api/v1/calendar/ics/", {"year": 2030}).content.decode()

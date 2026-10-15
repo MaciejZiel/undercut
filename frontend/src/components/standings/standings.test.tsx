@@ -45,7 +45,7 @@ describe("StandingsTable", () => {
     expect(within(rows[1]).getByRole("link", { name: "Name a" })).toHaveAttribute("href", "/drivers/a");
     expect(within(rows[1]).getByText("Championship leader")).toBeInTheDocument();
     expect(within(rows[2]).getByText("1,234.5")).toBeInTheDocument();
-    expect(within(rows[2]).getByText("-12.5")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("−12.5")).toBeInTheDocument();
     expect(within(rows[2]).getByText("0")).toBeInTheDocument();
   });
 

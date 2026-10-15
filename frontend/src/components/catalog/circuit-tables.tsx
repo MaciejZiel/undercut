@@ -104,7 +104,7 @@ export function MostWinsList({
       ) : (
         <ol className="divide-y divide-line">
           {items.map((i) => (
-            <li key={i.key} className="flex items-baseline justify-between gap-3 py-2 text-base">
+            <li key={i.key} className="flex items-center justify-between gap-3 py-2 text-base">
               {i.node}
               <span className="timing font-bold">
                 {i.wins} <span className="sr-only">wins</span>

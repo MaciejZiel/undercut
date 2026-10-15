@@ -136,13 +136,18 @@ def build_ics(calendar: dict, round_number: int | None, stamp: dt.datetime) -> s
     time and cancelled rounds are left out. `stamp` is the DTSTAMP of every event.
     """
     year = calendar["year"]
+    # One round gets its own calendar name: several subscriptions are then told apart.
+    round_name = next((e["name"] for e in calendar["rounds"] if e["round"] == round_number), None)
+    title = (
+        f"{round_name} {year}" if round_number is not None and round_name else f"Undercut {year}"
+    )
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
         f"PRODID:{PRODID}",
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
-        f"X-WR-CALNAME:{escape_text(f'Undercut {year}')}",
+        f"X-WR-CALNAME:{escape_text(title)}",
     ]
     for entry in calendar["rounds"]:
         if entry["status"] == "cancelled":
