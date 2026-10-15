@@ -56,3 +56,22 @@ def test_json_output(healthy_heartbeats, make_event):
     assert code == 1
     assert body["ok"] is False
     assert body["problems"][0]["code"] == "outbox_dead"
+
+
+def test_exit_one_when_a_sync_job_keeps_failing(healthy_heartbeats):
+    from django.utils import timezone
+
+    from apps.ingestion.models import SyncRun
+
+    for minutes in (30, 5):
+        started = timezone.now() - timedelta(minutes=minutes)
+        SyncRun.objects.create(
+            source="jolpica-api",
+            job="standings",
+            status=SyncRun.Status.FAILED,
+            started_at=started,
+            finished_at=started,
+        )
+    code, out = run()
+    assert code == 1
+    assert "sync_failing" in out and "jolpica-api/standings" in out

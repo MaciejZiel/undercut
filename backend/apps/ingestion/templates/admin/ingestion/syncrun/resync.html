@@ -1,0 +1,10 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<p>Queues a fresh sync of every session of the round: results, standings and OpenF1 analytics.
+The outbox worker runs it within a minute; repeating it is harmless.</p>
+<form method="post">{% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Queue the sync" class="default">
+  <a href="{% url 'admin:ingestion_syncrun_changelist' %}">Cancel</a>
+</form>
+{% endblock %}

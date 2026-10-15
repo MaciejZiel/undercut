@@ -30,6 +30,7 @@ reachable from the internet, read it on the server with the checks above, or `ma
 | `outbox_stuck` | oldest pending event is older than 30 minutes | the worker is not draining: it is stopped, crashed in a loop, or events are in long backoff. Check `undercut-worker.log` and the `outbox-worker` heartbeat |
 | `heartbeat_stale` | scheduler or outbox worker last reported more than 5 minutes ago | the process is hung or its supervisor stopped. Look at the log, restart that process by PID (see the update checklist) |
 | `heartbeat_missing` | a process never reported | never started since the migration (new deploy) or the migration was not applied. Check the supervisors |
+| `sync_failing` | the latest run of a sync job failed, and so did the one before it, within the last 24 h | an upstream (Jolpica, OpenF1) or the network is failing. Look at `SyncRun.errors` for the job. The same condition e-mails `ALERT_EMAIL_TO` once at the second failure and then every tenth. After fixing it, `manage.py resync_round <year> <round>` queues a fresh sync (also in the admin: SyncRun list, "Rerun a round") |
 | `results_missing` | the latest race ended more than 24 h ago and is not `results_final` | the results sync did not finalize it. Check the `jolpica-api` SyncRun in the status summary and the worker log; the Monday corrections job will not fix a missing race |
 
 The heartbeat is written by `run_scheduler` and `run_outbox_worker` (at most once every 30 s) into the `ops_heartbeat`

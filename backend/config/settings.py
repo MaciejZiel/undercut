@@ -223,6 +223,8 @@ else:
         }
     }
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Undercut <noreply@localhost>")
+# Who is told when a sync job keeps failing (comma separated). Empty: nobody, only the log.
+ALERT_EMAIL_TO = env.list("ALERT_EMAIL_TO", default=[])
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # Frontend page cache: purged by apps.webcache after data changes. Same secret as the

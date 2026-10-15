@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from apps.catalog.models import Result, Session
 from apps.events.models import OutboxEvent
+from apps.ingestion.failures import failing_jobs
 from apps.ingestion.models import SyncRun
 
 from .heartbeat import EXPECTED
@@ -188,6 +189,8 @@ def pipeline_problems(now: datetime | None = None) -> list[Problem]:
             problems.append(
                 Problem("heartbeat_stale", f"{hb['name']} last reported {age // 60} min ago")
             )
+    for source, job, failures in failing_jobs(now):
+        problems.append(Problem("sync_failing", f"{source}/{job} failed {failures} times in a row"))
     race = data_freshness(now)["latest_race"]
     if race and not race["results_final"]:
         if race["ended_age_seconds"] > RESULTS_GRACE.total_seconds():
