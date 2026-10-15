@@ -133,7 +133,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticatedOrReadOnly"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.AnonRateThrottle"],
+    "DEFAULT_THROTTLE_CLASSES": ["apps.core.throttling.PublicAnonRateThrottle"],
     "DEFAULT_THROTTLE_RATES": {"anon": "60/min"},
     # Behind nginx the peer is always 127.0.0.1; nginx puts the real client IP in
     # X-Forwarded-For, so set DRF_NUM_PROXIES=1 there to throttle per visitor.
@@ -294,3 +294,7 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 256 * 1024
 # Deliberate: see the notes above (no subdomain HSTS, no preload, TLS redirect done at the edge).
 SILENCED_SYSTEM_CHECKS = ["security.W005", "security.W008", "security.W021"]
+
+# Shared secret that lets the Next.js server's own API calls skip the anonymous rate limit
+# (see apps.core.throttling). Same value as the frontend's INTERNAL_API_TOKEN; empty = no exemption.
+INTERNAL_API_TOKEN = env("INTERNAL_API_TOKEN", default="")

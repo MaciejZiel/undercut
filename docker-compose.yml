@@ -25,6 +25,7 @@ services:
 
   migrate:
     build: ./backend
+    image: undercut-backend:dev
     command: python manage.py migrate --noinput
     environment:
       DATABASE_URL: postgres://undercut:${POSTGRES_PASSWORD:-undercut}@db:5432/undercut
@@ -37,6 +38,7 @@ services:
 
   backend:
     build: ./backend
+    image: undercut-backend:dev
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
     environment:
       DATABASE_URL: postgres://undercut:${POSTGRES_PASSWORD:-undercut}@db:5432/undercut
@@ -45,6 +47,7 @@ services:
       DJANGO_DEBUG: ${DJANGO_DEBUG:-true}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
       DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-http://localhost:8080}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-}
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -53,6 +56,7 @@ services:
 
   worker:
     build: ./backend
+    image: undercut-backend:dev
     command: python manage.py run_outbox_worker
     environment:
       DATABASE_URL: postgres://undercut:${POSTGRES_PASSWORD:-undercut}@db:5432/undercut
@@ -70,6 +74,7 @@ services:
 
   scheduler:
     build: ./backend
+    image: undercut-backend:dev
     command: python manage.py run_scheduler
     environment:
       DATABASE_URL: postgres://undercut:${POSTGRES_PASSWORD:-undercut}@db:5432/undercut
@@ -85,9 +90,11 @@ services:
 
   frontend:
     build: ./frontend
+    image: undercut-frontend:dev
     environment:
       API_INTERNAL_URL: http://backend:8000
       REVALIDATE_SECRET: ${REVALIDATE_SECRET:-}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-}
     depends_on:
       - backend
 

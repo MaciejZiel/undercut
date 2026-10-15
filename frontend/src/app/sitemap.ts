@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { connection } from "next/server";
 import { getCircuits, getConstructors, getDrivers, getSeason, getSeasons } from "@/lib/api/queries";
 import { circuitHref, constructorHref, driverHref, roundHref, seasonHref } from "@/lib/routes";
 import { absoluteUrl } from "@/lib/seo";
@@ -61,6 +62,10 @@ async function catalogPaths(): Promise<string[]> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // Render per request. Without this the sitemap is prerendered during `next build`, when the API
+  // is not reachable, and would freeze as the static routes only. The catalog lookups below are
+  // cached and tagged, so requests after the first are cheap and a data change refreshes them.
+  await connection();
   const statics: MetadataRoute.Sitemap = STATIC_PATHS.map((p) => ({
     url: absoluteUrl(p),
     changeFrequency: p === "/" || p === "/calendar" ? "daily" : "weekly",
