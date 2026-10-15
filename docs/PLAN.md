@@ -68,7 +68,7 @@ Przykładowy łańcuch zdarzeń: `SessionResultsFinalized` → klasyfikacje, pun
 | 4. Analityka | zrobione: import OpenF1, API, widoki; niezweryfikowane na weekendzie na żywo |
 | 5. Konta i typowanie | zrobione: allauth, ulubieni, typowanie, ligi, e-mail po wyścigu; logowanie Google (ADR 006) wdrożone w kodzie, wymaga kluczy na serwerze |
 | 6. Replay | zrobione (API i odtwarzacz); mapa toru i live timing świadomie odłożone |
-| 7. Szlif | w toku: SEO, strony „Źródła" i „Prywatność", kopie zapasowe i test odtworzenia, E2E i Lighthouse po wdrożeniu |
+| 7. Szlif | w toku. Zrobione bez UI: SEO, strony „Źródła" i „Prywatność", kopie zapasowe i test odtworzenia, E2E w CI, logowanie Google (ADR 006), SMTP (Brevo), maile HTML, alert o nieudanych synchronizacjach, `resync_round`, tygodniowy mail kontrolny, CSP, bramka typów (pyright, ratchet), pokrycie 96% z progiem 90%, audyt zależności (osv-scanner, npm audit), test obciążeniowy bez zależności. Zostaje UI (sekcja „Twoi", wykresy kariery, baner sesji, karta toru), Lighthouse i dostępność, Tailscale dla panelu admina, kopia backupu poza urządzeniem |
 
 Zweryfikowane na prawdziwych danych: liczba mistrzów świata, tytuły konstruktorów, klasyfikacje
 wybranych sezonów, moment rozstrzygnięcia tytułu 2024, bezpośrednie starcia.
