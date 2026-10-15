@@ -84,7 +84,9 @@ class RoundData:
 class SessionData:
     type: str  # a `Session.Type` value
     start_utc: dt.datetime | None = None
-    status: str = "scheduled"
+    # None = leave an existing session's status alone (a new one starts as "scheduled").
+    # The calendar sync uses it so it can never downgrade a session that already has results.
+    status: str | None = "scheduled"
     end_utc: dt.datetime | None = None
 
 
@@ -308,7 +310,9 @@ def upsert_round(data: RoundData) -> Outcome:
 
 
 def upsert_session(round_id: int, data: SessionData) -> Outcome:
-    values: dict = {"status": data.status}
+    values: dict = {}
+    if data.status is not None:
+        values["status"] = data.status
     if data.start_utc is not None:  # never replace a known start time with "unknown"
         values["start_utc"] = data.start_utc
     if data.end_utc is not None:
