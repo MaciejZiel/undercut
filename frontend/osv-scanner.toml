@@ -1,0 +1,6 @@
+# braces is only pulled in by development tooling (glob matching in the lint and test chain), never
+# shipped to users, and the advisory has no fixed release yet. Re-check by the date below.
+[[IgnoredVulns]]
+id = "GHSA-vfj7-8cjw-p6xm"
+ignoreUntil = 2027-01-15
+reason = "dev-only transitive dependency, no fixed version available"
