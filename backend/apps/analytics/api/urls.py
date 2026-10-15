@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import replay_views, views
 
 BASE = "rounds/<int:year>/<int:round>/analytics"
 
@@ -11,4 +11,14 @@ urlpatterns = [
     path(f"{BASE}/pit-stops/", views.PitStopsView.as_view(), name="analytics-pit-stops"),
     path(f"{BASE}/weather/", views.WeatherView.as_view(), name="analytics-weather"),
     path(f"{BASE}/race-control/", views.RaceControlView.as_view(), name="analytics-race-control"),
+    path(
+        "rounds/<int:year>/<int:round>/replay/",
+        replay_views.ReplayView.as_view(),
+        name="replay",
+    ),
+    path(
+        "rounds/<int:year>/<int:round>/replay/laps/",
+        replay_views.ReplayLapsView.as_view(),
+        name="replay-laps",
+    ),
 ]
