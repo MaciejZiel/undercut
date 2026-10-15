@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
@@ -8,9 +9,9 @@ import { PageOutOfRange } from "@/components/states/out-of-range";
 import { FilterForm } from "@/components/ui/filter-form";
 import { Pagination } from "@/components/ui/pagination";
 import { DriversTable } from "@/components/catalog/driver-tables";
-import { getConstructors, getDrivers } from "@/lib/api/queries";
+import { getConstructors, getDrivers, getSeasons } from "@/lib/api/queries";
 import { KNOWN_NATIONALITIES } from "@/lib/nationality";
-import { buildHref, first, param, parseChoice, parseIntParam } from "@/lib/url";
+import { buildHref, first, param, parseChoice, parseIntParam, resolveSeasonFilter } from "@/lib/url";
 
 export const metadata: Metadata = pageMetadata({
   title: "Drivers",
@@ -38,10 +39,15 @@ export default function DriversPage({ searchParams }: PageProps<"/drivers">) {
 
 async function DriverList({ searchParams }: { searchParams: PageProps<"/drivers">["searchParams"] }) {
   const sp = await searchParams;
-  const season = parseIntParam(sp.season, { min: 1950, max: 2100 });
   const nationality = first(sp.nationality);
   const constructor = first(param(sp, "constructor"));
   const q = first(sp.q);
+  const latest = (await getSeasons(1))?.results[0]?.year;
+  const { season, defaulted } = resolveSeasonFilter({
+    season: sp.season,
+    latest,
+    hasOtherFilters: Boolean(nationality || constructor || q),
+  });
   const ordering = parseChoice(sp.ordering, ORDERINGS, "family_name");
   const page = parseIntParam(sp.page) ?? 1;
 
@@ -53,7 +59,7 @@ async function DriverList({ searchParams }: { searchParams: PageProps<"/drivers"
     getConstructors({ season, ordering: "-starts", page_size: 100 }),
   ]);
 
-  const hasFilters = Boolean(season || nationality || constructor || q);
+  const hasFilters = Boolean((season && !defaulted) || nationality || constructor || q);
   const form = (
     <FilterForm
       action="/drivers"
@@ -93,6 +99,14 @@ async function DriverList({ searchParams }: { searchParams: PageProps<"/drivers"
   return (
     <>
       {form}
+      {defaulted && (
+        <p className="text-sm text-muted">
+          Showing the {season} season.{" "}
+          <Link className="font-semibold underline" href="/drivers?season=all">
+            Show every driver in history
+          </Link>
+        </p>
+      )}
       {data.results.length === 0 ? (
         <EmptyState
           title="No drivers match these filters"

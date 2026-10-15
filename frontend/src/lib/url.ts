@@ -64,3 +64,23 @@ export function isSlug(value: string): boolean {
 export function param(sp: SearchParams, key: string): string | string[] | undefined {
   return Object.hasOwn(sp, key) ? sp[key] : undefined;
 }
+
+/**
+ * Season filter of the driver list: the latest season by default (the list is most useful for
+ * the people racing now), but only while nothing else is filtered. `?season=all` shows everyone.
+ */
+export function resolveSeasonFilter({
+  season,
+  latest,
+  hasOtherFilters,
+}: {
+  season: string | string[] | undefined;
+  latest: number | undefined;
+  hasOtherFilters: boolean;
+}): { season: number | undefined; defaulted: boolean } {
+  const explicit = parseIntParam(season, { min: 1950, max: 2100 });
+  if (explicit) return { season: explicit, defaulted: false };
+  const everyone = first(season) === "all";
+  if (everyone || hasOtherFilters || latest === undefined) return { season: undefined, defaulted: false };
+  return { season: latest, defaulted: true };
+}

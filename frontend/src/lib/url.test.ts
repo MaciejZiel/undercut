@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildHref, first, isSlug, nextOrdering, param, parseChoice, parseIntParam, parseSort } from "./url";
+import { buildHref, first, isSlug, nextOrdering, param, parseChoice, parseIntParam, parseSort, resolveSeasonFilter } from "./url";
 
 describe("url helpers", () => {
   it("reads the first non-empty value", () => {
@@ -47,5 +47,39 @@ describe("url helpers", () => {
     expect(isSlug("red-bull")).toBe(true);
     expect(isSlug("../etc")).toBe(false);
     expect(isSlug("")).toBe(false);
+  });
+});
+
+describe("resolveSeasonFilter", () => {
+  const base = { latest: 2026, hasOtherFilters: false };
+
+  it("defaults to the latest season when nothing is filtered", () => {
+    expect(resolveSeasonFilter({ ...base, season: undefined })).toEqual({ season: 2026, defaulted: true });
+  });
+
+  it("keeps an explicit season", () => {
+    expect(resolveSeasonFilter({ ...base, season: "1988" })).toEqual({ season: 1988, defaulted: false });
+  });
+
+  it("shows everyone for season=all", () => {
+    expect(resolveSeasonFilter({ ...base, season: "all" })).toEqual({ season: undefined, defaulted: false });
+  });
+
+  it("does not default when another filter is set", () => {
+    expect(resolveSeasonFilter({ ...base, season: undefined, hasOtherFilters: true })).toEqual({
+      season: undefined,
+      defaulted: false,
+    });
+  });
+
+  it("ignores junk and falls back to the default", () => {
+    expect(resolveSeasonFilter({ ...base, season: "abc" })).toEqual({ season: 2026, defaulted: true });
+  });
+
+  it("falls back to everyone when the latest season is unknown", () => {
+    expect(resolveSeasonFilter({ ...base, latest: undefined, season: undefined })).toEqual({
+      season: undefined,
+      defaulted: false,
+    });
   });
 });
