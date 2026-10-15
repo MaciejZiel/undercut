@@ -58,6 +58,7 @@ export function NextRaceCard({
             outline={circuitDetail.outline}
             name={circuit.name}
             lapMs={circuitDetail.lap_record_ms}
+            seed={circuit.slug}
             className="absolute bottom-24 right-4 hidden max-h-[17rem] w-[22rem] sm:block lg:right-10"
           />
         )}

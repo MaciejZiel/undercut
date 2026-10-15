@@ -82,12 +82,11 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
       <div className="mb-12 grid gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         {c.outline && (
           <figure className="m-0">
-            <TrackOutline outline={c.outline} name={c.name} lapMs={c.lap_record_ms} className="mx-auto w-full max-h-[28rem]" />
-            {c.outline.marker !== false && c.lap_record_ms != null && (
-              <figcaption className="eyebrow mt-3 normal-case tracking-normal">
-                The dot runs the lap record ({formatLapTime(c.lap_record_ms)}) at {RACER_SPEED}× speed.
-              </figcaption>
-            )}
+            <TrackOutline outline={c.outline} name={c.name} lapMs={c.lap_record_ms} seed={c.slug} className="mx-auto w-full max-h-[28rem]" />
+            <figcaption className="eyebrow mt-3 normal-case tracking-normal">
+              The cars are an illustration: every circuit has its own field, running at about {RACER_SPEED}× the lap
+              record pace.
+            </figcaption>
             {c.outline.origin === "geojson" && (
               <figcaption className="eyebrow mt-3 normal-case tracking-normal">
                 Current layout. Outline from the f1-circuits data set by Tomislav Bacinger (MIT licence).

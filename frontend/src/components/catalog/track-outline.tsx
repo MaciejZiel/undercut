@@ -6,6 +6,40 @@ export const RACER_SPEED = 10;
 
 type Variant = "hero" | "mark";
 
+/** Team-like colours for the cars; the order is shuffled per circuit. */
+const CAR_COLORS = ["#3671c6", "#e8002d", "#27f4d2", "#ff8000", "#229971", "#64c4ff", "#6692ff", "#b6babd", "#ffd400", "#ff87bc"];
+const CARS = 8;
+
+function hash(text: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
+
+/** Small deterministic generator, so a circuit always gets the same field. */
+function random(seed: number): () => number {
+  let a = seed;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+export type Car = { color: string; offset: number; pace: number };
+
+/** The field of one circuit: eight cars in their own colours, spread along the lap, each a little faster or slower. */
+export function carsFor(seed: string): Car[] {
+  const rnd = random(hash(seed));
+  const colors = [...CAR_COLORS].sort(() => rnd() - 0.5).slice(0, CARS);
+  let gap = 0;
+  return colors.map((color) => {
+    gap += 0.025 + rnd() * 0.07;
+    return { color, offset: gap, pace: 1 + (rnd() - 0.5) * 0.05 };
+  });
+}
+
 // Stroke widths as a share of the drawing's longest side, so the line keeps its weight at every size.
 const STROKE = { hero: { line: 0.0075, casing: 0.034 }, mark: { line: 0.045, casing: 0 } } as const;
 
@@ -21,6 +55,7 @@ export function TrackOutline({
   className = "",
   lapMs = null,
   speed = RACER_SPEED,
+  seed = null,
 }: {
   outline: Outline;
   name: string;
@@ -29,6 +64,8 @@ export function TrackOutline({
   /** Lap record in milliseconds: a dot then runs the lap at that pace, `speed` times faster. */
   lapMs?: number | null;
   speed?: number;
+  /** Circuit slug: gives the circuit its own field of cars running the line. Without it no car is drawn. */
+  seed?: string | null;
 }) {
   const width = outline.width + PAD * 2;
   const height = outline.height + PAD * 2;
@@ -69,18 +106,24 @@ export function TrackOutline({
         strokeLinecap="round"
         className={variant === "hero" ? "draw" : "draw-quick"}
       />
-      {variant === "hero" && outline.marker !== false && lapMs != null && lapMs > 0 && (
-        // SMIL, so the dot needs no script; it starts once the line is drawn and is hidden for reduced motion.
+      {variant === "hero" && seed && (
+        // SMIL, so the cars need no script; they appear once the line is drawn and are hidden for reduced motion.
         <g className="racer" aria-hidden="true">
-          {[
-            { r: 2.4, opacity: 0.22, fill: "var(--accent)" },
-            { r: 1, opacity: 1, fill: "var(--accent)" },
-          ].map((dot) => (
-            <circle key={dot.r} r={side * 0.0085 * dot.r} fill={dot.fill} opacity={0}>
-              <set attributeName="opacity" to={dot.opacity} begin="2.6s" fill="freeze" />
-              <animateMotion path={path} dur={`${Math.max(3, lapMs / 1000 / speed)}s`} begin="2.6s" repeatCount="indefinite" calcMode="linear" />
-            </circle>
-          ))}
+          {carsFor(seed).map((car) => {
+            const lap = Math.max(3, (lapMs ?? 88_000) / 1000 / speed);
+            return (
+              <circle key={car.color} r={side * 0.012} fill={car.color} stroke="var(--bg)" strokeWidth={side * 0.003} opacity={0}>
+                <set attributeName="opacity" to={1} begin="2.6s" fill="freeze" />
+                <animateMotion
+                  path={path}
+                  dur={`${(lap * car.pace).toFixed(2)}s`}
+                  begin={`${(2.6 - car.offset * lap).toFixed(2)}s`}
+                  repeatCount="indefinite"
+                  calcMode="linear"
+                />
+              </circle>
+            );
+          })}
         </g>
       )}
       {variant === "hero" && outline.marker !== false && (

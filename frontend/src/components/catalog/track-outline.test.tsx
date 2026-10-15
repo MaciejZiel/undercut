@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { TrackOutline } from "./track-outline";
+import { TrackOutline, carsFor } from "./track-outline";
 
 const points = [
   [0, 0],
@@ -32,5 +32,27 @@ describe("TrackOutline", () => {
     const { container } = render(<TrackOutline outline={{ width: 500, height: 300, points }} name="X" variant="mark" />);
     expect(container.querySelectorAll("path")).toHaveLength(1);
     expect(container.querySelector("rect")).toBeNull();
+  });
+});
+
+describe("cars on the line", () => {
+  it("gives a circuit the same field every time and another circuit another one", () => {
+    expect(carsFor("monaco")).toEqual(carsFor("monaco"));
+    expect(carsFor("monaco").map((c) => c.color)).not.toEqual(carsFor("spa").map((c) => c.color));
+    expect(new Set(carsFor("monaco").map((c) => c.color)).size).toBe(8);
+  });
+
+  it("spreads the cars along the lap, nose to tail", () => {
+    const offsets = carsFor("monza").map((c) => c.offset);
+    expect(offsets).toEqual([...offsets].sort((a, b) => a - b));
+    expect(offsets[offsets.length - 1]).toBeLessThan(1);
+  });
+
+  it("draws the cars only for a circuit that gives its name", () => {
+    const outline = { width: 500, height: 300, points };
+    const without = render(<TrackOutline outline={outline} name="A" />);
+    expect(without.container.querySelectorAll("animateMotion")).toHaveLength(0);
+    const withSeed = render(<TrackOutline outline={outline} name="A" seed="monaco" />);
+    expect(withSeed.container.querySelectorAll("animateMotion")).toHaveLength(8);
   });
 });
