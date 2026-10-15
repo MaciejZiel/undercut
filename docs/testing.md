@@ -55,3 +55,10 @@ The workflow `.github/workflows/e2e.yml` runs on pull requests, on pushes to `ma
 
 Download the `playwright-report` artifact. Traces are recorded on the first retry; open one with
 `npx playwright show-trace trace.zip` or at trace.playwright.dev.
+
+### Known issue kept visible
+
+`03-register-favourite.spec.ts` contains a test marked `test.fail`: opening the confirmation link exactly
+as mailed shows "This link is invalid or has expired", because the confirmation page passes the
+percent-encoded key (`MQ%3A...`) to the API. The test stays green while the bug exists and fails
+once it is fixed; then remove the annotation and confirm through the page in the journey test.

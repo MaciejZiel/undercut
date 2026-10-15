@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    branches: [main, ci/e2e]
+    branches: [main]
 
 concurrency:
   group: e2e-${{ github.workflow }}-${{ github.ref }}
