@@ -35,7 +35,13 @@ const leagueHref = (code: string) => `/leagues/${encodeURIComponent(code)}`;
 
 export function LeaguesScreen() {
   return (
-    <RequireAuth>
+    <RequireAuth
+      explain={{
+        title: "Play against your friends",
+        description:
+          "A league is a private leaderboard with an invite code. Create one, send the code to your friends and see who calls the podium best over the season. You need an account to create or join one.",
+      }}
+    >
       <LeaguesBody />
     </RequireAuth>
   );

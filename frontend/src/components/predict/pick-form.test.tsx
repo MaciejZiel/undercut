@@ -1,10 +1,11 @@
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mockFetch } from "@/test/fetch-mock";
-import { ME_USER, USER, renderWithProviders } from "@/test/render";
+import { ME_ANON, ME_USER, USER, renderWithProviders } from "@/test/render";
 import type { PickableDriver, RoundState } from "@/lib/predict/api";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: vi.fn(), push: vi.fn() }) }));
+const push = vi.hoisted(() => vi.fn());
+vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: vi.fn(), push }) }));
 
 import { PickForm, podiumTaken } from "./pick-form";
 
@@ -19,6 +20,7 @@ const future = () => new Date(Date.now() + 3600_000).toISOString();
 const stateOf = (status: RoundState["status"], my_pick: RoundState["my_pick"] = null, closes_at: string | null = future()): RoundState => ({ round, status, closes_at, my_pick });
 
 beforeEach(() => {
+  sessionStorage.clear();
   document.cookie = "csrftoken=t; path=/";
 });
 afterEach(() => vi.unstubAllGlobals());
@@ -36,6 +38,26 @@ async function renderForm(state: RoundState, me: unknown = ME_USER, extra: Param
   await waitFor(() => expect(m.count("GET /api/v1/auth/me/")).toBe(1));
   return { m, ...utils };
 }
+
+describe("pick form for a guest", () => {
+  it("lets a guest fill the form in and sends them to sign in when saving, keeping the draft", async () => {
+    push.mockReset();
+    sessionStorage.clear();
+    await renderForm(stateOf("open"), ME_ANON);
+    choose("Winner (P1)", "Verstappen");
+    choose("Second place (P2)", "Norris");
+    choose("Third place (P3)", "Piastri");
+    choose("Pole position", "Leclerc");
+    choose("Fastest lap", "Norris");
+    fireEvent.click(screen.getByRole("button", { name: "Sign in to save pick" }));
+    expect(push).toHaveBeenCalledWith("/login?next=%2Fpredict%2F2026%2F3");
+    expect(JSON.parse(sessionStorage.getItem("undercut:draft:2026:3") as string)).toEqual({ p1: 1, p2: 2, p3: 3, pole: 4, fastest_lap: 2 });
+  });
+  it("shows how a pick scores", async () => {
+    await renderForm(stateOf("open"), ME_ANON);
+    expect(screen.getByText(/5 points for the right driver/)).toBeInTheDocument();
+  });
+});
 
 describe("pick form", () => {
   it("renders the five fields", async () => {

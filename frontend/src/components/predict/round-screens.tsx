@@ -7,10 +7,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { LoadingSkeleton } from "@/components/states/loading-skeleton";
 import { ErrorState } from "@/components/states/error-state";
 import { QueryState } from "@/components/account/query-state";
-import { RequireAuth } from "@/components/account/require-auth";
-import { primaryButton, secondaryButton, Notice } from "@/components/account/form-parts";
-import { useAuth } from "@/lib/auth/auth-context";
-import { loginHref } from "@/lib/auth/redirect";
+import { primaryButton, Notice } from "@/components/account/form-parts";
 import {
   fetchPickableDrivers,
   fetchRoundState,
@@ -24,7 +21,6 @@ import { PickForm } from "./pick-form";
 
 /** /predict: the next round that is open for predictions, with its countdown. Public. */
 export function PredictHome() {
-  const auth = useAuth();
   const client = useQueryClient();
   const next = useQuery({ queryKey: predictKeys.next, queryFn: findNextRound, staleTime: 30_000 });
   return (
@@ -62,17 +58,8 @@ export function PredictHome() {
             </div>
             {state.my_pick && <p className="mt-3 text-sm">Your pick: {[state.my_pick.p1, state.my_pick.p2, state.my_pick.p3].map((d) => d?.code ?? d?.name ?? "—").join(" / ")}</p>}
             <div className="mt-5 flex flex-wrap gap-3">
-              {auth.status === "anonymous" ? (
-                <Link href={loginHref(href)} className={primaryButton}>
-                  Sign in to predict
-                </Link>
-              ) : (
-                <Link href={href} className={primaryButton}>
-                  {!open ? "View round" : state.my_pick ? "Edit your pick" : "Make your pick"}
-                </Link>
-              )}
-              <Link href="/predict/leaderboard" className={secondaryButton}>
-                Leaderboard
+              <Link href={href} className={primaryButton}>
+                {!open ? "View round" : state.my_pick ? "Edit your pick" : "Predict the podium"}
               </Link>
             </div>
           </section>
@@ -85,9 +72,7 @@ export function PredictHome() {
 /** /predict/[year]/[round]: the five-field form; read-only once the server says it is closed. */
 export function PredictRoundScreen({ year, round }: { year: number; round: number }) {
   return (
-    <RequireAuth>
-      <RoundBody year={year} round={round} />
-    </RequireAuth>
+    <RoundBody year={year} round={round} />
   );
 }
 

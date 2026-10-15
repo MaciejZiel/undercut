@@ -18,7 +18,12 @@ function slotText(p: Pick | null | undefined): string {
 
 export function HistoryScreen() {
   return (
-    <RequireAuth>
+    <RequireAuth
+      explain={{
+        title: "Your picks live here",
+        description: "Every podium you call is saved with the points it earned. Sign in to see yours.",
+      }}
+    >
       <HistoryBody />
     </RequireAuth>
   );

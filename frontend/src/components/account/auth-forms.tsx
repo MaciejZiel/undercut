@@ -50,6 +50,16 @@ export function LoginForm({
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
+    if (!email.trim() || !password) {
+      setError({
+        form: null,
+        fields: {
+          ...(email.trim() ? {} : { email: "Enter your e-mail address." }),
+          ...(password ? {} : { password: "Enter your password." }),
+        },
+      });
+      return;
+    }
     setBusy(true);
     setError({ form: null, fields: {} });
     try {
@@ -98,7 +108,7 @@ export function LoginForm({
         onChange={(e) => setPassword(e.target.value)}
         error={error.fields.password}
       />
-      <button type="submit" disabled={busy || !email || !password} className={`${primaryButton} w-full`}>
+      <button type="submit" disabled={busy} className={`${primaryButton} w-full`}>
         {busy ? "Signing in…" : "Sign in"}
       </button>
       <div className="flex flex-wrap items-center justify-between gap-2 text-sm">

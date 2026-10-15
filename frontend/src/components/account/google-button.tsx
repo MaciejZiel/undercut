@@ -18,6 +18,8 @@ function GoogleMark() {
 /** "Continue with Google". Renders nothing when the backend has no Google keys configured. */
 export function GoogleButton({ next }: { next?: string | null }) {
   const status = useQuery({ queryKey: googleQueryKey, queryFn: fetchGoogleStatus, staleTime: 5 * 60_000 });
+  // Keep the room while the answer is on its way, so the page below does not jump.
+  if (status.isPending) return <div aria-hidden="true" className="h-[6.5rem]" />;
   if (!status.data?.enabled) return null;
   return (
     <>

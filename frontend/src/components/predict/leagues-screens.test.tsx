@@ -42,7 +42,7 @@ describe("auth gate", () => {
     expect(screen.queryByText("secret")).not.toBeInTheDocument();
   });
 
-  it("redirects when a per-user request answers 401 (session expired)", async () => {
+  it("shows what leagues are, with a sign-in link, when the session ended", async () => {
     window.history.pushState({}, "", "/leagues");
     let signedIn = true;
     mockFetch({
@@ -53,7 +53,9 @@ describe("auth gate", () => {
       },
     });
     renderWithProviders(<LeaguesScreen />);
-    await waitFor(() => expect(replace).toHaveBeenCalledWith("/login?next=%2Fleagues"));
+    expect(await screen.findByText("Play against your friends")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", expect.stringContaining("/login?next="));
+    expect(replace).not.toHaveBeenCalled();
   });
 });
 
@@ -148,7 +150,7 @@ describe("leagues", () => {
 });
 
 describe("predict home", () => {
-  it("lets visitors see the next round and sign in to predict", async () => {
+  it("lets visitors see the next round and open its form", async () => {
     mockFetch({
       "GET /api/v1/auth/me/": { body: ME_ANON },
       "GET /api/v1/seasons/": { body: { results: [{ year: 2026 }] } },
@@ -161,7 +163,7 @@ describe("predict home", () => {
     renderWithProviders(<PredictHome />);
     expect(await screen.findByRole("heading", { name: "Australian Grand Prix" })).toBeInTheDocument();
     expect(screen.getByLabelText(/Predictions close in/)).toBeInTheDocument();
-    const link = await screen.findByRole("link", { name: "Sign in to predict" });
-    expect(link).toHaveAttribute("href", "/login?next=%2Fpredict%2F2026%2F3");
+    const link = await screen.findByRole("link", { name: "Predict the podium" });
+    expect(link).toHaveAttribute("href", "/predict/2026/3");
   });
 });

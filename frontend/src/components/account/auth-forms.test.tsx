@@ -27,6 +27,15 @@ function fillLogin() {
 }
 
 describe("login", () => {
+  it("keeps the button active and names the missing fields instead", async () => {
+    mockFetch({ "GET /api/v1/auth/me/": { body: ME_ANON } });
+    renderWithProviders(<LoginScreen />);
+    const button = screen.getByRole("button", { name: "Sign in" });
+    expect(button).toBeEnabled();
+    fireEvent.click(button);
+    expect(await screen.findByText("Enter your e-mail address.")).toBeInTheDocument();
+    expect(screen.getByText("Enter your password.")).toBeInTheDocument();
+  });
   it("shows the API error for wrong credentials", async () => {
     mockFetch({
       "GET /api/v1/auth/me/": { body: ME_ANON },
