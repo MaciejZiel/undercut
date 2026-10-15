@@ -1,0 +1,7 @@
+{% autoescape off %}Hello from Undercut!
+
+{% block content %}{% endblock content %}
+
+Thank you for using Undercut.
+{{ current_site.domain }}
+{% endautoescape %}
