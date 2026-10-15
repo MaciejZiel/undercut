@@ -138,3 +138,18 @@ forbidden_modules = [
     "apps.predictions.models",
 ]
 allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "webcache does not reach into other modules' models"
+type = "forbidden"
+source_modules = ["apps.webcache"]
+forbidden_modules = [
+    "apps.catalog.models",
+    "apps.ingestion.models",
+    "apps.standings.models",
+    "apps.analytics.models",
+    "apps.predictions.models",
+    "apps.notifications.models",
+    "apps.accounts.models",
+]
+allow_indirect_imports = true

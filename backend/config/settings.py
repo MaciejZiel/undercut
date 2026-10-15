@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "apps.analytics",
     "apps.predictions",
     "apps.notifications",
+    "apps.webcache",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -213,3 +214,8 @@ else:
     }
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Undercut <noreply@localhost>")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Frontend page cache: purged by apps.webcache after data changes. Same secret as the
+# frontend's REVALIDATE_SECRET; empty disables purging (local development without the frontend).
+REVALIDATE_URL = env("REVALIDATE_URL", default="http://127.0.0.1:3000/_internal/revalidate")
+REVALIDATE_SECRET = env("REVALIDATE_SECRET", default="")
