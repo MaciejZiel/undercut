@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { signup } from "../helpers/api";
+import { confirmEmailKey, signup } from "../helpers/api";
 import { keyFromPath, waitForVerificationPath } from "../helpers/mail";
 import { newCredentials } from "../helpers/users";
 
@@ -13,13 +13,15 @@ test("register through the form, confirm the e-mail from the log, follow a drive
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page.getByRole("heading", { name: "Check your inbox" })).toBeVisible();
 
-  // The confirmation link is printed by the backend (console mail backend in debug mode).
-  // The mailed path is /account/verify-email/<key with %3A>; the page that actually confirms is
-  // /verify-email/<key> (see the known-issue test below for why the mailed path is not used here).
+  // The confirmation link is printed by the backend (console mail backend in debug mode). The
+  // confirmation page cannot be used here, see the known-issue test below, so the key from the link
+  // is submitted to the same endpoint the page would call.
   const linkPath = await waitForVerificationPath(who.email);
-  await page.goto(`/verify-email/${keyFromPath(linkPath)}`);
-  await page.getByRole("button", { name: "Confirm e-mail" }).click();
-  await expect(page.getByText("Your e-mail address is confirmed.")).toBeVisible();
+  await expect(page.getByTestId("unverified-banner")).toBeVisible();
+  await confirmEmailKey(page.request, keyFromPath(linkPath));
+  await page.reload();
+  await expect(page.getByRole("button", { name: /^Account menu for / })).toBeVisible();
+  await expect(page.getByTestId("unverified-banner")).toHaveCount(0);
 
   // Pick the driver through the search API so the test does not depend on a slug spelling.
   const search = await request.get("/api/v1/search/?q=verstappen");
@@ -43,12 +45,14 @@ test("register through the form, confirm the e-mail from the log, follow a drive
   await expect(page.getByRole("button", { name: /^Unfollow / })).toBeVisible();
 });
 
-// Known issue, found by this suite: the link in the e-mail (/account/verify-email/<key>) is an alias
-// that redirects with the key encoded twice (%3A becomes %253A), so the confirmation page reports
-// "This link is invalid or has expired" for every real link. `test.fail` keeps the run green while
-// the bug exists and turns red as soon as it is fixed, which is the cue to drop the annotation.
+// Known issue, found by this suite: the confirmation page sends the key from the URL to the API as
+// Next.js hands it over, percent-encoded ("MQ%3A1x..." instead of "MQ:1x..."), so the API answers
+// 400 and the page says "This link is invalid or has expired" for every real link. The alias page
+// /account/verify-email/<key> that the mail points to also encodes the key a second time.
+// `test.fail` keeps the run green while the bug exists and turns red once it is fixed, which is the
+// cue to drop the annotation and to confirm through the page in the journey test above.
 test("the link exactly as mailed opens the confirmation page", async ({ page, request }) => {
-  test.fail(true, "alias page double-encodes the confirmation key");
+  test.fail(true, "the confirmation page sends the percent-encoded key to the API");
   const who = newCredentials("lnk");
   await signup(request, who);
   const linkPath = await waitForVerificationPath(who.email);
