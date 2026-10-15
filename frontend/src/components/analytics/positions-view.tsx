@@ -31,7 +31,7 @@ function PositionsPanel({ data }: { data: Positions }) {
   const neutral = readChartTokens().muted;
 
   const legend = (
-    <ul aria-label="Drivers" className="flex flex-wrap gap-1.5 lg:flex-col lg:flex-nowrap">
+    <ul aria-label="Drivers" className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 lg:grid-cols-2">
       {data.drivers.map((d) => {
         const on = highlight === d.code;
         const faded = highlight !== null && !on;

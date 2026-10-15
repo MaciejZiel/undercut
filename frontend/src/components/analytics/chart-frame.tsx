@@ -66,8 +66,8 @@ export function ChartFrame({
         <div className={full ? "min-h-0 flex-1 overflow-auto" : ""}>{table}</div>
       ) : (
         <div className={`flex min-h-0 flex-col gap-3 lg:flex-row ${full ? "flex-1" : ""}`}>
-          <div className={`min-w-0 lg:flex-1 ${full ? "h-[calc(100dvh-9rem)]" : "h-[320px] md:h-[420px]"}`}>{chart}</div>
-          {legend && <div className="lg:w-44 lg:shrink-0 lg:overflow-y-auto">{legend}</div>}
+          <div className={`min-w-0 lg:flex-1 ${full ? "h-[calc(100dvh-9rem)]" : "h-[340px] md:h-[500px]"}`}>{chart}</div>
+          {legend && <div className="lg:w-56 lg:shrink-0 lg:overflow-y-auto">{legend}</div>}
         </div>
       )}
       <p className="mt-2 flex flex-wrap gap-x-4 text-xs text-muted">

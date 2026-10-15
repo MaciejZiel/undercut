@@ -1194,6 +1194,24 @@ def _drivers_teams(year: int, driver_ids: list[int]) -> dict[int, tuple[int, str
     return latest
 
 
+def standings_colors(kind: str, year: int, entity_ids: list[int]) -> dict[int, dict]:
+    """Colour and team name for championship entries, keyed by driver or constructor id.
+
+    A driver takes the colour of the team of their latest result that season; a constructor its own.
+    Entries without a known colour map to None. Two queries.
+    """
+    colors = season_colors(year)
+    if kind == "constructors":
+        return {i: {"color": colors.get(i), "team_name": None} for i in entity_ids}
+    teams = _drivers_teams(year, entity_ids)
+    out: dict[int, dict] = {}
+    for i in entity_ids:
+        constructor_id, team_name = teams.get(i, (None, None))
+        color = colors.get(constructor_id) if constructor_id is not None else None
+        out[i] = {"color": color, "team_name": team_name}
+    return out
+
+
 def this_day_in_f1(today: dt.date) -> dict | None:
     """A race won on today's day and month in an earlier year.
 

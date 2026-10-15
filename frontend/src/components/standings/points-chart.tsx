@@ -5,19 +5,20 @@ import { useQuery } from "@tanstack/react-query";
 import { createApiClient } from "@/lib/api/client";
 import type { Progress, StandingsKind } from "@/lib/api/queries";
 import { EChart } from "@/components/charts/echart";
-import { readChartTokens, seriesColor, type ChartTokens } from "@/components/charts/tokens";
+import { readChartTokens, type ChartTokens } from "@/components/charts/tokens";
 import { ErrorState } from "@/components/states/error-state";
 import { EmptyState } from "@/components/states/empty-state";
 import {
   buildProgressOption,
   defaultSelection,
+  lineLook,
   toggleSelection,
   type ProgressMetric,
 } from "./progress-option";
 import { ProgressTable } from "./progress-table";
 
 /** Candidates offered as toggles; the chart starts with the top five of them. */
-const POOL = 20;
+const POOL = 40;
 
 async function fetchProgress(kind: StandingsKind, season: number): Promise<Progress> {
   const api = createApiClient(window.location.origin);
@@ -98,7 +99,7 @@ function ChartPanel({ data, kind, season }: { data: Progress; kind: StandingsKin
 
       <fieldset className="mb-4">
         <legend className="mb-2 text-xs font-bold text-muted">
-          Lines ({selected.length} of {data.series.length})
+          Showing {selected.length} of {data.series.length}
         </legend>
         <ul className="flex flex-wrap gap-2">
           {data.series.map((s, index) => {
@@ -111,11 +112,7 @@ function ChartPanel({ data, kind, season }: { data: Progress; kind: StandingsKin
                   onClick={() => setSelected((cur) => toggleSelection(data, cur, s.entity.slug))}
                   className={`${toggleBase} inline-flex items-center gap-2 ${on ? "border-line bg-surface text-fg" : "border-transparent bg-surface-2 text-muted hover:text-fg"}`}
                 >
-                  <span
-                    aria-hidden="true"
-                    className="inline-block h-1 w-4 rounded-full"
-                    style={{ backgroundColor: on ? seriesColor(readChartTokens(), index) : "var(--fg-muted)", opacity: on ? 1 : 0.4 }}
-                  />
+                  <ChipMark color={on ? lineLook(data, index, readChartTokens()) : null} />
                   {s.entity.code ?? s.entity.name}
                   <span className="sr-only">{on ? ", shown. Activate to hide." : ", hidden. Activate to show."}</span>
                 </button>
@@ -144,5 +141,20 @@ function ChartPanel({ data, kind, season }: { data: Progress; kind: StandingsKin
         </div>
       )}
     </div>
+  );
+}
+
+/** The legend mark of a line: solid or dashed in the team colour, grey when the line is hidden. */
+function ChipMark({ color }: { color: { color: string; dashed: boolean } | null }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-block h-0 w-5 border-t-[3px]"
+      style={{
+        borderTopColor: color?.color ?? "var(--fg-muted)",
+        borderTopStyle: color?.dashed ? "dashed" : "solid",
+        opacity: color ? 1 : 0.4,
+      }}
+    />
   );
 }

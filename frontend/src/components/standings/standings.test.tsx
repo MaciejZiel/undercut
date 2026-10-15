@@ -23,10 +23,12 @@ const progress: Progress = {
     entity: { id: i, slug: `d${i}`, name: `Driver ${i}`, code: `D${i}`, nationality: null },
     points: [25, 43.5, null],
     positions: [1, 2, null],
+    color: i < 2 ? "#3671c6" : null,
+    team_name: i < 2 ? "Red Bull" : null,
   })),
 };
 
-type Opt = { series: { data: unknown }[]; color: string[]; yAxis: { inverse: boolean; min: number } };
+type Opt = { series: { data: unknown; lineStyle: { color: string; type: string } }[]; yAxis: { inverse: boolean; min: number } };
 const tokens = { fg: "#000", muted: "#555", line: "#ccc", surface: "#fff", accent: "#00f", palette: ["#111", "#222", "#333"] };
 
 describe("StandingsTable", () => {
@@ -68,11 +70,17 @@ describe("progress helpers", () => {
     expect(toggleSelection(progress, sel, "d0")).toEqual(["d1", "d2", "d3", "d4"]);
   });
 
+  it("draws the second driver of a team dashed", () => {
+    const pts = buildProgressOption(progress, ["d0", "d1"], "points", tokens) as unknown as Opt;
+    expect(pts.series.map((x) => x.lineStyle.type)).toEqual(["solid", "dashed"]);
+  });
+
   it("builds a points option and an inverted position axis", () => {
     const pts = buildProgressOption(progress, ["d1", "d2"], "points", tokens) as unknown as Opt;
     expect(pts.series).toHaveLength(2);
     expect(pts.series[0].data).toEqual([25, 43.5, null]);
-    expect(pts.color).toEqual(["#222", "#333"]);
+    // d1 has a team colour, d2 falls back to the palette (index 2).
+    expect(pts.series.map((x) => x.lineStyle.color)).toEqual(["#3671c6", "#333"]);
     expect(pts.yAxis.inverse).toBe(false);
     const pos = buildProgressOption(progress, ["d1"], "position", tokens) as unknown as Opt;
     expect(pos.yAxis.inverse).toBe(true);

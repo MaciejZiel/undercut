@@ -134,7 +134,7 @@ def test_drivers_no_n_plus_one(client, season_data, django_assert_num_queries):
 
 
 def test_progress_api_shape_and_queries(client, season_data, django_assert_num_queries):
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(4):  # table, season lookup, and the team colours
         res = client.get("/api/v1/standings/drivers/progress/?season=2024&top=2")
     body = res.json()
     assert body["season"] == 2024
@@ -142,6 +142,7 @@ def test_progress_api_shape_and_queries(client, season_data, django_assert_num_q
     assert len(body["series"]) == 2
     assert body["series"][0]["points"] == [18, 30.5, 60.5]
     assert body["series"][0]["positions"] == [2, 2, 1]
+    assert set(body["series"][0]) >= {"color", "team_name"}
 
 
 def test_progress_default_top_is_five(client):

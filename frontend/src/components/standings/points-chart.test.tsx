@@ -15,6 +15,8 @@ const data: Progress = {
     entity: { id: i, slug: `d${i}`, name: `Driver ${i}`, code: `D${i}`, nationality: null },
     points: [25, 40],
     positions: [1, 1],
+    color: null,
+    team_name: null,
   })),
 };
 
@@ -35,10 +37,10 @@ describe("PointsChart", () => {
     vi.stubGlobal("fetch", fetchMock);
     renderChart();
     await screen.findByTestId("chart");
-    expect(screen.getByText("Lines (5 of 7)")).toBeInTheDocument();
+    expect(screen.getByText("Showing 5 of 7")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /^D6/ }));
-    expect(screen.getByText("Lines (6 of 7)")).toBeInTheDocument();
+    expect(screen.getByText("Showing 6 of 7")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Show as table" }));
     expect(screen.getByRole("table")).toBeInTheDocument();
     expect(screen.queryByTestId("chart")).not.toBeInTheDocument();

@@ -23,6 +23,19 @@ export function seriesValues(series: Progress["series"][number], metric: Progres
   return metric === "points" ? series.points : series.positions;
 }
 
+const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+/**
+ * The team's colour, the same one the tables and the race charts use. A driver whose team mate comes
+ * earlier in the list gets a dashed line, so two lines of one colour can still be told apart.
+ */
+export function lineLook(data: Progress, index: number, tokens: ChartTokens): { color: string; dashed: boolean } {
+  const s = data.series[index];
+  const team = s.color && HEX.test(s.color) ? s.color : null;
+  const dashed = team !== null && data.series.slice(0, index).some((o) => o.color === s.color);
+  return { color: team ?? seriesColor(tokens, index), dashed };
+}
+
 /** Colours are tied to the index in the full list, so toggling a line never recolours the others. */
 export function buildProgressOption(
   data: Progress,
@@ -34,18 +47,19 @@ export function buildProgressOption(
   const lines = data.series
     .map((s, index) => ({ s, index }))
     .filter(({ s }) => chosen.has(s.entity.slug));
-  const axisText = { color: tokens.muted };
+  const axisText = { color: tokens.muted, fontFamily: "IBM Plex Mono, ui-monospace, Menlo, monospace", fontSize: 11 };
   return {
     animation: false,
-    color: lines.map(({ index }) => seriesColor(tokens, index)),
     textStyle: { color: tokens.fg },
-    grid: { left: 8, right: 16, top: 16, bottom: 8, containLabel: true },
+    grid: { left: 8, right: 16, top: 32, bottom: 8, containLabel: true },
     tooltip: {
       trigger: "axis",
       confine: true,
       backgroundColor: tokens.surface,
-      borderColor: tokens.line,
-      textStyle: { color: tokens.fg },
+      borderColor: tokens.fg,
+      borderWidth: 1,
+      extraCssText: "border-radius:0;box-shadow:none;",
+      textStyle: { color: tokens.fg, fontSize: 12 },
       axisPointer: { type: "line", lineStyle: { color: tokens.line } },
     },
     xAxis: {
@@ -70,13 +84,17 @@ export function buildProgressOption(
       axisLabel: axisText,
       splitLine: { lineStyle: { color: tokens.line } },
     },
-    series: lines.map(({ s }) => ({
-      name: s.entity.name,
-      type: "line",
-      data: seriesValues(s, metric),
-      connectNulls: false,
-      symbolSize: 6,
-      lineStyle: { width: 2.5 },
-    })),
+    series: lines.map(({ s, index }) => {
+      const look = lineLook(data, index, tokens);
+      return {
+        name: s.entity.name,
+        type: "line",
+        data: seriesValues(s, metric),
+        connectNulls: false,
+        symbolSize: 6,
+        itemStyle: { color: look.color },
+        lineStyle: { width: 2.5, color: look.color, type: look.dashed ? "dashed" : "solid" },
+      };
+    }),
   };
 }

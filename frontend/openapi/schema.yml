@@ -4173,10 +4173,20 @@ components:
             type: integer
             nullable: true
           description: Championship position per round, aligned to `rounds`.
+        color:
+          type: string
+          nullable: true
+          description: Team colour (a driver takes the colour of their team that season).
+        team_name:
+          type: string
+          nullable: true
+          description: 'Drivers only: their team.'
       required:
+      - color
       - entity
       - points
       - positions
+      - team_name
     QualifyingHeadToHead:
       type: object
       properties:

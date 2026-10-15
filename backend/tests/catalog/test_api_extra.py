@@ -524,3 +524,25 @@ def test_new_endpoints_have_bounded_query_counts(client, django_assert_max_num_q
         with django_assert_max_num_queries(limit):
             response = client.get(url)
         assert response.status_code == 200, url
+
+
+def test_progress_series_carry_the_team_colour(client):
+    season = f.SeasonFactory(year=2031)
+    team = f.ConstructorFactory(name="Red Racing")
+    f.ConstructorSeasonFactory(constructor=team, season=season, color_hex="#3671c6")
+    driver = f.DriverFactory()
+    f.ResultFactory(
+        session=f.SessionFactory(round=f.RoundFactory(season=season)),
+        driver=driver,
+        constructor=team,
+    )
+    sf.DriverStanding.objects.create(
+        season=season, after_round=1, driver=driver, points=25, position=1
+    )
+    sf.ConstructorStanding.objects.create(
+        season=season, after_round=1, constructor=team, points=25, position=1
+    )
+    drivers = client.get("/api/v1/standings/drivers/progress/?season=2031").json()["series"][0]
+    assert (drivers["color"], drivers["team_name"]) == ("#3671c6", "Red Racing")
+    teams = client.get("/api/v1/standings/constructors/progress/?season=2031").json()["series"][0]
+    assert (teams["color"], teams["team_name"]) == ("#3671c6", None)

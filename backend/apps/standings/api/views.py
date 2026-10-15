@@ -62,9 +62,15 @@ class ProgressView(_KindMixin, APIView):
         params = ProgressQuerySerializer(data=request.query_params)
         params.is_valid(raise_exception=True)
         season_id, year = _resolve_season(self.kind, params.validated_data.get("season"))
-        if season_id is None:
+        if season_id is None or year is None:
             return Response({"season": None, "rounds": [], "series": []})
         data = selectors.points_progression(self.kind, season_id, params.validated_data["top"])
+        # Imported here because the catalog's own selectors already import this module.
+        from apps.catalog.selectors import standings_colors
+
+        extra = standings_colors(self.kind, year, [s["entity"]["id"] for s in data["series"]])
+        for item in data["series"]:
+            item.update(extra[item["entity"]["id"]])
         return Response(ProgressSerializer({"season": year, **data}).data)
 
 

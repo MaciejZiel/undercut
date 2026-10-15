@@ -1873,6 +1873,10 @@ export interface components {
             points: (number | null)[];
             /** @description Championship position per round, aligned to `rounds`. */
             positions: (number | null)[];
+            /** @description Team colour (a driver takes the colour of their team that season). */
+            color: string | null;
+            /** @description Drivers only: their team. */
+            team_name: string | null;
         };
         QualifyingHeadToHead: {
             a_ahead: number;

@@ -40,6 +40,11 @@ class ProgressSeriesSerializer(serializers.Serializer):
         child=serializers.IntegerField(allow_null=True),
         help_text="Championship position per round, aligned to `rounds`.",
     )
+    color = serializers.CharField(
+        allow_null=True,
+        help_text="Team colour (a driver takes the colour of their team that season).",
+    )
+    team_name = serializers.CharField(allow_null=True, help_text="Drivers only: their team.")
 
 
 class ProgressSerializer(serializers.Serializer):
