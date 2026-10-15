@@ -158,8 +158,8 @@ if not DEBUG:
 
 
 # --- Accounts (django-allauth in headless mode, session based) ---------------------------------
-# Google login (FR-502) is not configured: it needs allauth's "socialaccount" extra, which pulls
-# in requests -> certifi (MPL-2.0, copyleft). That requires written approval first.
+# allauth's "socialaccount" extra is not used: it pulls in requests -> certifi (MPL-2.0, copyleft),
+# which needs written approval first. Google login is implemented in apps.accounts.google instead.
 ACCOUNT_ADAPTER = "apps.accounts.adapter.AccountAdapter"
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
@@ -174,6 +174,11 @@ def ACCOUNT_USER_DISPLAY(user):  # noqa: N802 (allauth setting name)
     return user.display_name or "there"
 
 
+# Google login (FR-502): a small OpenID Connect client in apps.accounts.google (standard library).
+# (allauth's socialaccount extra would pull in requests -> certifi, MPL-2.0). Disabled until both
+# values are set. The redirect URI below must be registered in the Google console exactly as is.
+GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID", default="")
+GOOGLE_CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET", default="")
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Undercut] "
 # Login attempts: 5 failures per 15 minutes per IP and per account (cache based; the local-memory
 # cache is enough on a single-host deployment).
@@ -230,6 +235,7 @@ REVALIDATE_SECRET = env("REVALIDATE_SECRET", default="")
 SITE_URL = env("SITE_URL", default="https://undercut.maciejzielinski.dev").rstrip("/")
 # Public base of the API, for the one-click unsubscribe link (defaults to the site itself).
 API_PUBLIC_URL = env("API_PUBLIC_URL", default=SITE_URL).rstrip("/")
+GOOGLE_REDIRECT_URI = f"{API_PUBLIC_URL}/api/v1/auth/google/callback/"
 
 
 # === Production operations (apps.ops): logging, Sentry, security review =========================

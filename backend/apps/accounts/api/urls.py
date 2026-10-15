@@ -1,10 +1,17 @@
 from django.urls import include, path
 
-from . import views
+from . import google_views, views
 
 urlpatterns = [
     path("auth/csrf/", views.CsrfView.as_view(), name="auth-csrf"),
     path("auth/me/", views.MeView.as_view(), name="auth-me"),
+    path("auth/google/", google_views.GoogleStatusView.as_view(), name="auth-google"),
+    path("auth/google/start/", google_views.GoogleStartView.as_view(), name="auth-google-start"),
+    path(
+        "auth/google/callback/",
+        google_views.GoogleCallbackView.as_view(),
+        name="auth-google-callback",
+    ),
     path("auth/demo/", views.DemoLoginView.as_view(), name="auth-demo"),
     # Registration, e-mail confirmation, login/logout, password reset and change, e-mail management:
     # django-allauth headless (browser client, session based), e.g.

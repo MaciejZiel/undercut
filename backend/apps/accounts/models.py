@@ -69,3 +69,17 @@ class Favorite(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user_id} -> {self.driver_id or self.constructor_id}"
+
+
+class GoogleIdentity(models.Model):
+    """A Google account linked to a user. ``sub`` is Google's stable id; the e-mail may change."""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="google_identity"
+    )
+    sub = models.CharField(max_length=255, unique=True)
+    email = models.EmailField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.user_id} <-> google:{self.sub}"
