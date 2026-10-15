@@ -23,6 +23,8 @@ log = logging.getLogger(__name__)
 RESULTS_AFTER = dt.timedelta(hours=1)  # first poll one hour after the session ends
 RESULTS_UNTIL = dt.timedelta(hours=12)  # then hourly, give up after twelve hours
 CORRECTIONS_WINDOW = dt.timedelta(days=8)
+# Safety net for a source or worker that was down during the hourly window: one more try a day.
+CATCHUP_UNTIL = dt.timedelta(days=30)
 
 # OpenF1 analytics: first try two hours after the session, then every two hours for a day. A
 # session that was already imported is skipped by the importer (a couple of cheap requests).
@@ -43,6 +45,19 @@ def results_due(now: dt.datetime):
         yield DueEvent(
             job=f"session-results:{ref.id}",
             slot=hour,
+            event_type="SessionResultsDue",
+            key=f"session:{ref.id}",
+            payload={"session_id": ref.id},
+        )
+
+
+def results_catchup_due(now: dt.datetime):
+    """One `SessionResultsDue` a day for a session still not final after the hourly window."""
+    day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    for ref in scheduling.sessions_awaiting_results(now, after=RESULTS_UNTIL, until=CATCHUP_UNTIL):
+        yield DueEvent(
+            job=f"session-results-catchup:{ref.id}",
+            slot=day,
             event_type="SessionResultsDue",
             key=f"session:{ref.id}",
             payload={"session_id": ref.id},
@@ -149,6 +164,7 @@ def register() -> None:
     subscribe("CalendarSyncDue")(on_calendar_sync_due)
     subscribe("ResultsCorrectionsDue")(on_results_corrections_due)
     register_provider(results_due)
+    register_provider(results_catchup_due)
     subscribe("AnalyticsDue")(on_analytics_due)
     register_provider(analytics_due)
     subscribe("PracticeResultsDue")(on_practice_results_due)

@@ -122,3 +122,24 @@ def test_corrections_event_resyncs_the_latest_finished_round(season, monkeypatch
         "driver_standings",
         "constructor_standings",
     }
+
+
+def catchup_ids(now):
+    return [e.payload["session_id"] for e in handlers.results_catchup_due(now)]
+
+
+def test_a_missed_session_is_retried_once_a_day_for_a_month(season):
+    ends = season.end_utc
+    assert season.id not in catchup_ids(ends + dt.timedelta(hours=11))  # hourly polls cover it
+    assert season.id in catchup_ids(ends + dt.timedelta(days=3))
+    assert season.id not in catchup_ids(ends + dt.timedelta(days=31))
+    Session.objects.filter(pk=season.pk).update(status="results_final")
+    assert season.id not in catchup_ids(ends + dt.timedelta(days=3))
+
+
+def test_the_catch_up_fires_once_per_day(season):
+    at = season.end_utc + dt.timedelta(days=3, hours=2)
+    first = run_due(at, schedule=[], providers=[handlers.results_catchup_due])
+    assert first >= 1
+    later = at + dt.timedelta(hours=1)
+    assert run_due(later, schedule=[], providers=[handlers.results_catchup_due]) == 0
