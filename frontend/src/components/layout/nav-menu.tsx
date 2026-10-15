@@ -3,19 +3,17 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { CATALOG_LINKS, NAV_ITEMS, isActive } from "@/lib/nav";
+import { isActive, type NavItem } from "@/lib/nav";
 import { ChevronDownIcon } from "@/components/ui/icons";
 
-const catalogItem = NAV_ITEMS.find((i) => i.label === "Catalog")!;
-
-/** Disclosure-style dropdown: a button toggles a list of links. */
-export function CatalogMenu({ linkClass }: { linkClass: (active: boolean) => string }) {
+/** Disclosure-style dropdown: a button toggles the links of a navigation group. */
+export function NavMenu({ item, linkClass }: { item: NavItem; linkClass: (active: boolean) => string }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLLIElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
   const pathname = usePathname();
-  const active = isActive(catalogItem, pathname);
+  const active = isActive(item, pathname);
 
   useEffect(() => {
     // Close after navigating: reacts to an external change (the route).
@@ -58,19 +56,19 @@ export function CatalogMenu({ linkClass }: { linkClass: (active: boolean) => str
         onClick={() => setOpen((o) => !o)}
         className={`${linkClass(active)} gap-1`}
       >
-        Catalog
+        {item.label}
         <ChevronDownIcon className={open ? "rotate-180" : ""} />
       </button>
       <ul
         id={panelId}
         hidden={!open}
-        className="absolute left-0 top-full z-30 -mt-1 w-64 rounded-lg border border-line bg-bg p-1.5 shadow-[0_12px_30px_rgb(32_49_73/0.14)]"
+        className="absolute left-0 top-full z-30 -mt-1 w-64 border border-fg bg-bg p-1.5"
       >
-        {CATALOG_LINKS.map((l) => (
+        {item.children?.map((l) => (
           <li key={l.href}>
             <Link
               href={l.href}
-              className="t-fast flex flex-col rounded-md px-3 py-2 hover:bg-surface"
+              className="t-fast flex flex-col px-3 py-2.5 hover:bg-surface"
             >
               <span className="font-semibold">{l.label}</span>
               <span className="text-xs text-muted">{l.hint}</span>

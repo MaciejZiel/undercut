@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { NAV_ITEMS, isActive } from "@/lib/nav";
 import { TAB_ICONS } from "@/components/ui/icons";
 
-/** Bottom tab bar, visible below 768 px. Catalog opens a 4-tile screen. */
+/** Bottom tab bar, visible below 768 px. Archive opens a list of its pages. */
 export function MobileTabBar() {
   const pathname = usePathname();
   return (

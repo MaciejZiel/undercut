@@ -94,14 +94,11 @@ export async function ChampionshipSection() {
     return (
       <section aria-labelledby="championship-h">
         <div className="mb-4 flex items-start justify-between gap-4">
-          <div>
-            <p className="eyebrow mb-1.5">The championship{drivers.season ? ` / ${drivers.season}` : ""}</p>
-            <h2 id="championship-h" className="heading text-[1.5rem] sm:text-[1.625rem]">
-              Points on the board.
-            </h2>
-          </div>
+          <h2 id="championship-h" className="heading text-[1.5rem] sm:text-[1.625rem]">
+            Championship{drivers.season ? ` ${drivers.season}` : ""}
+          </h2>
           <Link href="/standings/drivers" className="eyebrow whitespace-nowrap hover:text-accent">
-            Full standings ↗
+            Full standings →
           </Link>
         </div>
         <StandingsSwitch
@@ -127,40 +124,7 @@ export async function ChampionshipSection() {
   });
 }
 
-/** The bottom rule of the page: what happened on this day, and the invitation to call the next podium. */
-export async function BottomSection() {
-  await connection();
-  return guarded("Could not load this day in F1", async () => {
-    const { this_day_in_f1: item, next_race: next } = await getDashboard();
-    const predict = next && next.round != null ? next : null;
-    if (!item && !predict) return null;
-    const both = Boolean(item && predict);
-    return (
-      <div className={`grid grid-cols-1 border-t-[3px] border-fg ${both ? "lg:grid-cols-[minmax(0,1fr)_23.5rem]" : ""}`}>
-        {item && <ThisDayCard item={item} />}
-        {predict && (
-          <section
-            aria-labelledby="predict-h"
-            className={`py-6 ${both ? "border-t border-fg lg:border-l lg:border-t-0 lg:pl-7" : ""}`}
-          >
-            <p className="eyebrow">Your call / Round {predict.round}</p>
-            <h2 id="predict-h" className="heading mb-3 mt-2 text-[1.3125rem]">
-              Who takes the top step?
-            </h2>
-            <Link
-              href="/predict"
-              className="t-fast border-b-2 border-accent pb-1.5 text-[0.8125rem] font-bold hover:text-accent"
-            >
-              Join the prediction grid ↗
-            </Link>
-          </section>
-        )}
-      </div>
-    );
-  });
-}
-
-/** The big masthead of the home page: the name, the season and today's date. */
+/** A thin strip above the weekend: the season and today's date. The wordmark lives in the header. */
 export async function Masthead() {
   await connection();
   let season: number | null = null;
@@ -171,23 +135,18 @@ export async function Masthead() {
   }
   const today = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date());
   return (
-    <div className="flex items-end justify-between gap-6 border-b-4 border-fg pb-4 pt-1">
-      <p aria-hidden="true" className="display flex shrink-0 items-start whitespace-nowrap text-[clamp(3.2rem,13.5vw,8.25rem)] leading-[0.88]">
-        undercut
-        <svg viewBox="0 0 24 24" className="ml-[0.04em] mt-[0.08em] size-[0.62em] fill-none stroke-accent" strokeWidth={2.6} strokeLinecap="square">
-          <path d="M5 19 19 5M8 5h11v11" />
-        </svg>
-      </p>
-      <p className="ml-auto hidden shrink-0 whitespace-nowrap pb-1 text-xs leading-relaxed 2xl:block">
-        Every lap has a story.
-        <br />
-        Follow the numbers.
-      </p>
-      <p className="eyebrow ml-auto hidden shrink-0 pb-1 text-right sm:block 2xl:ml-0">
-        {season ? `Season ${season}` : "Season"}
-        <br />
-        {today}
-      </p>
+    <div className="flex items-baseline justify-between gap-4 border-b-4 border-fg pb-2 pt-1">
+      <p className="eyebrow">{season ? `Season ${season}` : "Season"}</p>
+      <p className="eyebrow">{today}</p>
     </div>
   );
+}
+
+/** "On this day": the winner of a race held on today's date in an earlier year. Lives in the archive. */
+export async function ThisDaySection() {
+  await connection();
+  return guarded("Could not load this day in F1", async () => {
+    const { this_day_in_f1: item } = await getDashboard();
+    return item ? <ThisDayCard item={item} /> : null;
+  });
 }

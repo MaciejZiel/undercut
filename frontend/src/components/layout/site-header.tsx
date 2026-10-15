@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { HeaderBrand } from "./header-brand";
 import { Logo } from "./logo";
 import { MainNav } from "./main-nav";
 import { SearchBox } from "./search-box";
@@ -11,9 +10,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-line-strong bg-bg">
       <div className="mx-auto flex h-16 w-full max-w-[77.5rem] items-center gap-2 px-4 sm:px-6 md:h-[4.25rem] md:gap-4 lg:px-10">
-        <Suspense fallback={<Logo />}>
-          <HeaderBrand />
-        </Suspense>
+        <Logo />
         <div className="md:ml-6 lg:ml-10">
           <Suspense fallback={null}>
             <MainNav />

@@ -51,6 +51,26 @@ async function StandingsContent({ kind, searchParams }: { kind: StandingsKind; s
   if (resolvedSeason) years.add(resolvedSeason);
   const rounds = data?.rounds ?? [];
 
+  const tabs = (
+    <nav aria-label="Championship" className="mb-6 overflow-x-auto overflow-y-hidden">
+      <ul className="flex gap-1 border-b border-line">
+        {(["drivers", "constructors"] as const).map((k) => (
+          <li key={k}>
+            <Link
+              href={buildHref(COPY[k].path, { season, after_round: afterRound })}
+              aria-current={k === kind ? "page" : undefined}
+              className={`t-fast block whitespace-nowrap border-b-[3px] px-3.5 py-2.5 text-sm font-bold ${
+                k === kind ? "border-accent text-accent" : "border-transparent text-muted hover:text-accent"
+              }`}
+            >
+              {k === "drivers" ? "Drivers" : "Constructors"}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+
   const form = (
     <FilterForm
       action={copy.path}
@@ -61,7 +81,7 @@ async function StandingsContent({ kind, searchParams }: { kind: StandingsKind; s
           kind: "select",
           name: "season",
           label: "Season",
-          value: season ? String(season) : "",
+          value: String(season ?? resolvedSeason ?? ""),
           allLabel: "Latest season",
           options: [...years].sort((a, b) => b - a).map((y) => ({ value: String(y), label: String(y) })),
         },
@@ -69,7 +89,7 @@ async function StandingsContent({ kind, searchParams }: { kind: StandingsKind; s
           kind: "select",
           name: "after_round",
           label: "After round",
-          value: afterRound ? String(afterRound) : "",
+          value: String(afterRound ?? (season ? "" : (data?.after_round ?? ""))),
           allLabel: "Latest round",
           options: rounds.map((r) => ({ value: String(r), label: `Round ${r}` })),
         },
@@ -80,6 +100,7 @@ async function StandingsContent({ kind, searchParams }: { kind: StandingsKind; s
   if (data === null) {
     return (
       <>
+        {tabs}
         {form}
         <EmptyState
           title="No standings for this selection"
@@ -93,10 +114,10 @@ async function StandingsContent({ kind, searchParams }: { kind: StandingsKind; s
   const heading = data.season
     ? `${data.season} season${data.after_round ? `, after round ${data.after_round}` : ""}`
     : "Standings";
-  const other: StandingsKind = kind === "drivers" ? "constructors" : "drivers";
 
   return (
     <>
+      {tabs}
       {form}
       {data.results.length === 0 || data.season === null ? (
         <EmptyState
@@ -111,14 +132,6 @@ async function StandingsContent({ kind, searchParams }: { kind: StandingsKind; s
               {heading}
             </h2>
             <StandingsTable kind={kind} rows={data.results} caption={`${copy.title}: ${heading}`} />
-            <p className="mt-3 text-sm">
-              <Link
-                href={buildHref(COPY[other].path, { season: data.season, after_round: data.after_round })}
-                className="font-semibold text-muted hover:text-accent hover:underline"
-              >
-                See the {COPY[other].noun}&apos; championship &rarr;
-              </Link>
-            </p>
           </section>
           <section aria-labelledby="chart-h">
             <h2 id="chart-h" className="mb-3 heading text-xl sm:text-[1.375rem]">

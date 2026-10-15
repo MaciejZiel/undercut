@@ -149,9 +149,9 @@ body {
 .label,
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fg-muted);
 }
@@ -394,3 +394,5 @@ a.rowlink::after {
 /* v16 */
 /* v17 */
 /* v18 */
+
+/* v-audit */

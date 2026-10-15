@@ -24,7 +24,7 @@ export default function SeasonsPage({ searchParams }: PageProps<"/seasons">) {
       <PageHeader
         title="Seasons"
         description="Year by year, newest first."
-        breadcrumbs={[{ label: "Catalog", href: "/catalog" }, { label: "Seasons" }]}
+        breadcrumbs={[{ label: "Archive", href: "/catalog" }, { label: "Seasons" }]}
       />
       <Suspense fallback={<ListPageSkeleton filters={false} />}>
         <SeasonList searchParams={searchParams} />

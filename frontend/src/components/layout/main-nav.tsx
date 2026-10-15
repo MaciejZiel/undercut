@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS, isActive } from "@/lib/nav";
-import { CatalogMenu } from "./catalog-menu";
+import { NavMenu } from "./nav-menu";
 
 function linkClass(active: boolean) {
   return [
@@ -20,8 +20,8 @@ export function MainNav() {
     <nav aria-label="Main" className="hidden md:block">
       <ul className="flex items-center">
         {NAV_ITEMS.map((item) =>
-          item.label === "Catalog" ? (
-            <CatalogMenu key={item.href} linkClass={linkClass} />
+          item.children ? (
+            <NavMenu key={item.href} item={item} linkClass={linkClass} />
           ) : (
             <li key={item.href}>
               <Link

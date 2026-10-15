@@ -14,7 +14,7 @@ export function ThisDayCard({ item }: { item: ThisDay }) {
       </span>
       <div>
         <h2 id="this-day-h" className="eyebrow mb-1.5">
-          From the archive / On this day
+          On this day
         </h2>
         <p className="max-w-[36ch] text-[0.9375rem] leading-relaxed">
           <DriverLink slug={item.driver.slug} name={item.driver.name} /> won the{" "}

@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { BottomSection, ChampionshipSection, LastRaceSection, Masthead, NextRaceSection } from "@/components/dashboard/sections";
+import { ChampionshipSection, LastRaceSection, Masthead, NextRaceSection } from "@/components/dashboard/sections";
 
 export const metadata: Metadata = {
-  title: "This weekend",
+  title: "Weekend",
   description: "The next Formula 1 race weekend, the latest podium and the championship top five.",
 };
 
@@ -31,7 +31,7 @@ export default function DashboardPage() {
   return (
     <>
       <h1 className="sr-only">Undercut: next race weekend, latest podium and championship standings</h1>
-      <Suspense fallback={<div className="h-28 border-b-4 border-fg" aria-hidden="true" />}>
+      <Suspense fallback={<div className="h-8 border-b-4 border-fg" aria-hidden="true" />}>
         <Masthead />
       </Suspense>
       <Suspense fallback={<HeroSkeleton />}>
@@ -49,9 +49,6 @@ export default function DashboardPage() {
           </Suspense>
         </div>
       </div>
-      <Suspense fallback={<div className="h-24 border-t-[3px] border-fg" aria-hidden="true" />}>
-        <BottomSection />
-      </Suspense>
     </>
   );
 }

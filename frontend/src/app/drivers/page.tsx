@@ -28,7 +28,7 @@ export default function DriversPage({ searchParams }: PageProps<"/drivers">) {
       <PageHeader
         title="Drivers"
         description="Every driver in the history of the championship. Filter by season, nationality or team."
-        breadcrumbs={[{ label: "Catalog", href: "/catalog" }, { label: "Drivers" }]}
+        breadcrumbs={[{ label: "Archive", href: "/catalog" }, { label: "Drivers" }]}
       />
       <Suspense fallback={<ListPageSkeleton filters />}>
         <DriverList searchParams={searchParams} />

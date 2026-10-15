@@ -48,17 +48,11 @@ export function NextRaceCard({
     <article aria-labelledby="next-race-h" className="grid grid-cols-1 border-b border-fg lg:grid-cols-[minmax(0,1fr)_23.5rem]">
       <div className="relative flex flex-col overflow-hidden py-7 lg:pr-9">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="bg-accent px-2 py-1 text-[0.625rem] font-bold tracking-[0.1em] text-accent-fg">UP NEXT</span>
+          <span className="bg-accent px-2 py-1 text-xs font-bold tracking-[0.08em] text-accent-fg">UP NEXT</span>
           <span className="eyebrow">
             Round {round} / {year}
           </span>
         </div>
-        <span
-          aria-hidden="true"
-          className="numeral pointer-events-none absolute right-0 top-14 hidden select-none text-[clamp(6rem,15vw,9.5rem)] tracking-[-0.07em] text-ghost sm:block lg:right-9"
-        >
-          {round}
-        </span>
         {circuitDetail?.outline && (
           <TrackOutline
             outline={circuitDetail.outline}
@@ -92,10 +86,10 @@ export function NextRaceCard({
             href={roundHref(year, round)}
             className="t-fast ml-auto border-b-2 border-accent pb-1.5 text-[0.8125rem] font-bold hover:text-accent"
           >
-            Explore the weekend ↗
+            Weekend details →
           </Link>
         </div>
-        <div className="mt-auto pt-8">
+        <div className="mt-auto hidden pt-8 lg:block">
           <CircuitFacts detail={circuitDetail} />
         </div>
       </div>
@@ -117,19 +111,22 @@ export function NextRaceCard({
           <div className="border-b border-line py-2.5">
             <AddToCalendar year={year} round={round} label="Add the weekend to my calendar" />
           </div>
-          <Link href="/calendar" className="t-fast flex items-baseline justify-between gap-3 border-b border-line py-2.5 text-[0.8125rem] hover:text-accent">
-            <b>Full schedule</b>
-            <span>View calendar ↗</span>
+          <Link href="/calendar" className="t-fast flex min-h-11 items-center justify-between gap-3 border-b border-line py-2.5 text-[0.8125rem] font-bold hover:text-accent">
+            Full calendar
+            <span aria-hidden="true">→</span>
           </Link>
         </div>
         <Link
           href="/predict"
           className="t-fast mt-5 flex items-center justify-between bg-fg px-4 py-3.5 text-[0.8125rem] font-bold text-bg hover:-translate-y-px hover:bg-accent hover:text-accent-fg"
         >
-          Make your podium picks
-          <span aria-hidden="true">↗</span>
+          Predict the podium
+          <span aria-hidden="true">→</span>
         </Link>
       </aside>
+      <div className="border-t border-line pb-2 lg:hidden">
+        <CircuitFacts detail={circuitDetail} />
+      </div>
     </article>
   );
 }
@@ -145,7 +142,7 @@ function CircuitFacts({ detail }: { detail: CircuitDetail | null }) {
   ].filter((i): i is { label: string; value: string; note?: string } => Boolean(i));
   if (items.length === 0) return null;
   return (
-    <dl aria-label={`${detail.name} facts`} className="mt-7 flex flex-wrap gap-x-10 gap-y-3 border-t border-line pt-4">
+    <dl aria-label={`${detail.name} facts`} className="mt-4 flex flex-wrap gap-x-10 gap-y-3 border-t border-line pt-4 lg:mt-7">
       {items.map((i) => (
         <div key={i.label} className="flex flex-col-reverse justify-end">
           <dt className="eyebrow mt-1">

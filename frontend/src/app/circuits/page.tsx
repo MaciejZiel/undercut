@@ -26,7 +26,7 @@ export default function CircuitsPage({ searchParams }: PageProps<"/circuits">) {
       <PageHeader
         title="Circuits"
         description="Every circuit that hosted a Grand Prix."
-        breadcrumbs={[{ label: "Catalog", href: "/catalog" }, { label: "Circuits" }]}
+        breadcrumbs={[{ label: "Archive", href: "/catalog" }, { label: "Circuits" }]}
       />
       <Suspense fallback={<ListPageSkeleton filters />}>
         <CircuitList searchParams={searchParams} />

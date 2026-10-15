@@ -49,18 +49,18 @@ export function TopFive({ kind, standings }: { kind: StandingsKind; standings: T
                     <ConstructorLink slug={row.slug} name={row.name} dot={false} stretch />
                   )}
                 </span>
-                {kind === "drivers" && row.team_name && <span className="mt-0.5 block truncate text-[0.6875rem] text-muted">{row.team_name}</span>}
+                {kind === "drivers" && row.team_name && <span className="mt-0.5 block truncate text-xs text-muted">{row.team_name}</span>}
               </span>
               <span className="text-right leading-tight">
                 <span className="block text-[1.1875rem] font-extrabold tabular-nums tracking-[-0.03em]">{formatPoints(row.points) ?? <Dash />}</span>
-                {behind > 0 && <span className="block text-[0.6875rem] tabular-nums text-muted">−{formatPoints(behind)}</span>}
+                {behind > 0 && <span className="block text-xs tabular-nums text-muted">−{formatPoints(behind)}</span>}
               </span>
             </li>
           );
         })}
       </ol>
       <Link href={copy.href} className="eyebrow mt-4 inline-block whitespace-nowrap hover:text-accent">
-        Full table ↗
+        Full table →
       </Link>
     </div>
   );

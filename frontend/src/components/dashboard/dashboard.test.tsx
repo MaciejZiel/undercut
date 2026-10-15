@@ -123,7 +123,7 @@ const base: Dashboard = {
 describe("dashboard sections", () => {
   it("shows empty states when there is no data", async () => {
     getDashboard.mockResolvedValue(base);
-    const { NextRaceSection, LastRaceSection, ChampionshipSection, BottomSection } = await import("./sections");
+    const { NextRaceSection, LastRaceSection, ChampionshipSection, ThisDaySection } = await import("./sections");
     render(await NextRaceSection());
     expect(screen.getByText("No upcoming race")).toBeInTheDocument();
     cleanup();
@@ -133,7 +133,7 @@ describe("dashboard sections", () => {
     render(await ChampionshipSection());
     expect(screen.getByText("No standings yet")).toBeInTheDocument();
     cleanup();
-    expect(await BottomSection()).toBeNull();
+    expect(await ThisDaySection()).toBeNull();
   });
   it("shows the next race and the podium", async () => {
     getDashboard.mockResolvedValue({

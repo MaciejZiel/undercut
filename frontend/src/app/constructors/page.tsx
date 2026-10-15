@@ -27,7 +27,7 @@ export default function ConstructorsPage({ searchParams }: PageProps<"/construct
       <PageHeader
         title="Constructors"
         description="Every team in the history of the championship."
-        breadcrumbs={[{ label: "Catalog", href: "/catalog" }, { label: "Constructors" }]}
+        breadcrumbs={[{ label: "Archive", href: "/catalog" }, { label: "Constructors" }]}
       />
       <Suspense fallback={<ListPageSkeleton filters />}>
         <ConstructorList searchParams={searchParams} />

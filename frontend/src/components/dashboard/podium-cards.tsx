@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { components } from "@/lib/api/client";
-import { formatInteger, formatLapTime, formatPoints, formatRaceTime } from "@/lib/format";
+import { formatInteger, formatLapTime, formatPoints, formatRaceGap } from "@/lib/format";
 import { roundHref } from "@/lib/routes";
 import { DriverLink } from "@/components/ui/entity-links";
 import { Dash } from "@/components/ui/value";
@@ -35,17 +35,14 @@ export function PodiumCards({
     <section aria-labelledby="podium-h">
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>
-          <p className="eyebrow mb-1.5">
-            Last classified{round != null ? ` / Round ${round}` : ""}
-          </p>
           <h2 id="podium-h" className="heading text-[1.5rem] sm:text-[1.625rem]">
-            {place}. Settled.
+            Last race: {place}
           </h2>
           <p className="sr-only">{name}</p>
         </div>
         {round != null && (
           <Link href={roundHref(year, round)} className="eyebrow whitespace-nowrap hover:text-accent">
-            Race report ↗
+            Race report →
           </Link>
         )}
       </div>
@@ -55,7 +52,8 @@ export function PodiumCards({
           const first = r.position === 1;
           const res = resultOf(r.driver.slug);
           const points = res?.points != null ? formatPoints(res.points) : null;
-          const time = first && res?.time_ms != null ? formatRaceTime(res.time_ms) : null;
+          const winnerRes = results?.find((x) => x.position === 1);
+          const time = res ? formatRaceGap(res, winnerRes) : null;
           const laps = first && res?.laps != null ? formatInteger(res.laps) : null;
           return (
             <li
@@ -102,7 +100,7 @@ export function PodiumCards({
         </span>
         {round != null && (
           <Link href={roundHref(year, round)} className="font-bold text-fg underline decoration-accent decoration-2 underline-offset-4 hover:text-accent">
-            Full results and analysis ↗
+            Full results and analysis →
           </Link>
         )}
       </p>
