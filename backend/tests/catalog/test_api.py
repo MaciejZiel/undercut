@@ -591,3 +591,19 @@ def test_driver_list_exposes_ids_so_a_season_grid_can_be_picked(client):
     rows = get(client, "/api/v1/drivers/", season=2024, page_size=100).json()["results"]
 
     assert [(r["id"], r["slug"]) for r in rows] == [(ver.id, ver.slug)]
+
+
+def test_search_puts_the_driver_with_most_starts_first_and_gives_the_years(client):
+    def raced(driver, years):
+        for year in years:
+            season = f.SeasonFactory(year=year)
+            session = f.SessionFactory(round=f.RoundFactory(season=season, round=1))
+            f.ResultFactory(session=session, driver=driver)
+
+    old = f.DriverFactory(given_name="Arthur", family_name="Leclerc")
+    star = f.DriverFactory(given_name="Charles", family_name="Leclerc")
+    raced(old, [1950])
+    raced(star, [2018, 2019, 2026])
+    hits = get(client, "/api/v1/search/", q="lecl").json()["drivers"]
+    assert [h["slug"] for h in hits] == [star.slug, old.slug]
+    assert [h["years"] for h in hits] == ["2018–2026", "1950"]

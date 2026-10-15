@@ -7,7 +7,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 import { SearchBox } from "./search-box";
 
 const payload = {
-  drivers: Array.from({ length: 7 }, (_, i) => ({ slug: `d${i}`, name: `Driver ${i}`, code: null, number: null, nationality: "Finnish" })),
+  drivers: Array.from({ length: 7 }, (_, i) => ({ slug: `d${i}`, name: `Driver ${i}`, code: null, number: null, nationality: "Finnish", years: null })),
   constructors: [{ slug: "ferrari", name: "Ferrari", nationality: "Italian" }],
   circuits: [],
   rounds: [],

@@ -26,6 +26,7 @@ from django.db.models import (
     F,
     IntegerField,
     Max,
+    Min,
     OuterRef,
     Q,
     QuerySet,
@@ -789,14 +790,32 @@ def _practice_results(session: Session, team) -> list[dict]:
 # --- Search ----------------------------------------------------------------------------------
 
 
+def _year_span(first: int | None, last: int | None) -> str | None:
+    if first is None or last is None:
+        return None
+    return str(first) if first == last else f"{first}\u2013{last}"
+
+
 def search(query: str) -> dict:
     """Diacritics- and case-insensitive search, at most SEARCH_GROUP_LIMIT hits per group."""
     needle = make_search_name(query)
+    # The ones with the most starts first, so "lecl" finds Charles before a driver of 1950.
+    found = (
+        Driver.objects.filter(search_name__contains=needle)
+        .annotate(
+            starts=Count("results"),
+            first_year=Min("results__session__round__season__year"),
+            last_year=Max("results__session__round__season__year"),
+        )
+        .order_by("-starts", "family_name", "given_name")[:SEARCH_GROUP_LIMIT]
+    )
     drivers = [
-        driver_ref(d) | {"nationality": d.nationality or None}
-        for d in Driver.objects.filter(search_name__contains=needle).order_by(
-            "family_name", "given_name"
-        )[:SEARCH_GROUP_LIMIT]
+        driver_ref(d)
+        | {
+            "nationality": d.nationality or None,
+            "years": _year_span(getattr(d, "first_year", None), getattr(d, "last_year", None)),
+        }
+        for d in found
     ]
     # Constructors, circuits and rounds have no normalised name column, so match their (small)
     # tables in Python instead of with a database extension.

@@ -2120,6 +2120,8 @@ export interface components {
             code: string | null;
             number: number | null;
             nationality: string | null;
+            /** @description Seasons raced, e.g. 2018–2026. */
+            years: string | null;
         };
         SearchRound: {
             year: number;

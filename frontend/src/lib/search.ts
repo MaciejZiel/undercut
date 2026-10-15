@@ -20,7 +20,7 @@ export function groupSuggestions(data: SearchResponse, limit = MAX_PER_GROUP): S
         id: `driver-${d.slug}`,
         href: driverHref(d.slug),
         label: d.name,
-        detail: d.nationality ?? null,
+        detail: [d.years, d.nationality].filter(Boolean).join(", ") || null,
       })),
     },
     {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { groupSuggestions, searchHref, type SearchResponse } from "./search";
 
-const driver = (n: number) => ({ slug: `d${n}`, name: `Driver ${n}`, code: null, number: null, nationality: "British" });
+const driver = (n: number) => ({ slug: `d${n}`, name: `Driver ${n}`, code: null, number: null, nationality: "British", years: n === 0 ? "2018–2026" : null });
 
 const data: SearchResponse = {
   drivers: Array.from({ length: 8 }, (_, i) => driver(i)),
@@ -15,7 +15,7 @@ describe("search suggestions", () => {
     const groups = groupSuggestions(data);
     expect(groups.map((g) => g.key)).toEqual(["drivers", "constructors", "rounds"]);
     expect(groups[0].items).toHaveLength(5);
-    expect(groups[0].items[0]).toMatchObject({ href: "/drivers/d0", label: "Driver 0", detail: "British" });
+    expect(groups[0].items[0]).toMatchObject({ href: "/drivers/d0", label: "Driver 0", detail: "2018–2026, British" });
     expect(groups[2].items[0]).toMatchObject({ href: "/seasons/2024/5", label: "2024 Chinese Grand Prix" });
   });
 

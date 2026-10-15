@@ -18,7 +18,6 @@ from pathlib import Path
 
 from django.db import transaction
 
-from apps.catalog import models as catalog_models
 from apps.catalog import services as catalog
 
 from .openf1.outline import DECIMETRES, build_outline
@@ -81,12 +80,12 @@ def import_geojson(path: Path = DATA, *, force: bool = False) -> Summary:
     summary = Summary()
     features = {f["properties"]["id"]: f for f in json.loads(path.read_text())["features"]}
     for geo_id, slug in SLUGS.items():
-        circuit = catalog_models.Circuit.objects.filter(slug=slug).first()
+        circuit = catalog.circuit_for_outline(slug)
         feature = features.get(geo_id)
         if circuit is None or feature is None:
             summary.failed.append(f"{slug}: not in the catalog or in the file")
             continue
-        if circuit.outline and not force:
+        if circuit and circuit[1] and not force:
             summary.skipped.append(slug)
             continue
         outline = outline_from_feature(feature)
@@ -94,6 +93,6 @@ def import_geojson(path: Path = DATA, *, force: bool = False) -> Summary:
             summary.failed.append(f"{slug}: unusable line")
             continue
         with transaction.atomic():
-            catalog.set_circuit_outline(circuit.pk, outline)
+            catalog.set_circuit_outline(circuit[0], outline)
         summary.written.append(slug)
     return summary

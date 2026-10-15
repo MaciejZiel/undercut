@@ -4826,12 +4826,17 @@ components:
         nationality:
           type: string
           nullable: true
+        years:
+          type: string
+          nullable: true
+          description: Seasons raced, e.g. 2018–2026.
       required:
       - code
       - name
       - nationality
       - number
       - slug
+      - years
     SearchRound:
       type: object
       properties:

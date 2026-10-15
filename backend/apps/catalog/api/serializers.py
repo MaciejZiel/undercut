@@ -385,6 +385,7 @@ class QualifyingSessionResultsSerializer(serializers.Serializer):
 
 class SearchDriverSerializer(DriverRefSerializer):
     nationality = serializers.CharField(allow_null=True)
+    years = serializers.CharField(allow_null=True, help_text="Seasons raced, e.g. 2018–2026.")
 
 
 class SearchConstructorSerializer(serializers.Serializer):
