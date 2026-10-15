@@ -126,3 +126,17 @@ migration must be undone). After every deploy run `manage.py check --deploy` onc
   secure, HSTS is on without subdomains, there is no HTTP-to-HTTPS redirect in Django.
 - `/admin/` and `/_internal/` are not reachable through the tunnel; the nginx gate is explained in
   `deploy/termux/nginx-server.conf`. `/api/v1/ops/status/` is open to staff sessions only.
+
+## Load test (NFR-101..103)
+
+`scripts/perf/load_test.py` (standard library only; k6 is AGPL-3.0 and is not used) sends GET requests from several
+threads and prints p50/p95/p99 latency and the error rate. It exits 1 above `--p95-ms` (default 500) or above
+`--max-errors` (default 1 %).
+
+```
+INTERNAL_API_TOKEN=... python scripts/perf/load_test.py https://undercut.maciejzielinski.dev \
+    /api/v1/seasons/ /api/v1/drivers/ /seasons/2024 --connections 10 --seconds 30
+```
+
+Run it against your own deployment only, and keep the load modest on the home server. Without `INTERNAL_API_TOKEN` the
+anonymous throttle (60 requests per minute per address) answers 429, which counts as errors.
