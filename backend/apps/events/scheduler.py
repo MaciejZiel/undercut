@@ -39,6 +39,7 @@ SCHEDULE: list[Recurring] = [
     Recurring("calendar-sync", "CalendarSyncDue", hour=5),
     Recurring("results-corrections", "ResultsCorrectionsDue", hour=6, weekday=0),
     Recurring("demo-reset", "DemoResetDue", hour=3),
+    Recurring("weekly-health-mail", "WeeklyHealthMailDue", hour=7, weekday=0),
 ]
 
 
