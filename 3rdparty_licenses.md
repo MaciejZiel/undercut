@@ -23,3 +23,6 @@
 | https://github.com/apache/echarts | echarts 6.1.0 | Apache-2.0 | https://github.com/apache/echarts/blob/master/LICENSE |
 | https://github.com/ecomfe/zrender | zrender (echarts, transitive) | BSD-3-Clause | https://github.com/ecomfe/zrender/blob/master/LICENSE |
 | https://github.com/python/tzdata | tzdata | Apache-2.0 | https://github.com/python/tzdata/blob/master/LICENSE |
+| https://github.com/microsoft/playwright | @playwright/test 1.63.0 (e2e) | Apache-2.0 | https://github.com/microsoft/playwright/blob/main/LICENSE |
+| https://github.com/microsoft/TypeScript | typescript 6.0.3 (e2e, dev) | Apache-2.0 | https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt |
+| https://github.com/DefinitelyTyped/DefinitelyTyped | @types/node 24.19.1 (e2e, dev) | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/LICENSE |
