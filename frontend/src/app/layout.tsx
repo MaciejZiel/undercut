@@ -7,12 +7,16 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import { Suspense } from "react";
+import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/seo";
 
 const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Undercut", template: "%s | Undercut" },
-  description: "Formula 1 stats, race analytics and predictions. Unofficial fan site.",
+  metadataBase: new URL(siteUrl()),
+  title: { default: SITE_NAME, template: `%s | ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  openGraph: { siteName: SITE_NAME, type: "website", locale: "en_GB", title: SITE_NAME, description: SITE_DESCRIPTION },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

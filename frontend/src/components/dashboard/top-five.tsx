@@ -1,18 +1,21 @@
 import Link from "next/link";
-import type { StandingsKind, Standings } from "@/lib/api/queries";
+import type { components } from "@/lib/api/client";
+import type { StandingsKind } from "@/lib/api/queries";
 import { formatPoints } from "@/lib/format";
 import { ConstructorLink, DriverLink } from "@/components/ui/entity-links";
 import { DataTable, RowTh, Td, Th, Tr } from "@/components/ui/data-table";
 import { Dash } from "@/components/ui/value";
+
+type TopStandings = components["schemas"]["TopStandings"];
 
 const COPY = {
   drivers: { title: "Drivers", href: "/standings/drivers", head: "Driver" },
   constructors: { title: "Constructors", href: "/standings/constructors", head: "Constructor" },
 } as const;
 
-export function TopFive({ kind, standings }: { kind: StandingsKind; standings: Standings }) {
+export function TopFive({ kind, standings }: { kind: StandingsKind; standings: TopStandings }) {
   const copy = COPY[kind];
-  const rows = standings.results.slice(0, 5);
+  const rows = standings.entries.slice(0, 5);
   const id = `top-${kind}-h`;
   return (
     <section aria-labelledby={id}>
@@ -37,13 +40,13 @@ export function TopFive({ kind, standings }: { kind: StandingsKind; standings: S
         </thead>
         <tbody>
           {rows.map((row) => (
-            <Tr key={row.entity.id}>
+            <Tr key={row.slug}>
               <RowTh className="timing font-bold">{row.position ?? <Dash />}</RowTh>
               <Td>
                 {kind === "drivers" ? (
-                  <DriverLink slug={row.entity.slug} name={row.entity.name} />
+                  <DriverLink slug={row.slug} name={row.name} />
                 ) : (
-                  <ConstructorLink slug={row.entity.slug} name={row.entity.name} />
+                  <ConstructorLink slug={row.slug} name={row.name} />
                 )}
               </Td>
               <Td align="right" className="timing font-bold">

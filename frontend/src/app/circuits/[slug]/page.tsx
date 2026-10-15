@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+import { circuitHref } from "@/lib/routes";
 import { notFound } from "next/navigation";
 import { DetailPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
@@ -15,10 +17,11 @@ export async function generateMetadata({ params }: PageProps<"/circuits/[slug]">
   const { slug } = await params;
   const circuit = isSlug(slug) ? await getCircuit(slug) : null;
   if (!circuit) return { title: "Circuit not found" };
-  return {
+  return pageMetadata({
     title: circuit.name,
     description: `${circuit.name}${circuit.country ? `, ${circuit.country}` : ""}: every Grand Prix winner and the record holders.`,
-  };
+    path: circuitHref(slug),
+  });
 }
 
 export default function CircuitPage({ params }: PageProps<"/circuits/[slug]">) {

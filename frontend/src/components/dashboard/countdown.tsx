@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { countdownParts } from "./pick-races";
+import { countdownParts } from "./countdown-parts";
 
 function subscribe(onChange: () => void) {
   const id = window.setInterval(onChange, 1000);

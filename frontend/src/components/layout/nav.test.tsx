@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 let mockPath = "/";
 vi.mock("next/navigation", () => ({ usePathname: () => mockPath }));
@@ -7,6 +7,7 @@ vi.mock("next/navigation", () => ({ usePathname: () => mockPath }));
 import { MainNav } from "./main-nav";
 import { MobileTabBar } from "./mobile-tab-bar";
 import { SiteFooter } from "./site-footer";
+import { resetFooterCounts } from "@/components/dashboard/footer-counts";
 
 const LABELS = ["Dashboard", "Calendar", "Standings", "Catalog", "Predict"];
 
@@ -58,7 +59,10 @@ describe("mobile tab bar", () => {
 });
 
 describe("footer", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
   it("shows the exact disclaimer", () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("{}", { status: 500 })));
     render(<SiteFooter />);
     expect(
       screen.getByText(
@@ -66,5 +70,17 @@ describe("footer", () => {
       ),
     ).toBeInTheDocument();
   });
-});
 
+  it("shows the counts from the dashboard endpoint, and nothing when it fails", async () => {
+    resetFooterCounts();
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ counts: { seasons: 76, races: 1130, drivers: 870 } })));
+    render(<SiteFooter />);
+    expect(await screen.findByText("76 seasons · 1,130 races · 870 drivers")).toBeInTheDocument();
+    cleanup();
+    resetFooterCounts();
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("{}", { status: 500 })));
+    render(<SiteFooter />);
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+    expect(screen.queryByText(/seasons ·/)).not.toBeInTheDocument();
+  });
+});

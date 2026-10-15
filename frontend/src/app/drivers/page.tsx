@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { PageHeader } from "@/components/ui/page-header";
 import { ListPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
@@ -11,10 +12,11 @@ import { getConstructors, getDrivers } from "@/lib/api/queries";
 import { KNOWN_NATIONALITIES } from "@/lib/nationality";
 import { buildHref, first, param, parseChoice, parseIntParam } from "@/lib/url";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Drivers",
   description: "Every driver in the history of the championship: starts, wins, titles and teams.",
-};
+  path: "/drivers",
+});
 
 const ORDERINGS = ["family_name", "-family_name", "wins", "-wins", "starts", "-starts", "titles", "-titles"] as const;
 const PAGE_SIZE = 25;

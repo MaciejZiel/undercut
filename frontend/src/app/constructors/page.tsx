@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { PageHeader } from "@/components/ui/page-header";
 import { ListPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
@@ -11,10 +12,11 @@ import { getConstructors } from "@/lib/api/queries";
 import { KNOWN_NATIONALITIES } from "@/lib/nationality";
 import { buildHref, first, parseChoice, parseIntParam } from "@/lib/url";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Constructors",
   description: "Every team in the history of the championship: starts, wins and titles.",
-};
+  path: "/constructors",
+});
 
 const ORDERINGS = ["name", "-name", "wins", "-wins", "starts", "-starts"] as const;
 const PAGE_SIZE = 25;

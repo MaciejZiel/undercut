@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/ui/page-header";
 import { LoadingSkeleton } from "@/components/states/loading-skeleton";
-import { RaceSections, TopFiveSection } from "@/components/dashboard/sections";
+import { RaceSections, ThisDaySection, TopFiveSection } from "@/components/dashboard/sections";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -39,6 +39,9 @@ export default function DashboardPage() {
             <TopFiveSection kind="constructors" />
           </Suspense>
         </div>
+        <Suspense fallback={<div className="skeleton h-24 rounded-lg" aria-hidden="true" />}>
+          <ThisDaySection />
+        </Suspense>
       </div>
     </>
   );

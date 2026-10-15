@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { StandingsPage } from "@/components/standings/standings-view";
+import { TitleRaceSection } from "@/components/standings/title-race";
 
 export const metadata: Metadata = {
   title: "Driver standings",
@@ -7,5 +9,12 @@ export const metadata: Metadata = {
 };
 
 export default function DriverStandingsRoute({ searchParams }: PageProps<"/standings/drivers">) {
-  return <StandingsPage kind="drivers" searchParams={searchParams} />;
+  return (
+    <>
+      <StandingsPage kind="drivers" searchParams={searchParams} />
+      <Suspense fallback={null}>
+        <TitleRaceSection searchParams={searchParams} />
+      </Suspense>
+    </>
+  );
 }

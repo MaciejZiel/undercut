@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { components } from "@/lib/api/client";
-import { formatPoints, formatResultTime } from "@/lib/format";
+import { formatLapTime } from "@/lib/format";
 import { roundHref } from "@/lib/routes";
 import { DriverLink } from "@/components/ui/entity-links";
 import { Dash } from "@/components/ui/value";
 
-type RaceResult = components["schemas"]["RaceResult"];
+type S = components["schemas"];
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
@@ -14,28 +14,32 @@ export function PodiumCards({
   year,
   round,
   name,
-  results,
+  podium,
+  fastestLap,
 }: {
   year: number;
-  round: number;
+  round: number | null;
   name: string;
-  results: RaceResult[];
+  podium: S["PodiumEntry"][];
+  fastestLap: S["FastestLap"] | null;
 }) {
-  const podium = results.filter((r) => r.position !== null && r.position <= 3).sort((a, b) => a.position! - b.position!);
+  const sorted = [...podium].sort((a, b) => a.position - b.position).slice(0, 3);
+  const lap = fastestLap ? formatLapTime(fastestLap.time_ms) : null;
   return (
     <section aria-labelledby="podium-h">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="podium-h" className="text-xl font-extrabold tracking-tight">
           Last race: {name}
         </h2>
-        <Link href={roundHref(year, round)} className="text-sm font-semibold text-muted hover:text-accent hover:underline">
-          Full results and analysis &rarr;
-        </Link>
+        {round != null && (
+          <Link href={roundHref(year, round)} className="text-sm font-semibold text-muted hover:text-accent hover:underline">
+            Full results and analysis &rarr;
+          </Link>
+        )}
       </div>
       <ol className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {podium.map((r) => {
+        {sorted.map((r) => {
           const color = r.team.color && HEX.test(r.team.color) ? r.team.color : "var(--fg-muted)";
-          const time = formatResultTime(r.position, r.time_ms);
           return (
             <li
               key={r.driver.slug}
@@ -50,12 +54,21 @@ export function PodiumCards({
                 <DriverLink slug={r.driver.slug} name={r.driver.name} />
               </p>
               <p className="text-sm text-muted">{r.team.name}</p>
-              <p className="timing mt-2 text-sm">{time ?? <Dash />}</p>
-              <p className="timing text-sm text-muted">{formatPoints(r.points) ?? "0"} pts</p>
             </li>
           );
         })}
       </ol>
+      <p className="mt-3 text-sm text-muted">
+        Fastest lap:{" "}
+        {fastestLap ? (
+          <>
+            <DriverLink slug={fastestLap.driver.slug} name={fastestLap.driver.name} />{" "}
+            <span className="timing">{lap ?? <Dash />}</span>
+          </>
+        ) : (
+          <Dash label="Not available" />
+        )}
+      </p>
     </section>
   );
 }

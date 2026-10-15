@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { PageHeader } from "@/components/ui/page-header";
 import { ListPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
@@ -10,10 +11,11 @@ import { CircuitsTable } from "@/components/catalog/circuit-tables";
 import { getCircuits } from "@/lib/api/queries";
 import { buildHref, first, parseChoice, parseIntParam } from "@/lib/url";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Circuits",
   description: "Every circuit that hosted a Grand Prix, with the number of races and the latest one.",
-};
+  path: "/circuits",
+});
 
 const ORDERINGS = ["name", "-name", "country", "-country", "gp_count", "-gp_count", "last_gp_date", "-last_gp_date"] as const;
 const PAGE_SIZE = 25;

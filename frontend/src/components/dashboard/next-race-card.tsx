@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatDate } from "@/lib/format";
 import { circuitHref, roundHref } from "@/lib/routes";
+import { icsHref } from "@/components/calendar/time";
 import { Countdown } from "./countdown";
 
 export function NextRaceCard({
@@ -39,6 +40,14 @@ export function NextRaceCard({
       <div className="mt-5">
         {raceStartUtc ? <Countdown target={raceStartUtc} /> : <p className="text-sm text-muted">Start time to be confirmed</p>}
       </div>
+      <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold">
+        <Link href="/calendar" className="text-muted hover:text-accent hover:underline">
+          Full calendar &rarr;
+        </Link>
+        <a href={icsHref(year, round)} className="text-muted hover:text-accent hover:underline">
+          Add to calendar
+        </a>
+      </p>
     </article>
   );
 }

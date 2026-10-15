@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata, absoluteUrl } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
@@ -28,10 +30,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const route = parseRoute(await params);
   const round = route ? await getRound(route.year, route.round) : null;
   if (!round) return { title: "Round not found" };
-  return {
+  return pageMetadata({
     title: `${round.year} ${round.name}`,
     description: `${round.name} ${round.year} at ${round.circuit.name}: race, sprint and qualifying results.`,
-  };
+    path: roundHref(round.year, round.round),
+  });
 }
 
 export default function RoundPage({ params, searchParams }: Props) {
@@ -59,6 +62,22 @@ async function RoundDetail({ params, searchParams }: Props) {
 
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "SportsEvent",
+          name: `${round.year} ${round.name}`,
+          sport: "Formula One",
+          startDate: round.date,
+          eventStatus: round.is_cancelled ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
+          location: {
+            "@type": "Place",
+            name: round.circuit.name,
+            ...(round.circuit.country ? { address: { "@type": "PostalAddress", addressCountry: round.circuit.country } } : {}),
+          },
+          url: absoluteUrl(roundHref(round.year, round.round)),
+        }}
+      />
       <div className="mb-6">
         <Breadcrumbs
           items={[

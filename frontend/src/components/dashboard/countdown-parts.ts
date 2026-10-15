@@ -1,18 +1,3 @@
-import type { components } from "@/lib/api/client";
-
-type CalendarRound = components["schemas"]["CalendarRound"];
-
-/**
- * Next race: the first held round dated today or later without a winner.
- * Last race: the latest round that already has a winner.
- */
-export function pickRaces(rounds: CalendarRound[], today: string): { next: CalendarRound | null; last: CalendarRound | null } {
-  const held = rounds.filter((r) => !r.is_cancelled && r.round !== null).sort((a, b) => a.date.localeCompare(b.date));
-  const next = held.find((r) => r.date >= today && !r.winner) ?? null;
-  const done = held.filter((r) => r.winner);
-  return { next, last: done.length ? done[done.length - 1] : null };
-}
-
 export type CountdownParts = { days: number; hours: number; minutes: number; seconds: number };
 
 /** Split a remaining time into parts; null once the moment has passed. */

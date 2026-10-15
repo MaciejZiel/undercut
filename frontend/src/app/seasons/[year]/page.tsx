@@ -1,11 +1,14 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { DetailPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
 import { StatTiles } from "@/components/ui/stat-tiles";
+import { LoadingSkeleton } from "@/components/states/loading-skeleton";
+import { SeasonMatrixSection } from "@/components/season/matrix";
 import { CalendarTable } from "@/components/catalog/season-tables";
 import { getSeason } from "@/lib/api/queries";
 import { seasonHref } from "@/lib/routes";
@@ -19,10 +22,11 @@ export async function generateMetadata({ params }: PageProps<"/seasons/[year]">)
   const year = parseYear((await params).year);
   const season = year ? await getSeason(year) : null;
   if (!season) return { title: "Season not found" };
-  return {
+  return pageMetadata({
     title: `${season.year} season`,
     description: `The ${season.year} Formula 1 calendar with winners of every round.`,
-  };
+    path: seasonHref(season.year),
+  });
 }
 
 export default function SeasonPage({ params }: PageProps<"/seasons/[year]">) {
@@ -83,6 +87,14 @@ async function SeasonDetail({ params }: { params: PageProps<"/seasons/[year]">["
         ) : (
           <CalendarTable year={season.year} rounds={season.rounds} today={today} />
         )}
+      </section>
+      <section aria-labelledby="matrix-h" className="mt-10">
+        <h2 id="matrix-h" className="mb-3 text-xl font-extrabold tracking-tight">
+          Results matrix
+        </h2>
+        <Suspense fallback={<LoadingSkeleton variant="table" rows={10} label="Loading the results matrix" />}>
+          <SeasonMatrixSection year={season.year} />
+        </Suspense>
       </section>
     </>
   );

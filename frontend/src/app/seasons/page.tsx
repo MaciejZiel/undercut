@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { PageHeader } from "@/components/ui/page-header";
 import { ListPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
@@ -9,10 +10,11 @@ import { SeasonsTable } from "@/components/catalog/season-tables";
 import { getSeasons } from "@/lib/api/queries";
 import { parseIntParam } from "@/lib/url";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Seasons",
   description: "Every Formula 1 season since 1950 with its champions and number of rounds.",
-};
+  path: "/seasons",
+});
 
 const PAGE_SIZE = 100;
 

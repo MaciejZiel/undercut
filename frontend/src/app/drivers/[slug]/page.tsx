@@ -1,6 +1,10 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata, absoluteUrl } from "@/lib/seo";
+import { driverHref } from "@/lib/routes";
+import { JsonLd } from "@/components/seo/json-ld";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { DetailPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
 import { EntityHeader } from "@/components/ui/entity-header";
@@ -9,7 +13,7 @@ import { StatTiles } from "@/components/ui/stat-tiles";
 import { DriverLastResultsTable, DriverSeasonsTable } from "@/components/catalog/driver-tables";
 import { getDriver } from "@/lib/api/queries";
 import { formatDate, formatInteger, formatPoints, fullName } from "@/lib/format";
-import { isSlug } from "@/lib/url";
+import { buildHref, isSlug } from "@/lib/url";
 import { FavoriteButton } from "@/components/account/favorite-button";
 
 export async function generateMetadata({ params }: PageProps<"/drivers/[slug]">): Promise<Metadata> {
@@ -17,10 +21,11 @@ export async function generateMetadata({ params }: PageProps<"/drivers/[slug]">)
   const driver = isSlug(slug) ? await getDriver(slug) : null;
   if (!driver) return { title: "Driver not found" };
   const name = fullName(driver);
-  return {
+  return pageMetadata({
     title: name,
     description: `${name}: career statistics, season by season results and latest races.`,
-  };
+    path: driverHref(slug),
+  });
 }
 
 export default function DriverPage({ params }: PageProps<"/drivers/[slug]">) {
@@ -42,6 +47,19 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
 
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name,
+          givenName: driver.given_name,
+          familyName: driver.family_name,
+          ...(driver.date_of_birth ? { birthDate: driver.date_of_birth } : {}),
+          ...(driver.nationality ? { nationality: driver.nationality } : {}),
+          jobTitle: "Formula 1 driver",
+          url: absoluteUrl(driverHref(driver.slug)),
+        }}
+      />
       <EntityHeader
         title={name}
         accentColor={driver.team?.color}
@@ -57,6 +75,12 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
       >
         {/* Favourites: minimal hook-in, see components/account/favorite-button.tsx */}
         <FavoriteButton kind="driver" slug={driver.slug} name={name} />
+        <Link
+          href={buildHref("/compare", { a: driver.slug })}
+          className="t-fast mt-3 inline-block rounded-md border border-line px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
+        >
+          Compare with&hellip;
+        </Link>
       </EntityHeader>
       <StatTiles
         label={`${name} career statistics`}

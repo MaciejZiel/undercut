@@ -1,43 +1,11 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { components } from "@/lib/api/client";
-import type { Standings } from "@/lib/api/queries";
 import { Countdown } from "./countdown";
-import { countdownParts, pickRaces } from "./pick-races";
+import { countdownParts } from "./countdown-parts";
 import { PodiumCards } from "./podium-cards";
+import { ThisDayCard } from "./this-day-card";
 import { TopFive } from "./top-five";
-
-type Round = components["schemas"]["CalendarRound"];
-const winner = { driver: { slug: "a", name: "A", code: null, number: null }, team: { slug: "t", name: "T", color: null } };
-const rd = (n: number, date: string, over: Partial<Round> = {}): Round => ({
-  round: n,
-  name: `GP ${n}`,
-  date,
-  is_cancelled: false,
-  has_sprint: false,
-  circuit: { slug: "c", name: "C", country: null } as Round["circuit"],
-  winner: null,
-  ...over,
-});
-
-describe("pickRaces", () => {
-  it("finds the next upcoming and the last completed round, skipping cancelled", () => {
-    const rounds = [
-      rd(1, "2024-03-01", { winner }),
-      rd(2, "2024-03-15", { winner }),
-      rd(3, "2024-04-01", { is_cancelled: true }),
-      rd(4, "2024-04-15"),
-      rd(5, "2024-05-01"),
-    ];
-    const { next, last } = pickRaces(rounds, "2024-04-02");
-    expect(next?.round).toBe(4);
-    expect(last?.round).toBe(2);
-  });
-  it("returns nulls for an empty or finished season", () => {
-    expect(pickRaces([], "2024-01-01")).toEqual({ next: null, last: null });
-    expect(pickRaces([rd(1, "2024-03-01", { winner })], "2024-12-01").next).toBeNull();
-  });
-});
 
 describe("countdownParts", () => {
   it("splits and ends", () => {
@@ -60,37 +28,124 @@ describe("Countdown", () => {
   });
 });
 
+const driver = (slug: string) => ({ slug, name: `N ${slug}`, code: null, number: null });
+
 describe("PodiumCards", () => {
-  it("shows the three podium finishers with a link to the round", () => {
-    const res = (p: number, slug: string, color: string | null) =>
-      ({ position: p, position_text: String(p), driver: { slug, name: `N ${slug}`, code: null, number: null }, team: { slug: "t", name: "Team", color }, grid: 1, laps: 50, status: "Finished", time_ms: p === 1 ? 5527123 : 5234, best_lap_ms: null, points: 25, fastest_lap: null, position_change: 0 }) as components["schemas"]["RaceResult"];
-    render(<PodiumCards year={2024} round={3} name="Test GP" results={[res(4, "x", null), res(2, "b", "#3671c6"), res(1, "a", "#ff0000"), res(3, "c", null)]} />);
+  const podium = [
+    { position: 3, driver: driver("c"), team: { slug: "t", name: "Team C", color: null } },
+    { position: 1, driver: driver("a"), team: { slug: "t", name: "Team A", color: "#ff0000" } },
+    { position: 2, driver: driver("b"), team: { slug: "t", name: "Team B", color: "#3671c6" } },
+  ];
+  it("shows the podium winner first, a link to the round and the fastest lap", () => {
+    render(
+      <PodiumCards
+        year={2024}
+        round={3}
+        name="Test GP"
+        podium={podium}
+        fastestLap={{ driver: driver("b"), team: { slug: "t", name: "Team B", color: null }, time_ms: 83456 }}
+      />,
+    );
     const items = screen.getAllByRole("listitem");
     expect(items).toHaveLength(3);
     expect(within(items[0]).getByRole("link", { name: "N a" })).toBeInTheDocument();
-    expect(within(items[0]).getByText("1:32:07.123")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Full results and analysis/ })).toHaveAttribute("href", "/seasons/2024/3");
+    expect(screen.getByText("1:23.456")).toBeInTheDocument();
+  });
+  it("shows a dash instead of an unknown fastest lap and hides the link without a round", () => {
+    render(<PodiumCards year={2024} round={null} name="Test GP" podium={podium} fastestLap={null} />);
+    expect(screen.queryByRole("link", { name: /Full results/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/Fastest lap:/)).toHaveTextContent("Fastest lap: —Not available");
   });
 });
 
 describe("TopFive", () => {
+  const standings = (n: number): components["schemas"]["TopStandings"] => ({
+    season: 2024,
+    after_round: 3,
+    entries: Array.from({ length: n }, (_, i) => ({
+      position: i + 1,
+      slug: `d${i}`,
+      name: `Driver ${i}`,
+      code: null,
+      color: "#ff0000",
+      points: 100 - i,
+      wins: 0,
+    })),
+  });
   it("lists only five rows and links to the full table", () => {
-    const standings: Standings = {
-      season: 2024,
-      after_round: 3,
-      rounds: [1, 2, 3],
-      results: Array.from({ length: 8 }, (_, i) => ({
-        position: i + 1,
-        position_text: String(i + 1),
-        entity: { id: i, slug: `d${i}`, name: `Driver ${i}`, code: null, nationality: null },
-        points: 100 - i,
-        wins: 0,
-        podiums: 0,
-        gap_to_leader: i,
-      })),
-    };
-    render(<TopFive kind="drivers" standings={standings} />);
+    render(<TopFive kind="drivers" standings={standings(8)} />);
     expect(screen.getAllByRole("row")).toHaveLength(6);
     expect(screen.getByRole("link", { name: /Full table/ })).toHaveAttribute("href", "/standings/drivers");
+  });
+  it("links constructors to their pages", () => {
+    render(<TopFive kind="constructors" standings={standings(2)} />);
+    expect(screen.getByRole("link", { name: "Driver 0" })).toHaveAttribute("href", "/constructors/d0");
+  });
+});
+
+describe("ThisDayCard", () => {
+  it("names the winner and links the round", () => {
+    render(<ThisDayCard item={{ year: 1988, round: 5, race: "Mexican Grand Prix", date: "1988-05-15", driver: driver("a"), team: { slug: "t", name: "McLaren", color: null } }} />);
+    expect(screen.getByText("This day in F1")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "1988 Mexican Grand Prix" })).toHaveAttribute("href", "/seasons/1988/5");
+  });
+});
+
+type Dashboard = components["schemas"]["Dashboard"];
+const getDashboard = vi.fn<() => Promise<Dashboard>>();
+vi.mock("./data", () => ({ getDashboard: () => getDashboard() }));
+vi.mock("next/server", () => ({ connection: async () => {} }));
+
+const base: Dashboard = {
+  next_race: null,
+  last_race: null,
+  driver_standings: { season: null, after_round: null, entries: [] },
+  constructor_standings: { season: null, after_round: null, entries: [] },
+  this_day_in_f1: null,
+  counts: { seasons: 1, races: 2, drivers: 3 },
+};
+
+describe("dashboard sections", () => {
+  it("shows empty states when there is no data", async () => {
+    getDashboard.mockResolvedValue(base);
+    const { RaceSections, TopFiveSection, ThisDaySection } = await import("./sections");
+    render(await RaceSections());
+    expect(screen.getByText("No season data yet")).toBeInTheDocument();
+    cleanup();
+    render(await TopFiveSection({ kind: "drivers" }));
+    expect(screen.getByText("No drivers standings yet")).toBeInTheDocument();
+    cleanup();
+    expect(await ThisDaySection()).toBeNull();
+  });
+  it("shows the next race and the podium", async () => {
+    getDashboard.mockResolvedValue({
+      ...base,
+      next_race: {
+        year: 2025, round: 4, name: "Next GP", date: "2025-04-20", status: "next", is_next: true, has_sprint: false,
+        race_start_utc: "2099-01-01T00:00:00Z", circuit: { slug: "c", name: "Circuit", country: "Spain", locality: null, timezone: null },
+        sessions: [], winner: null,
+      },
+      last_race: {
+        year: 2025,
+        round: 3,
+        name: "Last GP",
+        date: "2025-04-01",
+        circuit: { slug: "c", name: "Circuit", country: null },
+        podium: [{ position: 1, driver: driver("a"), team: { slug: "t", name: "Team", color: null } }],
+        fastest_lap: null,
+      },
+    });
+    const { RaceSections } = await import("./sections");
+    render(await RaceSections());
+    expect(screen.getByRole("link", { name: "Next GP" })).toHaveAttribute("href", "/seasons/2025/4");
+    expect(screen.getByRole("link", { name: "N a" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Add to calendar" })).toHaveAttribute("href", "/api/v1/calendar/ics/?year=2025&round=4");
+  });
+  it("keeps the error inside the section", async () => {
+    getDashboard.mockRejectedValue(new Error("down"));
+    const { TopFiveSection } = await import("./sections");
+    render(await TopFiveSection({ kind: "constructors" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("Could not load the constructors standings");
   });
 });

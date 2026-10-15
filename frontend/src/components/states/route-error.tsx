@@ -8,5 +8,11 @@ export function RouteError({ error, retry }: { error: Error & { digest?: string 
   useEffect(() => {
     console.error(error);
   }, [error]);
-  return <ErrorState onRetry={retry} />;
+  return (
+    <>
+      {/* The failed page had its own h1; keep one so the heading order stays valid. */}
+      <h1 className="sr-only">Something went wrong</h1>
+      <ErrorState onRetry={retry} />
+    </>
+  );
 }

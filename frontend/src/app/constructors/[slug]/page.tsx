@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+import { constructorHref } from "@/lib/routes";
 import { notFound } from "next/navigation";
 import { DetailPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
@@ -16,10 +18,11 @@ export async function generateMetadata({ params }: PageProps<"/constructors/[slu
   const { slug } = await params;
   const team = isSlug(slug) ? await getConstructor(slug) : null;
   if (!team) return { title: "Constructor not found" };
-  return {
+  return pageMetadata({
     title: team.name,
     description: `${team.name}: wins, season by season results and drivers.`,
-  };
+    path: constructorHref(slug),
+  });
 }
 
 export default function ConstructorPage({ params }: PageProps<"/constructors/[slug]">) {
