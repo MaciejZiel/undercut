@@ -9,6 +9,8 @@ type Variant = "hero" | "mark";
 /** Team-like colours for the cars; the order is shuffled per circuit. */
 const CAR_COLORS = ["#3671c6", "#e8002d", "#27f4d2", "#ff8000", "#229971", "#64c4ff", "#6692ff", "#b6babd", "#ffd400", "#ff87bc"];
 const CARS = 8;
+const LAUNCH_AFTER = 2.8;
+const LAUNCH_EVERY = 0.55;
 
 function hash(text: string): number {
   let h = 2166136261;
@@ -27,17 +29,13 @@ function random(seed: number): () => number {
   };
 }
 
-export type Car = { color: string; offset: number; pace: number };
+export type Car = { color: string; pace: number };
 
-/** The field of one circuit: eight cars in their own colours, spread along the lap, each a little faster or slower. */
+/** The field of one circuit: eight cars in their own colours, each a little faster or slower than the next. */
 export function carsFor(seed: string): Car[] {
   const rnd = random(hash(seed));
   const colors = [...CAR_COLORS].sort(() => rnd() - 0.5).slice(0, CARS);
-  let gap = 0;
-  return colors.map((color) => {
-    gap += 0.025 + rnd() * 0.07;
-    return { color, offset: gap, pace: 1 + (rnd() - 0.5) * 0.05 };
-  });
+  return colors.map((color) => ({ color, pace: 1 + (rnd() - 0.5) * 0.05 }));
 }
 
 // Stroke widths as a share of the drawing's longest side, so the line keeps its weight at every size.
@@ -109,22 +107,16 @@ export function TrackOutline({
       {variant === "hero" && seed && (
         // SMIL, so the cars need no script; they appear once the line is drawn and are hidden for reduced motion.
         <g className="racer" aria-hidden="true">
-          {carsFor(seed).map((car) => {
+          {carsFor(seed).map((car, index) => {
             const lap = Math.max(3, (lapMs ?? 88_000) / 1000 / speed);
-            const dur = `${(lap * car.pace).toFixed(2)}s`;
-            const begin = `${(2.6 - car.offset * lap).toFixed(2)}s`;
+            // The line is drawn first (about 2.5 s), then the cars leave the start one after another.
+            const begin = `${(LAUNCH_AFTER + index * LAUNCH_EVERY).toFixed(2)}s`;
             return (
               <g key={car.color} opacity={0}>
-                <set attributeName="opacity" to={1} begin="2.6s" fill="freeze" />
-                {/* A short tail of the car's colour behind the head: a dash that slides along the line. */}
-                <path d={path} pathLength={1} fill="none" stroke={car.color} strokeWidth={side * 0.007} strokeLinecap="round" strokeDasharray="0.04 2" strokeDashoffset={0.04} opacity={0.55}>
-                  <animate attributeName="stroke-dashoffset" from="0.04" to="-0.96" dur={dur} begin={begin} repeatCount="indefinite" calcMode="linear" />
-                </path>
-                <g>
-                  <circle r={side * 0.02} fill={car.color} opacity={0.2} />
-                  <circle r={side * 0.0105} fill={car.color} stroke="var(--bg)" strokeWidth={side * 0.0035} />
-                  <animateMotion path={path} dur={dur} begin={begin} repeatCount="indefinite" calcMode="linear" />
-                </g>
+                <set attributeName="opacity" to={1} begin={begin} fill="freeze" />
+                <circle r={side * 0.02} fill={car.color} opacity={0.2} />
+                <circle r={side * 0.0105} fill={car.color} stroke="var(--bg)" strokeWidth={side * 0.0035} />
+                <animateMotion path={path} dur={`${(lap * car.pace).toFixed(2)}s`} begin={begin} repeatCount="indefinite" calcMode="linear" />
               </g>
             );
           })}

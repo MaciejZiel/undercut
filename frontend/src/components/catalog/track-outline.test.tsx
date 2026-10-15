@@ -42,10 +42,12 @@ describe("cars on the line", () => {
     expect(new Set(carsFor("monaco").map((c) => c.color)).size).toBe(8);
   });
 
-  it("spreads the cars along the lap, nose to tail", () => {
-    const offsets = carsFor("monza").map((c) => c.offset);
-    expect(offsets).toEqual([...offsets].sort((a, b) => a - b));
-    expect(offsets[offsets.length - 1]).toBeLessThan(1);
+  it("sends the cars off one after another once the line is drawn", () => {
+    const { container } = render(<TrackOutline outline={{ width: 500, height: 300, points }} name="A" seed="monza" />);
+    const begins = [...container.querySelectorAll("animateMotion")].map((el) => parseFloat(el.getAttribute("begin") ?? "0"));
+    expect(begins[0]).toBeGreaterThan(2.5);
+    expect(begins).toEqual([...begins].sort((a, b) => a - b));
+    expect(new Set(begins).size).toBe(8);
   });
 
   it("draws the cars only for a circuit that gives its name", () => {
