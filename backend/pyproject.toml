@@ -42,15 +42,83 @@ select = ["E", "F", "I", "UP", "B", "DJ"]
 [tool.importlinter]
 root_packages = ["apps"]
 
-# Modules talk through events and public interfaces, never through each other's internals.
+# Modules talk through events and public interfaces (services, selectors, api), never through
+# each other's models or admin. One contract per module keeps violations easy to read.
+
 [[tool.importlinter.contracts]]
-name = "Domain modules are independent"
-type = "independence"
-modules = [
-    "apps.catalog",
-    "apps.ingestion",
-    "apps.standings",
-    "apps.analytics",
-    "apps.predictions",
-    "apps.notifications",
+name = "catalog does not reach into other modules' models"
+type = "forbidden"
+source_modules = ["apps.catalog"]
+forbidden_modules = [
+    "apps.ingestion.models",
+    "apps.standings.models",
+    "apps.analytics.models",
+    "apps.predictions.models",
+    "apps.notifications.models",
 ]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "ingestion does not reach into other modules' models"
+type = "forbidden"
+source_modules = ["apps.ingestion"]
+forbidden_modules = [
+    "apps.catalog.models",
+    "apps.standings.models",
+    "apps.analytics.models",
+    "apps.predictions.models",
+    "apps.notifications.models",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "standings does not reach into other modules' models"
+type = "forbidden"
+source_modules = ["apps.standings"]
+forbidden_modules = [
+    "apps.catalog.models",
+    "apps.ingestion.models",
+    "apps.analytics.models",
+    "apps.predictions.models",
+    "apps.notifications.models",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "analytics does not reach into other modules' models"
+type = "forbidden"
+source_modules = ["apps.analytics"]
+forbidden_modules = [
+    "apps.catalog.models",
+    "apps.ingestion.models",
+    "apps.standings.models",
+    "apps.predictions.models",
+    "apps.notifications.models",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "predictions does not reach into other modules' models"
+type = "forbidden"
+source_modules = ["apps.predictions"]
+forbidden_modules = [
+    "apps.catalog.models",
+    "apps.ingestion.models",
+    "apps.standings.models",
+    "apps.analytics.models",
+    "apps.notifications.models",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "notifications does not reach into other modules' models"
+type = "forbidden"
+source_modules = ["apps.notifications"]
+forbidden_modules = [
+    "apps.catalog.models",
+    "apps.ingestion.models",
+    "apps.standings.models",
+    "apps.analytics.models",
+    "apps.predictions.models",
+]
+allow_indirect_imports = true

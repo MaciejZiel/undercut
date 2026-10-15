@@ -166,7 +166,8 @@ class Driver(models.Model):
 
 class Round(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="rounds")
-    round = models.PositiveSmallIntegerField()
+    # Null for cancelled rounds that the source keeps without a number.
+    round = models.PositiveSmallIntegerField(null=True, blank=True)
     name = models.CharField(max_length=200)
     circuit = models.ForeignKey(Circuit, on_delete=models.PROTECT, related_name="rounds")
     date = models.DateField()
@@ -177,12 +178,19 @@ class Round(models.Model):
     class Meta:
         ordering = ["season__year", "round"]
         constraints = [
-            models.UniqueConstraint(fields=["season", "round"], name="catalog_round_season_uniq"),
-            models.CheckConstraint(condition=Q(round__gte=1), name="catalog_round_number_pos"),
+            models.UniqueConstraint(
+                fields=["season", "round"],
+                condition=Q(round__isnull=False),
+                name="catalog_round_season_uniq",
+            ),
+            models.CheckConstraint(
+                condition=Q(round__isnull=True) | Q(round__gte=1),
+                name="catalog_round_number_pos",
+            ),
         ]
 
     def __str__(self):
-        return f"{self.season.year} R{self.round} {self.name}"
+        return f"{self.season.year} R{self.round or '-'} {self.name}"
 
 
 class Session(models.Model):
