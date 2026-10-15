@@ -116,7 +116,7 @@ export function TrackOutline({
                 <set attributeName="opacity" to={1} begin={begin} fill="freeze" />
                 <circle r={side * 0.02} fill={car.color} opacity={0.2} />
                 <circle r={side * 0.0105} fill={car.color} stroke="var(--bg)" strokeWidth={side * 0.0035} />
-                <animateMotion path={path} dur={`${(lap * car.pace).toFixed(2)}s`} begin={begin} repeatCount="indefinite" calcMode="linear" />
+                <animateMotion path={path} dur={`${(lap * car.pace).toFixed(2)}s`} begin={begin} repeatCount="indefinite" calcMode="paced" />
               </g>
             );
           })}
