@@ -70,7 +70,7 @@ def _replace(model, key: str, season_id: int, after_round: int, rows: Iterable[A
                 to_create.append(
                     model(season_id=season_id, after_round=after_round, **{key: key_id}, **values)
                 )
-            else:
+            elif any(getattr(obj, field) != value for field, value in values.items()):
                 for field, value in values.items():
                     setattr(obj, field, value)
                 to_update.append(obj)

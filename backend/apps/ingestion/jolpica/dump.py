@@ -194,6 +194,18 @@ class SessionEntryRow:
     fastest_lap_rank: int | None
 
 
+@dataclass(frozen=True)
+class StandingRow:
+    """One championship line after a race (driver or team, depending on the list)."""
+
+    year: int
+    round_number: int
+    entity_id: int  # dump driver id or team id
+    position: int | None
+    points: Decimal
+    wins: int
+
+
 @dataclass
 class Dump:
     seasons: list[SeasonRow] = field(default_factory=list)
@@ -211,6 +223,9 @@ class Dump:
     )
     # session_entry_id -> fastest lap time text (qualifying times live only in `lap` rows)
     fastest_laps: dict[int, str] = field(default_factory=dict)
+    # Championship tables after each race session (sprint and qualifying snapshots are dropped).
+    driver_standings: list[StandingRow] = field(default_factory=list)
+    team_standings: list[StandingRow] = field(default_factory=list)
 
 
 def _int(value: str) -> int | None:
@@ -328,6 +343,32 @@ def read_dump(directory: Path) -> Dump:
         for r in _rows(directory, "lap"):
             if _bool(r["is_entry_fastest_lap"]) and not _bool(r["is_deleted"]) and r["time"]:
                 dump.fastest_laps[int(r["session_entry_id"])] = r["time"]
+        race_sessions = {
+            s.id for sessions in dump.sessions_by_round.values() for s in sessions if s.type == "R"
+        }
+        for table, key, target in (
+            ("driverchampionship", "driver_id", dump.driver_standings),
+            ("teamchampionship", "team_id", dump.team_standings),
+        ):
+            for r in _rows(directory, table):
+                number = _int(r["round_number"])
+                # Only eligible entries after a race count; others are non-championship drivers.
+                if (
+                    int(r["session_id"]) not in race_sessions
+                    or number is None
+                    or not _bool(r["is_eligible"])
+                ):
+                    continue
+                target.append(
+                    StandingRow(
+                        int(r["year"]),
+                        number,
+                        int(r[key]),
+                        _int(r["position"]),
+                        _dec(r["points"]) or Decimal(0),
+                        _int(r["win_count"]) or 0,
+                    )
+                )
     except KeyError as exc:
         raise DumpError(f"Unexpected dump layout, missing column {exc}") from exc
     return dump

@@ -61,9 +61,10 @@ def test_replace_drivers_creates_updates_deletes_and_is_idempotent():
         "updated": 0,
         "deleted": 0,
     }
+    # identical data: nothing is written, so nothing is reported as updated
     assert services.replace_driver_standings(season.pk, 1, rows) == {
         "created": 0,
-        "updated": 2,
+        "updated": 0,
         "deleted": 0,
     }
     new_rows = [

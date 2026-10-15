@@ -10,7 +10,7 @@ import datetime as dt
 import re
 from collections import Counter
 from collections.abc import Iterable, Iterator
-from dataclasses import replace
+from dataclasses import dataclass, field, replace
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 from apps.catalog.services import (
@@ -374,3 +374,90 @@ def iter_rounds(
 ) -> Iterator[tuple[RoundRow, RoundBundle]]:
     for row in rounds:
         yield row, map_round(dump, row, years, today=today)
+
+
+# --------------------------------------------------------------------------- standings
+
+
+@dataclass(frozen=True)
+class StandingsLine:
+    jolpica_id: str  # driver or constructor reference
+    position: int | None
+    position_text: str
+    points: Decimal
+    wins: int
+    podiums: int
+
+
+@dataclass
+class RoundStandings:
+    drivers: list[StandingsLine] = field(default_factory=list)
+    constructors: list[StandingsLine] = field(default_factory=list)
+
+
+def _cumulative_podiums(
+    dump: Dump, years: dict[int, int]
+) -> dict[tuple[int, int], tuple[dict[int, int], dict[int, int]]]:
+    """Podiums up to and including each round: per driver id and per team id (per car).
+
+    Counted from race results, as the spec asks ("podia wyliczamy z Result").
+    """
+    result: dict[tuple[int, int], tuple[dict[int, int], dict[int, int]]] = {}
+    by_year: dict[int, list[RoundRow]] = {}
+    for row in dump.rounds:
+        if row.season_id in years and row.number is not None and not row.is_cancelled:
+            by_year.setdefault(years[row.season_id], []).append(row)
+    for year, rounds in by_year.items():
+        drivers: Counter[int] = Counter()
+        teams: Counter[int] = Counter()
+        for row in sorted(rounds, key=lambda r: r.number or 0):
+            for session in dump.sessions_by_round.get(row.id, []):
+                if session.type != "R":
+                    continue
+                for entry in dump.entries_by_session.get(session.id, []):
+                    # A disqualified car keeps a position in the dump but is not classified.
+                    if not entry.is_classified or entry.position is None or entry.position > 3:
+                        continue
+                    team_driver = dump.team_drivers[
+                        dump.round_entries[entry.round_entry_id].team_driver_id
+                    ]
+                    drivers[team_driver.driver_id] += 1
+                    teams[team_driver.team_id] += 1
+            result[(year, row.number or 0)] = (dict(drivers), dict(teams))
+    return result
+
+
+def map_standings(
+    dump: Dump, from_year: int | None, to_year: int | None
+) -> dict[tuple[int, int], RoundStandings]:
+    """Championship tables keyed by (year, round number), straight from the dump.
+
+    The dump already applies the historical rules (dropped scores, shared drives, exclusions),
+    which is why standings are imported and never recomputed.
+    """
+    years = season_years(dump, from_year, to_year)
+    wanted = set(years.values())
+    podiums = _cumulative_podiums(dump, years)
+    tables: dict[tuple[int, int], RoundStandings] = {}
+
+    for rows, ref_of, side in (
+        (dump.driver_standings, lambda i: dump.drivers[i].reference, "drivers"),
+        (dump.team_standings, lambda i: dump.teams[i].reference, "constructors"),
+    ):
+        for row in rows:
+            if row.year not in wanted:
+                continue
+            driver_counts, team_counts = podiums.get((row.year, row.round_number), ({}, {}))
+            counts = driver_counts if side == "drivers" else team_counts
+            line = StandingsLine(
+                jolpica_id=ref_of(row.entity_id),
+                position=row.position,
+                position_text=str(row.position) if row.position is not None else "",
+                points=row.points,
+                wins=row.wins,
+                podiums=counts.get(row.entity_id, 0),
+            )
+            getattr(tables.setdefault((row.year, row.round_number), RoundStandings()), side).append(
+                line
+            )
+    return tables

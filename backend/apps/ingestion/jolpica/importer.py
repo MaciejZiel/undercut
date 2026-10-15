@@ -11,9 +11,11 @@ from pathlib import Path
 from django.db import transaction
 from django.utils import timezone
 
+from apps.catalog import references
 from apps.catalog import services as catalog
 from apps.events.publisher import publish
 from apps.ingestion.models import SyncRun
+from apps.standings import services as standings
 
 from . import mapper
 from .dump import Dump, open_dump, read_dump
@@ -76,7 +78,77 @@ def _import(
         done += 1
         if done % 100 == 0:
             report(f"  {done}/{len(rounds)} rounds")
+    _import_standings(dump, from_year, to_year, totals, errors, report)
     return done
+
+
+def _import_standings(
+    dump: Dump,
+    from_year: int | None,
+    to_year: int | None,
+    totals: dict[str, catalog.Counts],
+    errors: list[dict],
+    report: Report,
+) -> None:
+    """Championship tables after every race, written through the standings module."""
+    season_ids = references.season_ids_by_year()
+    driver_ids = references.driver_ids_by_jolpica_id()
+    constructor_ids = references.constructor_ids_by_jolpica_id()
+    missing: set[str] = set()
+
+    def rows_for(lines, ids, key):
+        out = []
+        for line in lines:
+            entity_id = ids.get(line.jolpica_id)
+            if entity_id is None:
+                missing.add(line.jolpica_id)
+                continue
+            out.append(
+                {
+                    key: entity_id,
+                    "position": line.position,
+                    "position_text": line.position_text,
+                    "points": line.points,
+                    "wins": line.wins,
+                    "podiums": line.podiums,
+                }
+            )
+        return out
+
+    tables = mapper.map_standings(dump, from_year, to_year)
+    for (year, number), table in sorted(tables.items()):
+        season_id = season_ids.get(year)
+        if season_id is None:
+            continue
+        try:
+            with transaction.atomic():
+                for name, replace, lines, ids, key in (
+                    (
+                        "driver_standing",
+                        standings.replace_driver_standings,
+                        table.drivers,
+                        driver_ids,
+                        "driver_id",
+                    ),
+                    (
+                        "constructor_standing",
+                        standings.replace_constructor_standings,
+                        table.constructors,
+                        constructor_ids,
+                        "constructor_id",
+                    ),
+                ):
+                    if not lines:
+                        continue
+                    counts = replace(season_id, number, rows_for(lines, ids, key))
+                    totals[name].created += counts["created"]
+                    totals[name].updated += counts["updated"]
+        except Exception as exc:
+            log.exception("Standings failed: %s round %s", year, number)
+            errors.append({"standings": f"{year} R{number}", "error": str(exc)[:500]})
+    if missing:
+        errors.append({"standings": "unmatched references", "missing": sorted(missing)[:20]})
+    report(f"Standings done ({len(tables)} round tables).")
 
 
 def run_import(
