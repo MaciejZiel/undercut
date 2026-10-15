@@ -15,7 +15,7 @@ _LOOKBACK = 50
 
 
 def consecutive_failures(source: str, job: str) -> int:
-    """Failed runs of (source, job) since its last run that did not fail. Running ones are skipped."""
+    """Failed runs of (source, job) since its last run that did not fail (running ones skipped)."""
     runs = (
         SyncRun.objects.filter(source=source, job=job)
         .exclude(status=SyncRun.Status.RUNNING)
