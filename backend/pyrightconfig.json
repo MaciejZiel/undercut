@@ -1,0 +1,18 @@
+{
+  "include": [
+    "apps",
+    "config"
+  ],
+  "exclude": [
+    "**/migrations",
+    "**/__pycache__"
+  ],
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.13",
+  "typeCheckingMode": "basic",
+  "reportMissingModuleSource": "none",
+  "ignore": [
+    "config/settings.py"
+  ]
+}

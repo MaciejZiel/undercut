@@ -42,7 +42,7 @@ def init_sentry(dsn: str, *, environment: str, traces_sample_rate: float = 0.0) 
     if not dsn:
         return False
     try:
-        import sentry_sdk
+        import sentry_sdk  # pyright: ignore[reportMissingImports]  (optional dependency)
     except ImportError:
         logger.warning("SENTRY_DSN is set but sentry-sdk is not installed; error reporting is off")
         return False

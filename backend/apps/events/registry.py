@@ -2,8 +2,12 @@
 
 from collections import defaultdict
 from collections.abc import Callable
+from typing import TYPE_CHECKING
 
-Handler = Callable[["OutboxEvent"], None]  # noqa: F821
+if TYPE_CHECKING:
+    from .models import OutboxEvent
+
+Handler = Callable[["OutboxEvent"], None]
 
 _handlers: dict[str, list[Handler]] = defaultdict(list)
 

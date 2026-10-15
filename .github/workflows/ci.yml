@@ -32,7 +32,11 @@ jobs:
       - run: uv run ruff format --check .
       - run: uv run lint-imports
       - run: uv run python manage.py makemigrations --check --dry-run
-      - run: uv run pytest -q
+      - name: Type check (errors may not rise above the baseline)
+        run: |
+          npm install --global pyright@1.1.414
+          uv run python scripts/typecheck_ratchet.py
+      - run: uv run pytest -q --cov=apps --cov-report=term
 
   frontend:
     runs-on: ubuntu-latest

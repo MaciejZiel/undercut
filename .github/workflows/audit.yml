@@ -1,0 +1,47 @@
+name: Audit
+
+# Known vulnerabilities in the locked dependencies (NFR-205). Separate from CI so that a new
+# advisory does not block unrelated work, and scheduled so that advisories show up without a push.
+on:
+  push:
+    branches: [main]
+    paths:
+      - backend/uv.lock
+      - frontend/package-lock.json
+      - .github/workflows/audit.yml
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  osv:
+    name: Python and Node lock files (osv-scanner)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Install osv-scanner
+        run: go install github.com/google/osv-scanner/v2/cmd/osv-scanner@v2.6.0
+      - name: Scan
+        run: |
+          "$(go env GOPATH)/bin/osv-scanner" scan source \
+            --lockfile backend/uv.lock \
+            --lockfile frontend/package-lock.json
+
+  npm:
+    name: npm audit (production dependencies)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm audit --omit=dev --audit-level=high

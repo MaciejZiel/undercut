@@ -26,3 +26,16 @@
 | https://github.com/microsoft/playwright | @playwright/test 1.63.0 (e2e) | Apache-2.0 | https://github.com/microsoft/playwright/blob/main/LICENSE |
 | https://github.com/microsoft/TypeScript | typescript 6.0.3 (e2e, dev) | Apache-2.0 | https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt |
 | https://github.com/DefinitelyTyped/DefinitelyTyped | @types/node 24.19.1 (e2e, dev) | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/LICENSE |
+| https://github.com/pytest-dev/pytest | pytest (dev) | MIT | https://github.com/pytest-dev/pytest/blob/main/LICENSE |
+| https://github.com/pytest-dev/pytest-django | pytest-django (dev) | BSD-3-Clause | https://github.com/pytest-dev/pytest-django/blob/main/LICENSE |
+| https://github.com/pytest-dev/pytest-cov | pytest-cov (dev) | MIT | https://github.com/pytest-dev/pytest-cov/blob/master/LICENSE |
+| https://github.com/coveragepy/coveragepy | coverage (dev) | Apache-2.0 | https://github.com/coveragepy/coveragepy/blob/main/LICENSE.txt |
+| https://github.com/FactoryBoy/factory_boy | factory-boy (dev) | MIT | https://github.com/FactoryBoy/factory_boy/blob/master/LICENSE |
+| https://github.com/astral-sh/ruff | ruff (dev) | MIT | https://github.com/astral-sh/ruff/blob/main/LICENSE |
+| https://github.com/seddonym/import-linter | import-linter (dev) | BSD-2-Clause | https://github.com/seddonym/import-linter/blob/master/LICENSE |
+| https://github.com/python/mypy | mypy (dev, declared since stage 0, not used) | MIT | https://github.com/python/mypy/blob/master/LICENSE |
+| https://github.com/typeddjango/django-stubs | django-stubs (dev, not used) | MIT | https://github.com/typeddjango/django-stubs/blob/master/LICENSE.md |
+| https://github.com/typeddjango/djangorestframework-stubs | djangorestframework-stubs (dev, not used) | MIT | https://github.com/typeddjango/djangorestframework-stubs/blob/master/LICENSE.txt |
+| https://github.com/cpburnz/python-pathspec | pathspec (dev, transitive dependency of mypy) | MPL-2.0 (copyleft) | https://www.mozilla.org/MPL/2.0/ |
+| https://github.com/microsoft/pyright | pyright (CI only, run with npm) | MIT | https://github.com/microsoft/pyright/blob/main/LICENSE.txt |
+| https://github.com/google/osv-scanner | osv-scanner (CI only, binary) | Apache-2.0 | https://github.com/google/osv-scanner/blob/main/LICENSE |
