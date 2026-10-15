@@ -10,6 +10,7 @@ import { ConstructorSeasonsTable } from "@/components/catalog/constructor-tables
 import { getConstructor } from "@/lib/api/queries";
 import { formatInteger, formatPoints } from "@/lib/format";
 import { isSlug } from "@/lib/url";
+import { FavoriteButton } from "@/components/account/favorite-button";
 
 export async function generateMetadata({ params }: PageProps<"/constructors/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -45,7 +46,10 @@ async function ConstructorDetail({ params }: { params: PageProps<"/constructors/
         accentColor={latestColor}
         breadcrumbs={[{ label: "Constructors", href: "/constructors" }, { label: team.name }]}
         subtitle={<Nationality value={team.nationality} />}
-      />
+      >
+        {/* Favourites: minimal hook-in, see components/account/favorite-button.tsx */}
+        <FavoriteButton kind="constructor" slug={team.slug} name={team.name} />
+      </EntityHeader>
       <StatTiles
         label={`${team.name} statistics`}
         stats={[

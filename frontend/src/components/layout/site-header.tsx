@@ -4,6 +4,7 @@ import { MainNav } from "./main-nav";
 import { SearchBox } from "./search-box";
 import { ThemeToggle } from "./theme-toggle";
 import { AccountButton } from "./account-button";
+import { UnverifiedBanner } from "@/components/account/unverified-banner";
 
 export function SiteHeader() {
   return (
@@ -23,6 +24,7 @@ export function SiteHeader() {
       </div>
       {/* Mobile: search sits under the logo row so nothing overflows at 360 px. */}
       <SearchBox className="px-4 pb-3 sm:hidden" />
+      <UnverifiedBanner />
     </header>
   );
 }

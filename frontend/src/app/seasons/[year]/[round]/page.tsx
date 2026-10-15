@@ -10,7 +10,10 @@ import { QualifyingResultsTable, RaceResultsTable } from "@/components/round/res
 import { getRound, getRoundResults, type QualifyingResults, type RaceResults } from "@/lib/api/queries";
 import { formatDate, formatLength } from "@/lib/format";
 import { roundHref, seasonHref } from "@/lib/routes";
-import { availableTabs, pickTab, tabHref } from "@/lib/sessions";
+import { availableTabs, pickTab } from "@/lib/sessions";
+import { AnalyticsPanel } from "@/components/analytics/analytics-panel";
+import { pickView, viewHref, visibleViews } from "@/components/analytics/round-views";
+import { ReplayPanel } from "@/components/replay/replay-panel";
 import { first, parseIntParam } from "@/lib/url";
 
 type Props = PageProps<"/seasons/[year]/[round]">;
@@ -48,6 +51,8 @@ async function RoundDetail({ params, searchParams }: Props) {
   const tabs = availableTabs(round.sessions);
   const active = pickTab(requested, tabs, round.sessions);
   const defaultTab = pickTab(undefined, tabs, round.sessions);
+  const views = visibleViews(round.year);
+  const view = pickView(first((await searchParams).view), round.year);
   const base = roundHref(round.year, round.round);
   const sessionInfo = active ? round.sessions.find((s) => s.type === active.type) : undefined;
   const results = active ? await getRoundResults(round.year, round.round, active.type) : null;
@@ -97,7 +102,7 @@ async function RoundDetail({ params, searchParams }: Props) {
             return (
               <Link
                 key={t.key}
-                href={tabHref(base, t, defaultTab)}
+                href={viewHref(base, { session: t.key === defaultTab?.key ? null : t.key, view })}
                 aria-current={current ? "page" : undefined}
                 className={`t-fast -mb-px border-b-2 px-4 py-2.5 text-sm font-bold ${
                   current ? "border-accent text-fg" : "border-transparent text-muted hover:text-fg"
@@ -109,11 +114,31 @@ async function RoundDetail({ params, searchParams }: Props) {
           })}
         </nav>
       )}
+      {views.length > 1 && (
+        <nav aria-label="Views" className="mb-4 flex flex-wrap gap-2">
+          {views.map((v) => (
+            <Link
+              key={v.key}
+              href={viewHref(base, { session: active && active.key !== defaultTab?.key ? active.key : null, view: v.key })}
+              aria-current={v.key === view ? "page" : undefined}
+              className={`t-fast rounded-md border px-3 py-1.5 text-sm font-semibold ${
+                v.key === view ? "border-accent bg-accent-soft text-accent" : "border-line text-muted hover:text-fg"
+              }`}
+            >
+              {v.label}
+            </Link>
+          ))}
+        </nav>
+      )}
       {round.year < 2023 && (
         <p className="mb-4 text-sm text-muted">Detailed analytics are available from the 2023 season.</p>
       )}
 
-      {!active || results === null || results.results.length === 0 ? (
+      {active && (view === "analysis" || view === "strategy") ? (
+        <AnalyticsPanel key={`${view}-${active.type}`} view={view} year={round.year} round={round.round} session={active.type} />
+      ) : active && view === "replay" ? (
+        <ReplayPanel key={active.type} year={round.year} round={round.round} session={active.type} roundName={round.name} label={active.label} />
+      ) : !active || results === null || results.results.length === 0 ? (
         <EmptyState
           title={round.is_cancelled ? "This round was cancelled" : "No results yet"}
           description={

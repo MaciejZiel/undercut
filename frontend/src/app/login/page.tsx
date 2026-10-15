@@ -1,7 +1,12 @@
-import { PlaceholderPage } from "@/components/ui/placeholder-page";
+import { Suspense } from "react";
+import { LoginScreen } from "@/components/account/auth-forms";
 
 export const metadata = { title: "Sign in" };
 
 export default function LoginPage() {
-  return <PlaceholderPage title="Sign in" description="Sign in to keep favourites and predictions." />;
+  return (
+    <Suspense fallback={null}>
+      <LoginScreen />
+    </Suspense>
+  );
 }

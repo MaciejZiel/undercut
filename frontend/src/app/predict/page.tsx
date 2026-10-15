@@ -1,7 +1,15 @@
-import { PlaceholderPage } from "@/components/ui/placeholder-page";
+import { PageHeader } from "@/components/ui/page-header";
+import { PredictNav } from "@/components/predict/predict-nav";
+import { PredictHome } from "@/components/predict/round-screens";
 
 export const metadata = { title: "Predict" };
 
 export default function PredictPage() {
-  return <PlaceholderPage title="Predict" description="Pick the podium for the next race and climb the leaderboard." />;
+  return (
+    <>
+      <PageHeader title="Predict" description="Pick the podium, pole and fastest lap before qualifying starts and climb the leaderboard." />
+      <PredictNav />
+      <PredictHome />
+    </>
+  );
 }

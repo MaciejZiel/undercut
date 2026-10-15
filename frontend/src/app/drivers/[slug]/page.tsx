@@ -10,6 +10,7 @@ import { DriverLastResultsTable, DriverSeasonsTable } from "@/components/catalog
 import { getDriver } from "@/lib/api/queries";
 import { formatDate, formatInteger, formatPoints, fullName } from "@/lib/format";
 import { isSlug } from "@/lib/url";
+import { FavoriteButton } from "@/components/account/favorite-button";
 
 export async function generateMetadata({ params }: PageProps<"/drivers/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -53,7 +54,10 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
             {driver.code && <span className="timing">{driver.code}</span>}
           </>
         }
-      />
+      >
+        {/* Favourites: minimal hook-in, see components/account/favorite-button.tsx */}
+        <FavoriteButton kind="driver" slug={driver.slug} name={name} />
+      </EntityHeader>
       <StatTiles
         label={`${name} career statistics`}
         stats={[
