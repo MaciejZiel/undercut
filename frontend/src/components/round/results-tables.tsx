@@ -43,18 +43,57 @@ function FastestLapMark() {
   );
 }
 
+const FINISHED = new Set(["Finished", "Lapped"]);
+
+/** Milliseconds behind the winner for a car that finished on the winner's lap, otherwise null. */
+function leadLapGap(r: S["RaceResult"], winner: S["RaceResult"] | undefined): number | null {
+  if (!winner || r.position === 1 || r.time_ms == null || winner.time_ms == null) return null;
+  if (r.laps == null || winner.laps == null || r.laps !== winner.laps) return null;
+  if (r.status !== "Finished") return null;
+  return r.time_ms > winner.time_ms ? r.time_ms - winner.time_ms : null;
+}
+
+/** The gap column: the winner's time, the gap with a bar drawn to scale, laps down, or why the car stopped. */
+function GapCell({ r, winner, maxGap }: { r: S["RaceResult"]; winner: S["RaceResult"] | undefined; maxGap: number }) {
+  const text = formatRaceGap(r, winner);
+  const gap = leadLapGap(r, winner);
+  if (r.position === 1 && text) return <span>{text}</span>;
+  if (text && gap != null) {
+    return (
+      <span className="inline-flex w-36 flex-col items-end max-sm:w-24">
+        <span>{text}</span>
+        <span
+          aria-hidden="true"
+          className="mt-1 block h-[3px] rounded-[1px] bg-accent/40"
+          style={{ width: `${Math.max(2, Math.round((gap / maxGap) * 100))}%`, minWidth: "2px" }}
+        />
+      </span>
+    );
+  }
+  if (text) return <span>{text}</span>;
+  if (r.status && !FINISHED.has(r.status)) {
+    return (
+      <span className="text-muted">
+        {r.status}
+        {r.laps != null ? `, lap ${r.laps}` : ""}
+      </span>
+    );
+  }
+  return <Dash label="No data" />;
+}
+
 export function RaceResultsTable({ results, caption }: { results: S["RaceResult"][]; caption: string }) {
   const winner = results.find((r) => r.position === 1);
+  const gaps = results.map((r) => leadLapGap(r, winner)).filter((g): g is number => g != null);
+  const maxGap = Math.max(1, ...gaps);
   return (
-    <DataTable caption={caption} minWidth="52rem">
+    <DataTable caption={caption} minWidth="46rem" stack>
       <thead>
         <tr>
           <Th align="right">Pos</Th>
           <Th>Driver</Th>
           <Th>Team</Th>
-          <Th align="right">Laps</Th>
-          <Th align="right">Time / gap</Th>
-          <Th>Status</Th>
+          <Th align="right">Gap</Th>
           <Th align="right">Grid</Th>
           <Th align="right">+/−</Th>
           <Th align="right">Pts</Th>
@@ -63,27 +102,29 @@ export function RaceResultsTable({ results, caption }: { results: S["RaceResult"
       <tbody>
         {results.map((r) => (
           <Tr key={r.driver.slug}>
-            <Td align="right" className="timing font-bold">
+            <Td align="right" className="c-pos timing font-bold">
               {orDash(formatPosition(r.position, r.position_text), "Not classified")}
             </Td>
-            <RowTh color={r.team.color}>
+            <RowTh color={r.team.color} className="c-name">
               <DriverLink slug={r.driver.slug} name={r.driver.name} />
               {r.fastest_lap === true && <FastestLapMark />}
             </RowTh>
-            <Td>
+            <Td className="c-sub">
               <ConstructorLink {...r.team} dot={false} />
+              {r.grid != null && r.grid > 0 && <span className="sm:hidden"> · from P{r.grid}</span>}
             </Td>
-            <Td align="right">{orDash(formatInteger(r.laps))}</Td>
-            <Td align="right" className="timing whitespace-nowrap">
-              {orDash(formatRaceGap(r, winner))}
+            <Td align="right" className="c-gap timing whitespace-nowrap">
+              <GapCell r={r} winner={winner} maxGap={maxGap} />
             </Td>
-            <Td>{orDash(r.status)}</Td>
-            <Td align="right">{orDash(r.grid === 0 ? "Pit lane" : r.grid)}</Td>
-            <Td align="right">
+            <Td align="right" className="c-hide">
+              {orDash(r.grid === 0 ? "Pit lane" : r.grid)}
+            </Td>
+            <Td align="right" className="c-hide">
               <PositionChange change={r.position_change} />
             </Td>
-            <Td align="right" className="font-semibold">
+            <Td align="right" className="c-end font-semibold">
               {orDash(formatPoints(r.points))}
+              {r.points != null && r.points > 0 && <span className="font-normal sm:hidden"> pts</span>}
             </Td>
           </Tr>
         ))}

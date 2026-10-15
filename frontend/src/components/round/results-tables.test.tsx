@@ -81,7 +81,7 @@ describe("RaceResultsTable", () => {
     );
     const row = within(screen.getAllByRole("row")[1]);
     expect(row.getByText("R")).toBeInTheDocument();
-    expect(row.getAllByTitle(/No data|No grid position/).length).toBeGreaterThanOrEqual(5);
+    expect(row.getAllByTitle(/No data|No grid position/).length).toBeGreaterThanOrEqual(4);
     expect(row.queryByText("0")).toBeNull();
     expect(row.queryByTitle("Fastest lap")).toBeNull();
   });

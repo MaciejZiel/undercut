@@ -194,6 +194,66 @@ table {
   display: block;
 }
 
+/* A results table that turns into a two-line list under 640 px: position | name and team | gap and points.
+   The cells name their place with c-* classes; c-hide cells fold into the text of the others. */
+@media (max-width: 639px) {
+  table.stack,
+  table.stack tbody {
+    display: block;
+  }
+  table.stack thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  table.stack tr {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+    column-gap: 0.5rem;
+    padding-block: 0.75rem;
+  }
+  table.stack td,
+  table.stack th {
+    display: block;
+    padding: 0;
+  }
+  table.stack .c-pos {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    font-size: 1.125rem;
+    text-align: left;
+  }
+  table.stack .c-name {
+    grid-column: 2;
+    grid-row: 1;
+    padding-left: 0.75rem;
+  }
+  table.stack .c-sub {
+    grid-column: 2;
+    grid-row: 2;
+    padding-left: 0.75rem;
+    color: var(--fg-muted);
+    font-size: 0.8125rem;
+  }
+  table.stack .c-gap {
+    grid-column: 3;
+    grid-row: 1;
+    text-align: right;
+  }
+  table.stack .c-end {
+    grid-column: 3;
+    grid-row: 2;
+    text-align: right;
+    color: var(--fg-muted);
+    font-size: 0.8125rem;
+  }
+  table.stack .c-hide {
+    display: none;
+  }
+}
+
 .skeleton {
   background: var(--surface-2);
   border-radius: 4px;
@@ -220,3 +280,4 @@ table {
   }
 }
 /* v3 */
+/* v4 */

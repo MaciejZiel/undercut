@@ -27,7 +27,7 @@ export function StandingsTable({
   caption: string;
 }) {
   return (
-    <DataTable caption={caption} minWidth="36rem">
+    <DataTable caption={caption} minWidth="36rem" stack>
       <thead>
         <tr>
           <Th className="w-14">Pos</Th>
@@ -41,10 +41,10 @@ export function StandingsTable({
       <tbody>
         {rows.map((row) => (
           <Tr key={row.entity.id}>
-            <RowTh className="timing">
+            <RowTh className="c-pos timing">
               <PositionCell row={row} />
             </RowTh>
-            <Td>
+            <Td className="c-name">
               {kind === "drivers" ? (
                 <span className="inline-flex flex-wrap items-baseline gap-x-2">
                   <DriverLink slug={row.entity.slug} name={row.entity.name} />
@@ -53,17 +53,20 @@ export function StandingsTable({
               ) : (
                 <ConstructorLink slug={row.entity.slug} name={row.entity.name} />
               )}
+              <span className="mt-0.5 block text-[0.8125rem] font-normal text-muted sm:hidden">
+                {formatInteger(row.wins) ?? "0"} wins · {formatInteger(row.podiums) ?? "0"} podiums
+              </span>
             </Td>
-            <Td align="right" className="timing font-bold">
+            <Td align="right" className="c-gap timing font-bold">
               {formatPoints(row.points) ?? <Dash />}
             </Td>
-            <Td align="right" className="timing">
+            <Td align="right" className="c-hide timing">
               {formatInteger(row.wins) ?? <Dash />}
             </Td>
-            <Td align="right" className="timing">
+            <Td align="right" className="c-hide timing">
               {formatInteger(row.podiums) ?? <Dash />}
             </Td>
-            <Td align="right" className="timing">
+            <Td align="right" className="c-end timing">
               <GapCell row={row} />
             </Td>
           </Tr>

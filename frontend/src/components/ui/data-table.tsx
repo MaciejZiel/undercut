@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { buildHref, nextOrdering, parseSort } from "@/lib/url";
 
 /**
@@ -10,14 +10,20 @@ export function DataTable({
   caption,
   children,
   minWidth = "34rem",
+  stack = false,
 }: {
   caption: string;
   children: ReactNode;
   minWidth?: string;
+  /** Below 640 px the rows become two-line list items (the cells place themselves) and nothing scrolls sideways. */
+  stack?: boolean;
 }) {
   return (
     <div className="relative overflow-x-auto">
-      <table className="w-full border-collapse text-left text-sm" style={{ minWidth }}>
+      <table
+        className={`w-full border-collapse text-left text-sm ${stack ? "stack sm:min-w-[var(--table-min)]" : "min-w-[var(--table-min)]"}`}
+        style={{ "--table-min": minWidth } as CSSProperties}
+      >
         <caption className="sr-only">{caption}</caption>
         {children}
       </table>
@@ -90,9 +96,9 @@ export function SortTh({
   );
 }
 
-export function Tr({ children, muted = false }: { children: ReactNode; muted?: boolean }) {
+export function Tr({ children, muted = false, className = "" }: { children: ReactNode; muted?: boolean; className?: string }) {
   return (
-    <tr className={`border-b border-line hover:bg-surface/70 ${muted ? "text-muted" : ""}`}>
+    <tr className={`border-b border-line hover:bg-surface/70 ${muted ? "text-muted" : ""} ${className}`}>
       {children}
     </tr>
   );
