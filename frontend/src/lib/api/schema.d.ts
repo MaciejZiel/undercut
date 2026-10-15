@@ -86,6 +86,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/google/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Whether Google sign-in is available, and what is linked for the signed-in user. */
+        get: operations["v1_auth_google_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description Whether Google sign-in is available, and what is linked for the signed-in user. */
+        delete: operations["v1_auth_google_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/google/callback/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Google sends the browser back here. The one-time flow in the session is consumed first. */
+        get: operations["v1_auth_google_callback_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/google/start/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Begin sign-in (``?next=/path``) or, when signed in, linking (``?mode=link``). */
+        get: operations["v1_auth_google_start_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/me/": {
         parameters: {
             query?: never;
@@ -526,6 +578,23 @@ export interface paths {
          *     so a link prefetcher triggering it is harmless.
          */
         post: operations["notifications_unsubscribe_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ops/status/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Operational summary for staff: outbox, sync jobs, heartbeats, data freshness, sizes. */
+        get: operations["v1_ops_status_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1343,6 +1412,13 @@ export interface components {
             drivers: components["schemas"]["FavoriteDriver"][];
             constructors: components["schemas"]["FavoriteConstructor"][];
             limits: components["schemas"]["FavoriteLimits"];
+        };
+        GoogleStatus: {
+            enabled: boolean;
+            linked: boolean;
+            /** Format: email */
+            email: string | null;
+            has_password: boolean;
         };
         HeadToHead: {
             races_together: number;
@@ -2385,6 +2461,83 @@ export interface operations {
             };
         };
     };
+    v1_auth_google_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoogleStatus"];
+                };
+            };
+        };
+    };
+    v1_auth_google_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_auth_google_callback_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_auth_google_start_retrieve: {
+        parameters: {
+            query?: {
+                mode?: "link" | "login";
+                /** @description Same-site path to return to. */
+                next?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     v1_auth_me_retrieve: {
         parameters: {
             query?: never;
@@ -3167,6 +3320,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UnsubscribeResult"];
+                };
+            };
+        };
+    };
+    v1_ops_status_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };

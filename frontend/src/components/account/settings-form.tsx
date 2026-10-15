@@ -1,9 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState, type FormEvent } from "react";
 import { deleteAccount, fetchExport, updateSettings, type User } from "@/lib/auth/api";
 import { useAuth } from "@/lib/auth/auth-context";
+import { fetchGoogleStatus, googleErrorMessage, googleQueryKey, googleStartUrl, unlinkGoogle } from "@/lib/auth/google";
 import { describeError, formErrors } from "@/lib/auth/messages";
 import { applyThemeChoice, browserTimeZone, saveTextFile, timeZoneOptions, type ThemeChoice } from "@/lib/auth/settings";
 import { Field, Notice, dangerButton, inputClass, primaryButton, secondaryButton } from "./form-parts";
@@ -16,6 +18,7 @@ export function SettingsScreen() {
     <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <ProfileForm user={user} />
       <div className="space-y-8">
+        <GoogleSection />
         <ExportSection />
         <DeleteSection user={user} />
       </div>
@@ -207,6 +210,52 @@ function DeleteSection({ user }: { user: User }) {
           </div>
         </form>
       </Modal>
+    </section>
+  );
+}
+
+function GoogleSection() {
+  const params = useSearchParams();
+  const client = useQueryClient();
+  const status = useQuery({ queryKey: googleQueryKey, queryFn: fetchGoogleStatus });
+  const unlink = useMutation({
+    mutationFn: unlinkGoogle,
+    onSuccess: () => client.invalidateQueries({ queryKey: googleQueryKey }),
+  });
+  if (!status.data?.enabled) return null;
+  const { linked, email, has_password: hasPassword } = status.data;
+  const failure = googleErrorMessage(params.get("google_error")) ?? (unlink.error ? describeError(unlink.error) : null);
+  const justLinked = params.get("google") === "linked" && linked;
+
+  return (
+    <section aria-labelledby="google-h" className="rounded-lg border border-line bg-surface p-5">
+      <h2 id="google-h" className="mb-1 text-xl font-extrabold tracking-tight">
+        Google login
+      </h2>
+      {failure && <Notice className="mb-3">{failure}</Notice>}
+      {justLinked && <Notice tone="success" className="mb-3">Google account linked.</Notice>}
+      {linked ? (
+        <>
+          <p className="mb-3 text-sm text-muted">
+            Linked to <strong className="text-fg">{email}</strong>. You can sign in with it.
+          </p>
+          {!hasPassword && (
+            <p className="mb-3 text-sm text-muted">
+              This account has no password yet. To unlink Google, first set one with “Forgot your password?” on the sign-in page.
+            </p>
+          )}
+          <button type="button" onClick={() => unlink.mutate()} disabled={unlink.isPending || !hasPassword} className={secondaryButton}>
+            {unlink.isPending ? "Unlinking…" : "Unlink Google"}
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="mb-3 text-sm text-muted">Link your Google account to sign in with one click.</p>
+          <a href={googleStartUrl("/settings", "link")} className={secondaryButton}>
+            Link Google
+          </a>
+        </>
+      )}
     </section>
   );
 }

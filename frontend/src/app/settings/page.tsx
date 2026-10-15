@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { RequireAuth } from "@/components/account/require-auth";
 import { SettingsScreen } from "@/components/account/settings-form";
@@ -9,7 +10,9 @@ export default function SettingsPage() {
     <>
       <PageHeader title="Settings" description="Your profile, preferences and data." />
       <RequireAuth>
-        <SettingsScreen />
+        <Suspense fallback={null}>
+          <SettingsScreen />
+        </Suspense>
       </RequireAuth>
     </>
   );

@@ -135,6 +135,73 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/auth/google/:
+    get:
+      operationId: v1_auth_google_retrieve
+      description: Whether Google sign-in is available, and what is linked for the
+        signed-in user.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleStatus'
+          description: ''
+    delete:
+      operationId: v1_auth_google_destroy
+      description: Whether Google sign-in is available, and what is linked for the
+        signed-in user.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/google/callback/:
+    get:
+      operationId: v1_auth_google_callback_retrieve
+      description: Google sends the browser back here. The one-time flow in the session
+        is consumed first.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '302':
+          description: No response body
+  /api/v1/auth/google/start/:
+    get:
+      operationId: v1_auth_google_start_retrieve
+      description: Begin sign-in (``?next=/path``) or, when signed in, linking (``?mode=link``).
+      parameters:
+      - in: query
+        name: mode
+        schema:
+          type: string
+          enum:
+          - link
+          - login
+      - in: query
+        name: next
+        schema:
+          type: string
+        description: Same-site path to return to.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '302':
+          description: No response body
   /api/v1/auth/me/:
     get:
       operationId: v1_auth_me_retrieve
@@ -1047,6 +1114,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnsubscribeResult'
+          description: ''
+  /api/v1/ops/status/:
+    get:
+      operationId: v1_ops_status_retrieve
+      description: 'Operational summary for staff: outbox, sync jobs, heartbeats,
+        data freshness, sizes.'
+      tags:
+      - ops
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
           description: ''
   /api/v1/predictions/history/:
     get:
@@ -2937,6 +3021,24 @@ components:
       - constructors
       - drivers
       - limits
+    GoogleStatus:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        linked:
+          type: boolean
+        email:
+          type: string
+          format: email
+          nullable: true
+        has_password:
+          type: boolean
+      required:
+      - email
+      - enabled
+      - has_password
+      - linked
     HeadToHead:
       type: object
       properties:

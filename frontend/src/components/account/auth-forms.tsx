@@ -15,8 +15,10 @@ import {
 } from "@/lib/auth/api";
 import { useAuth } from "@/lib/auth/auth-context";
 import { describeError, formErrors } from "@/lib/auth/messages";
+import { googleErrorMessage } from "@/lib/auth/google";
 import { loginHref, registerHref, safeNext } from "@/lib/auth/redirect";
 import { Field, FormCard, Notice, primaryButton, secondaryButton } from "./form-parts";
+import { GoogleButton } from "./google-button";
 
 function useNext(): string | null {
   return safeNext(useSearchParams().get("next"));
@@ -118,12 +120,17 @@ export function LoginScreen() {
   const next = useNext();
   const auth = useAuth();
   const router = useRouter();
+  const googleError = googleErrorMessage(useSearchParams().get("google_error"));
   useEffect(() => {
     if (auth.status === "authenticated") router.replace(next ?? "/");
   }, [auth.status, next, router]);
   return (
     <FormCard title="Sign in">
-      <LoginForm next={next} />
+      {googleError && <Notice className="mb-4">{googleError}</Notice>}
+      <div className="space-y-4">
+        <LoginForm next={next} />
+        <GoogleButton next={next} />
+      </div>
     </FormCard>
   );
 }
@@ -210,6 +217,9 @@ export function RegisterScreen() {
           {busy ? "Creating account…" : "Create account"}
         </button>
       </form>
+      <div className="mt-4 space-y-4">
+        <GoogleButton next={next} />
+      </div>
     </FormCard>
   );
 }

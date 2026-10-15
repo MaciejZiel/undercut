@@ -4,7 +4,10 @@ import { mockFetch } from "@/test/fetch-mock";
 import { ME_USER, USER, renderWithProviders } from "@/test/render";
 
 const replace = vi.fn();
-vi.mock("next/navigation", () => ({ useRouter: () => ({ replace, push: vi.fn() }) }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace, push: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+}));
 
 import { SettingsScreen } from "./settings-form";
 
@@ -19,6 +22,7 @@ describe("settings", () => {
   it("saves only through PATCH with the CSRF header and applies the theme", async () => {
     const m = mockFetch({
       "GET /api/v1/auth/me/": { body: ME_USER },
+      "GET /api/v1/auth/google/": { body: { enabled: false, linked: false, email: null, has_password: true } },
       "PATCH /api/v1/account/settings/": ({ body }) => ({ body: { ...USER, ...(body as object) } }),
     });
     renderWithProviders(<SettingsScreen />);
@@ -36,6 +40,7 @@ describe("settings", () => {
   it("shows API validation errors on the field", async () => {
     mockFetch({
       "GET /api/v1/auth/me/": { body: ME_USER },
+      "GET /api/v1/auth/google/": { body: { enabled: false, linked: false, email: null, has_password: true } },
       "PATCH /api/v1/account/settings/": { status: 400, body: { detail: "This display name is reserved.", code: "display_name_reserved" } },
     });
     renderWithProviders(<SettingsScreen />);
@@ -54,6 +59,7 @@ describe("settings", () => {
     });
     mockFetch({
       "GET /api/v1/auth/me/": { body: ME_USER },
+      "GET /api/v1/auth/google/": { body: { enabled: false, linked: false, email: null, has_password: true } },
       "GET /api/v1/account/export/": new Response('{"user":{"id":7}}', { headers: { "Content-Type": "application/json" } }),
     });
     renderWithProviders(<SettingsScreen />);
@@ -67,6 +73,7 @@ describe("settings", () => {
   it("requires typing the display name before deleting, then calls the API", async () => {
     const m = mockFetch({
       "GET /api/v1/auth/me/": { body: ME_USER },
+      "GET /api/v1/auth/google/": { body: { enabled: false, linked: false, email: null, has_password: true } },
       "POST /api/v1/account/delete/": { status: 204 },
       "DELETE /api/v1/allauth/browser/v1/auth/session": { status: 401, body: {} },
     });
