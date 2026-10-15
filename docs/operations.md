@@ -92,7 +92,7 @@ Restore test log (fill in after each run):
 
 | Date | Dump | Result | Duration |
 |---|---|---|---|
-| 2026-10-15: PASSED (dump 904 KB restored in 1 s; 77 seasons, 881 drivers, 28,711 results) | | | |
+| 2026-10-15 | `undercut-20261015T134503Z.dump` (904 KB) | PASSED (77 seasons, 881 drivers, 28,711 results) | 1 s |
 
 ## Rotating secrets
 
