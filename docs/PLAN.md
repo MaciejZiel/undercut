@@ -28,6 +28,10 @@ Publiczny serwis dla fanów F1 na prawdziwych danych od 1950 r. Flagowy projekt 
 
 Ruch: Caddy kieruje `/api` i `/admin` do Django, resztę do Next.js. Jedna domena, więc bez CORS.
 
+## Priorytety
+- Najważniejsze: poprawność i jakość backendu, danych, zdarzeń i testów. UI robimy możliwie dobrze, ale dopieszczanie (polish, drobne efekty) zostaje na etap 7.
+- Testy piszemy od początku, ale tam, gdzie błąd boli (outbox, import, klasyfikacje, punktacja, ograniczenia w bazie).
+
 ## Etapy
 
 | Etap | Zawartość | Co da się pokazać |
