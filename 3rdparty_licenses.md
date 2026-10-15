@@ -33,9 +33,8 @@
 | https://github.com/FactoryBoy/factory_boy | factory-boy (dev) | MIT | https://github.com/FactoryBoy/factory_boy/blob/master/LICENSE |
 | https://github.com/astral-sh/ruff | ruff (dev) | MIT | https://github.com/astral-sh/ruff/blob/main/LICENSE |
 | https://github.com/seddonym/import-linter | import-linter (dev) | BSD-2-Clause | https://github.com/seddonym/import-linter/blob/master/LICENSE |
-| https://github.com/python/mypy | mypy (dev, declared since stage 0, not used) | MIT | https://github.com/python/mypy/blob/master/LICENSE |
-| https://github.com/typeddjango/django-stubs | django-stubs (dev, not used) | MIT | https://github.com/typeddjango/django-stubs/blob/master/LICENSE.md |
-| https://github.com/typeddjango/djangorestframework-stubs | djangorestframework-stubs (dev, not used) | MIT | https://github.com/typeddjango/djangorestframework-stubs/blob/master/LICENSE.txt |
-| https://github.com/cpburnz/python-pathspec | pathspec (dev, transitive dependency of mypy) | MPL-2.0 (copyleft) | https://www.mozilla.org/MPL/2.0/ |
 | https://github.com/microsoft/pyright | pyright (CI only, run with npm) | MIT | https://github.com/microsoft/pyright/blob/main/LICENSE.txt |
+| https://github.com/typeddjango/django-stubs | django-stubs (dev, type information for pyright) | MIT | https://github.com/typeddjango/django-stubs/blob/master/LICENSE.md |
+| https://github.com/typeddjango/djangorestframework-stubs | djangorestframework-stubs (dev, type information for pyright) | MIT | https://github.com/typeddjango/djangorestframework-stubs/blob/master/LICENSE.txt |
+| https://github.com/python/typeshed | types-PyYAML (dev, transitive dependency of the Django stubs) | Apache-2.0 | https://github.com/python/typeshed/blob/main/LICENSE |
 | https://github.com/google/osv-scanner | osv-scanner (CI only, binary) | Apache-2.0 | https://github.com/google/osv-scanner/blob/main/LICENSE |

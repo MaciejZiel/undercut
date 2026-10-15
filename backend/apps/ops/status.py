@@ -115,8 +115,8 @@ def data_freshness(now: datetime | None = None) -> dict:
             "season": race.round.season.year,
             "round": race.round.round,
             "name": race.round.name,
-            "ended_at": _iso(race.ended_at),
-            "ended_age_seconds": _seconds(now - race.ended_at),
+            "ended_at": _iso(race.ended_at),  # pyright: ignore[reportAttributeAccessIssue]
+            "ended_age_seconds": _seconds(now - race.ended_at),  # pyright: ignore[reportAttributeAccessIssue]
             "status": race.status,
             "results_final": final,
             # The first finalization event is the best record of when results became final.
