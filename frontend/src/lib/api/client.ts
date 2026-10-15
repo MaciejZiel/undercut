@@ -1,24 +1,7 @@
 import createClient from "openapi-fetch";
+import type { paths } from "./schema";
 
-/**
- * Hand-written minimal `paths` type covering GET /api/health/ only.
- * It is a stand-in until the OpenAPI schema is generated with
- * `npm run gen:api` (src/lib/api/schema.d.ts); then import `paths` from there.
- */
-export interface paths {
-  "/api/health/": {
-    get: {
-      parameters: { query?: never; header?: never; path?: never; cookie?: never };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: Record<string, unknown>;
-          content: { "application/json": { status: string } };
-        };
-      };
-    };
-  };
-}
+export type { paths, components } from "./schema";
 
 /**
  * Server side (RSC, route handlers) talks to Django directly through
@@ -27,11 +10,9 @@ export interface paths {
  */
 export function resolveBaseUrl(): string {
   if (typeof window !== "undefined") return "";
-  return process.env.API_INTERNAL_URL ?? "http://localhost:8000";
+  return process.env.API_INTERNAL_URL ?? "http://127.0.0.1:8000";
 }
 
 export function createApiClient(baseUrl: string = resolveBaseUrl()) {
   return createClient<paths>({ baseUrl });
 }
-
-export const api = createApiClient();

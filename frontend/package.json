@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "typecheck": "next typegen && tsc --noEmit",
-    "gen:api": "openapi-typescript http://localhost:8000/api/schema/ -o src/lib/api/schema.d.ts"
+    "gen:api": "openapi-typescript openapi/schema.yml -o src/lib/api/schema.d.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.3",

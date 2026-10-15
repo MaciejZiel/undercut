@@ -1,0 +1,1742 @@
+openapi: 3.0.3
+info:
+  title: Undercut API
+  version: 0.1.0
+  description: Formula 1 stats, analytics and predictions.
+paths:
+  /api/v1/circuits/:
+    get:
+      operationId: v1_circuits_list
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: List circuits
+      parameters:
+      - in: query
+        name: country
+        schema:
+          type: string
+          maxLength: 100
+          minLength: 1
+      - in: query
+        name: ordering
+        schema:
+          enum:
+          - name
+          - country
+          - gp_count
+          - last_gp_date
+          - -name
+          - -country
+          - -gp_count
+          - -last_gp_date
+          type: string
+          default: name
+          minLength: 1
+        description: |-
+          * `name` - name
+          * `country` - country
+          * `gp_count` - gp_count
+          * `last_gp_date` - last_gp_date
+          * `-name` - -name
+          * `-country` - -country
+          * `-gp_count` - -gp_count
+          * `-last_gp_date` - -last_gp_date
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+          maxLength: 100
+          minLength: 1
+      tags:
+      - circuits
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCircuitListList'
+          description: ''
+  /api/v1/circuits/{slug}/:
+    get:
+      operationId: v1_circuits_retrieve
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: Circuit page
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - circuits
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CircuitDetail'
+          description: ''
+  /api/v1/constructors/:
+    get:
+      operationId: v1_constructors_list
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: List constructors
+      parameters:
+      - in: query
+        name: nationality
+        schema:
+          type: string
+          maxLength: 100
+          minLength: 1
+      - in: query
+        name: ordering
+        schema:
+          enum:
+          - name
+          - wins
+          - starts
+          - -name
+          - -wins
+          - -starts
+          type: string
+          default: name
+          minLength: 1
+        description: |-
+          * `name` - name
+          * `wins` - wins
+          * `starts` - starts
+          * `-name` - -name
+          * `-wins` - -wins
+          * `-starts` - -starts
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+          maxLength: 100
+          minLength: 1
+      - in: query
+        name: season
+        schema:
+          type: integer
+          maximum: 2100
+          minimum: 1950
+      tags:
+      - constructors
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConstructorListList'
+          description: ''
+  /api/v1/constructors/{slug}/:
+    get:
+      operationId: v1_constructors_retrieve
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: Constructor history
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - constructors
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstructorDetail'
+          description: ''
+  /api/v1/drivers/:
+    get:
+      operationId: v1_drivers_list
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: List drivers
+      parameters:
+      - in: query
+        name: active
+        schema:
+          type: boolean
+          nullable: true
+        description: Raced in the latest season with results.
+      - in: query
+        name: champion
+        schema:
+          type: boolean
+          nullable: true
+        description: 'Only world champions. Not available until standings are integrated:
+          true answers 400.'
+      - in: query
+        name: constructor
+        schema:
+          type: string
+          pattern: ^[-a-zA-Z0-9_]+$
+          minLength: 1
+        description: Constructor slug.
+      - in: query
+        name: nationality
+        schema:
+          type: string
+          maxLength: 100
+          minLength: 1
+      - in: query
+        name: ordering
+        schema:
+          enum:
+          - family_name
+          - wins
+          - starts
+          - titles
+          - -family_name
+          - -wins
+          - -starts
+          - -titles
+          type: string
+          default: family_name
+          minLength: 1
+        description: |-
+          * `family_name` - family_name
+          * `wins` - wins
+          * `starts` - starts
+          * `titles` - titles
+          * `-family_name` - -family_name
+          * `-wins` - -wins
+          * `-starts` - -starts
+          * `-titles` - -titles
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+          maxLength: 100
+          minLength: 1
+        description: Case and diacritics insensitive name search.
+      - in: query
+        name: season
+        schema:
+          type: integer
+          maximum: 2100
+          minimum: 1950
+        description: Started in this year.
+      tags:
+      - drivers
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDriverListList'
+          description: ''
+  /api/v1/drivers/{slug}/:
+    get:
+      operationId: v1_drivers_retrieve
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: Driver career
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - drivers
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverDetail'
+          description: ''
+  /api/v1/rounds/{year}/{round}/:
+    get:
+      operationId: v1_rounds_retrieve
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: Race weekend header
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - rounds
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoundDetail'
+          description: ''
+  /api/v1/rounds/{year}/{round}/results/:
+    get:
+      operationId: v1_rounds_results_retrieve
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: Session results
+      parameters:
+      - in: path
+        name: round
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: session
+        schema:
+          enum:
+          - RACE
+          - SPRINT
+          - Q
+          type: string
+          default: RACE
+          minLength: 1
+        description: |-
+          RACE (default), SPRINT or Q (qualifying).
+
+          * `RACE` - RACE
+          * `SPRINT` - SPRINT
+          * `Q` - Q
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - rounds
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResults'
+          description: ''
+  /api/v1/search/:
+    get:
+      operationId: v1_search_retrieve
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: Global search
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: At least 2 characters; case and diacritics insensitive.
+        required: true
+      tags:
+      - search
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Search'
+          description: ''
+  /api/v1/seasons/:
+    get:
+      operationId: v1_seasons_list
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: List seasons
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - seasons
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSeasonListList'
+          description: ''
+  /api/v1/seasons/{year}/:
+    get:
+      operationId: v1_seasons_retrieve
+      description: Anonymous GET-only access; no session lookup, so responses are
+        cacheable.
+      summary: Season calendar
+      parameters:
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - seasons
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonDetail'
+          description: ''
+  /api/v1/standings/constructors/:
+    get:
+      operationId: v1_standings_constructors_retrieve
+      summary: Championship standings after a round
+      parameters:
+      - in: query
+        name: after_round
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+        description: Table after this round.
+      - in: query
+        name: season
+        schema:
+          type: integer
+          maximum: 2200
+          minimum: 1950
+        description: 'Season year (default: latest).'
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Standings'
+          description: ''
+  /api/v1/standings/constructors/progress/:
+    get:
+      operationId: v1_standings_constructors_progress_retrieve
+      summary: Cumulative points and position per round
+      parameters:
+      - in: query
+        name: season
+        schema:
+          type: integer
+          maximum: 2200
+          minimum: 1950
+        description: 'Season year (default: latest).'
+      - in: query
+        name: top
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 5
+        description: Entries to return.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Progress'
+          description: ''
+  /api/v1/standings/drivers/:
+    get:
+      operationId: v1_standings_drivers_retrieve
+      summary: Championship standings after a round
+      parameters:
+      - in: query
+        name: after_round
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+        description: Table after this round.
+      - in: query
+        name: season
+        schema:
+          type: integer
+          maximum: 2200
+          minimum: 1950
+        description: 'Season year (default: latest).'
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Standings'
+          description: ''
+  /api/v1/standings/drivers/progress/:
+    get:
+      operationId: v1_standings_drivers_progress_retrieve
+      summary: Cumulative points and position per round
+      parameters:
+      - in: query
+        name: season
+        schema:
+          type: integer
+          maximum: 2200
+          minimum: 1950
+        description: 'Season year (default: latest).'
+      - in: query
+        name: top
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 5
+        description: Entries to return.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Progress'
+          description: ''
+components:
+  schemas:
+    CalendarRound:
+      type: object
+      properties:
+        round:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        date:
+          type: string
+          format: date
+        is_cancelled:
+          type: boolean
+        has_sprint:
+          type: boolean
+        circuit:
+          $ref: '#/components/schemas/CircuitRef'
+        winner:
+          allOf:
+          - $ref: '#/components/schemas/RoundWinner'
+          nullable: true
+          description: Null for upcoming rounds.
+      required:
+      - circuit
+      - date
+      - has_sprint
+      - is_cancelled
+      - name
+      - round
+      - winner
+    CareerStats:
+      type: object
+      description: |-
+        Career totals; all values are null when the module has no race results.
+
+        TODO: ``titles`` is always null until the standings module can supply champions.
+      properties:
+        starts:
+          type: integer
+          nullable: true
+        wins:
+          type: integer
+          nullable: true
+        podiums:
+          type: integer
+          nullable: true
+        poles:
+          type: integer
+          nullable: true
+          description: Grid position 1 before 1994, qualifying position 1 from 1994.
+        fastest_laps:
+          type: integer
+          nullable: true
+        points:
+          type: number
+          format: double
+          nullable: true
+          description: Race and sprint points.
+        titles:
+          type: integer
+          nullable: true
+      required:
+      - fastest_laps
+      - podiums
+      - points
+      - poles
+      - starts
+      - wins
+    CircuitDetail:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        locality:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        lat:
+          type: number
+          format: double
+          nullable: true
+        lng:
+          type: number
+          format: double
+          nullable: true
+        timezone:
+          type: string
+          nullable: true
+        length_m:
+          type: integer
+          nullable: true
+        lap_record_ms:
+          type: integer
+          nullable: true
+        lap_record_driver:
+          type: string
+          nullable: true
+        lap_record_year:
+          type: integer
+          nullable: true
+        gp_count:
+          type: integer
+        last_gp_date:
+          type: string
+          format: date
+          nullable: true
+        winners:
+          type: array
+          items:
+            $ref: '#/components/schemas/CircuitWinner'
+          description: Newest first.
+        most_wins_drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MostWinsDriver'
+        most_wins_teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/MostWinsTeam'
+      required:
+      - country
+      - gp_count
+      - lap_record_driver
+      - lap_record_ms
+      - lap_record_year
+      - last_gp_date
+      - lat
+      - length_m
+      - lng
+      - locality
+      - most_wins_drivers
+      - most_wins_teams
+      - name
+      - slug
+      - timezone
+      - winners
+    CircuitList:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        locality:
+          type: string
+          readOnly: true
+          nullable: true
+        country:
+          type: string
+          readOnly: true
+          nullable: true
+        gp_count:
+          type: integer
+          description: Grands Prix held so far, cancelled excluded.
+        last_gp_date:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - country
+      - gp_count
+      - last_gp_date
+      - locality
+      - name
+      - slug
+    CircuitRef:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        country:
+          type: string
+          nullable: true
+      required:
+      - country
+      - name
+      - slug
+    CircuitWinner:
+      type: object
+      properties:
+        year:
+          type: integer
+        round:
+          type: integer
+          nullable: true
+        round_name:
+          type: string
+        date:
+          type: string
+          format: date
+        driver:
+          $ref: '#/components/schemas/DriverRef'
+        team:
+          $ref: '#/components/schemas/TeamRef'
+      required:
+      - date
+      - driver
+      - round
+      - round_name
+      - team
+      - year
+    ConstructorDetail:
+      type: object
+      description: 'Constructor page. TODO: ``stats.titles`` is null until the standings
+        module exists.'
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        nationality:
+          type: string
+          nullable: true
+        stats:
+          $ref: '#/components/schemas/CareerStats'
+        seasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConstructorSeasonRow'
+        current_season:
+          type: integer
+          nullable: true
+          description: Latest season raced.
+        current_drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeasonDriver'
+      required:
+      - current_drivers
+      - current_season
+      - name
+      - nationality
+      - seasons
+      - slug
+      - stats
+    ConstructorList:
+      type: object
+      description: 'Row of the constructor list. TODO: ``titles`` is null until the
+        standings module exists.'
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        nationality:
+          type: string
+          readOnly: true
+          nullable: true
+        starts:
+          type: integer
+        wins:
+          type: integer
+        titles:
+          type: integer
+          nullable: true
+      required:
+      - name
+      - nationality
+      - slug
+      - starts
+      - wins
+    ConstructorSeasonRow:
+      type: object
+      properties:
+        year:
+          type: integer
+        color:
+          type: string
+          nullable: true
+        points:
+          type: number
+          format: double
+          nullable: true
+        wins:
+          type: integer
+        championship_position:
+          type: integer
+          nullable: true
+          description: Null until the standings module exists.
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeasonDriver'
+      required:
+      - championship_position
+      - color
+      - drivers
+      - points
+      - wins
+      - year
+    DriverDetail:
+      type: object
+      description: 'Driver page. TODO: ``stats.titles`` is null until the standings
+        module exists.'
+      properties:
+        slug:
+          type: string
+        given_name:
+          type: string
+        family_name:
+          type: string
+        code:
+          type: string
+          nullable: true
+        number:
+          type: integer
+          nullable: true
+        nationality:
+          type: string
+          nullable: true
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        team:
+          allOf:
+          - $ref: '#/components/schemas/TeamRef'
+          nullable: true
+          description: Current or last team on race day.
+        stats:
+          $ref: '#/components/schemas/CareerStats'
+        seasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverSeason'
+        last_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverResult'
+      required:
+      - code
+      - date_of_birth
+      - family_name
+      - given_name
+      - last_results
+      - nationality
+      - number
+      - seasons
+      - slug
+      - stats
+      - team
+    DriverList:
+      type: object
+      description: 'Row of the driver list. TODO: ``titles`` is null until the standings
+        module exists.'
+      properties:
+        slug:
+          type: string
+        given_name:
+          type: string
+        family_name:
+          type: string
+        code:
+          type: string
+          readOnly: true
+          nullable: true
+        number:
+          type: integer
+          nullable: true
+        nationality:
+          type: string
+          readOnly: true
+          nullable: true
+        starts:
+          type: integer
+        wins:
+          type: integer
+        titles:
+          type: integer
+          nullable: true
+        team:
+          allOf:
+          - $ref: '#/components/schemas/TeamRef'
+          nullable: true
+          readOnly: true
+          description: Current or last team on race day.
+      required:
+      - code
+      - family_name
+      - given_name
+      - nationality
+      - number
+      - slug
+      - starts
+      - team
+      - wins
+    DriverRef:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        code:
+          type: string
+          nullable: true
+        number:
+          type: integer
+          nullable: true
+      required:
+      - code
+      - name
+      - number
+      - slug
+    DriverResult:
+      type: object
+      properties:
+        year:
+          type: integer
+        round:
+          type: integer
+          nullable: true
+        round_name:
+          type: string
+        date:
+          type: string
+          format: date
+        team:
+          $ref: '#/components/schemas/TeamRef'
+        grid:
+          type: integer
+          nullable: true
+        position:
+          type: integer
+          nullable: true
+        position_text:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        points:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - date
+      - grid
+      - points
+      - position
+      - position_text
+      - round
+      - round_name
+      - status
+      - team
+      - year
+    DriverSeason:
+      type: object
+      properties:
+        year:
+          type: integer
+        teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamRef'
+          description: Teams on race day (several after a transfer).
+        points:
+          type: number
+          format: double
+          nullable: true
+        wins:
+          type: integer
+        championship_position:
+          type: integer
+          nullable: true
+          description: Null until the standings module exists.
+      required:
+      - championship_position
+      - points
+      - teams
+      - wins
+      - year
+    EliminatedInEnum:
+      enum:
+      - Q1
+      - Q2
+      type: string
+      description: |-
+        * `Q1` - Q1
+        * `Q2` - Q2
+    Entity:
+      type: object
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+        name:
+          type: string
+        code:
+          type: string
+          nullable: true
+        nationality:
+          type: string
+          nullable: true
+      required:
+      - code
+      - id
+      - name
+      - nationality
+      - slug
+    MostWinsDriver:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        code:
+          type: string
+          nullable: true
+        number:
+          type: integer
+          nullable: true
+        wins:
+          type: integer
+      required:
+      - code
+      - name
+      - number
+      - slug
+      - wins
+    MostWinsTeam:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        color:
+          type: string
+          nullable: true
+          description: '#rrggbb or null (neutral colour).'
+        wins:
+          type: integer
+      required:
+      - color
+      - name
+      - slug
+      - wins
+    NullEnum:
+      enum:
+      - null
+    PaginatedCircuitListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CircuitList'
+    PaginatedConstructorListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConstructorList'
+    PaginatedDriverListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverList'
+    PaginatedSeasonListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeasonList'
+    Progress:
+      type: object
+      properties:
+        season:
+          type: integer
+          nullable: true
+        rounds:
+          type: array
+          items:
+            type: integer
+        series:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgressSeries'
+      required:
+      - rounds
+      - season
+      - series
+    ProgressSeries:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/Entity'
+        points:
+          type: array
+          items:
+            type: number
+            format: double
+            maximum: 10000
+            minimum: -10000
+            exclusiveMaximum: true
+            exclusiveMinimum: true
+            nullable: true
+          description: Cumulative points per round, aligned to `rounds`.
+        positions:
+          type: array
+          items:
+            type: integer
+            nullable: true
+          description: Championship position per round, aligned to `rounds`.
+      required:
+      - entity
+      - points
+      - positions
+    QualifyingResult:
+      type: object
+      properties:
+        position:
+          type: integer
+          nullable: true
+        driver:
+          $ref: '#/components/schemas/DriverRef'
+        team:
+          $ref: '#/components/schemas/TeamRef'
+        q1_ms:
+          type: integer
+          nullable: true
+        q2_ms:
+          type: integer
+          nullable: true
+        q3_ms:
+          type: integer
+          nullable: true
+        eliminated_in:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/EliminatedInEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - driver
+      - eliminated_in
+      - position
+      - q1_ms
+      - q2_ms
+      - q3_ms
+      - team
+    QualifyingSessionResults:
+      type: object
+      description: Qualifying results.
+      properties:
+        year:
+          type: integer
+        round:
+          type: integer
+        session:
+          $ref: '#/components/schemas/ResultsSession'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QualifyingResult'
+      required:
+      - results
+      - round
+      - session
+      - year
+    RaceResult:
+      type: object
+      properties:
+        position:
+          type: integer
+          nullable: true
+        position_text:
+          type: string
+          nullable: true
+          description: For example R, D or W.
+        driver:
+          $ref: '#/components/schemas/DriverRef'
+        team:
+          allOf:
+          - $ref: '#/components/schemas/TeamRef'
+          description: Team on race day.
+        grid:
+          type: integer
+          nullable: true
+        laps:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        time_ms:
+          type: integer
+          nullable: true
+        best_lap_ms:
+          type: integer
+          nullable: true
+        points:
+          type: number
+          format: double
+          nullable: true
+        fastest_lap:
+          type: boolean
+          nullable: true
+          description: True for the fastest lap, null when there is no data.
+        position_change:
+          type: integer
+          nullable: true
+          description: Grid minus finish; positive means places gained.
+      required:
+      - best_lap_ms
+      - driver
+      - fastest_lap
+      - grid
+      - laps
+      - points
+      - position
+      - position_change
+      - position_text
+      - status
+      - team
+      - time_ms
+    RaceSessionResults:
+      type: object
+      description: Race or sprint results.
+      properties:
+        year:
+          type: integer
+        round:
+          type: integer
+        session:
+          $ref: '#/components/schemas/ResultsSession'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RaceResult'
+      required:
+      - results
+      - round
+      - session
+      - year
+    ResultsSession:
+      type: object
+      properties:
+        type:
+          type: string
+        status:
+          type: string
+      required:
+      - status
+      - type
+    RoundCircuit:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        country:
+          type: string
+          nullable: true
+        locality:
+          type: string
+          nullable: true
+        length_m:
+          type: integer
+          nullable: true
+      required:
+      - country
+      - length_m
+      - locality
+      - name
+      - slug
+    RoundDetail:
+      type: object
+      properties:
+        year:
+          type: integer
+        round:
+          type: integer
+        name:
+          type: string
+        date:
+          type: string
+          format: date
+        is_cancelled:
+          type: boolean
+        scheduled_laps:
+          type: integer
+          nullable: true
+        circuit:
+          $ref: '#/components/schemas/RoundCircuit'
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoundSession'
+          description: Only sessions that exist.
+        previous_round:
+          allOf:
+          - $ref: '#/components/schemas/RoundLink'
+          nullable: true
+        next_round:
+          allOf:
+          - $ref: '#/components/schemas/RoundLink'
+          nullable: true
+      required:
+      - circuit
+      - date
+      - is_cancelled
+      - name
+      - next_round
+      - previous_round
+      - round
+      - scheduled_laps
+      - sessions
+      - year
+    RoundLink:
+      type: object
+      properties:
+        year:
+          type: integer
+        round:
+          type: integer
+        name:
+          type: string
+      required:
+      - name
+      - round
+      - year
+    RoundSession:
+      type: object
+      properties:
+        type:
+          type: string
+          description: FP1, FP2, FP3, SQ, SPRINT, Q or RACE.
+        status:
+          type: string
+        start_utc:
+          type: string
+          format: date-time
+          nullable: true
+        has_results:
+          type: boolean
+      required:
+      - has_results
+      - start_utc
+      - status
+      - type
+    RoundWinner:
+      type: object
+      properties:
+        driver:
+          $ref: '#/components/schemas/DriverRef'
+        team:
+          $ref: '#/components/schemas/TeamRef'
+      required:
+      - driver
+      - team
+    Search:
+      type: object
+      properties:
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchDriver'
+        constructors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchConstructor'
+        circuits:
+          type: array
+          items:
+            $ref: '#/components/schemas/CircuitRef'
+        rounds:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchRound'
+      required:
+      - circuits
+      - constructors
+      - drivers
+      - rounds
+    SearchConstructor:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        nationality:
+          type: string
+          nullable: true
+      required:
+      - name
+      - nationality
+      - slug
+    SearchDriver:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        code:
+          type: string
+          nullable: true
+        number:
+          type: integer
+          nullable: true
+        nationality:
+          type: string
+          nullable: true
+      required:
+      - code
+      - name
+      - nationality
+      - number
+      - slug
+    SearchRound:
+      type: object
+      properties:
+        year:
+          type: integer
+        round:
+          type: integer
+        name:
+          type: string
+        date:
+          type: string
+          format: date
+      required:
+      - date
+      - name
+      - round
+      - year
+    SeasonDetail:
+      type: object
+      properties:
+        year:
+          type: integer
+        name:
+          type: string
+          nullable: true
+        sprint_rounds:
+          type: integer
+        rounds:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalendarRound'
+      required:
+      - name
+      - rounds
+      - sprint_rounds
+      - year
+    SeasonDriver:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        code:
+          type: string
+          nullable: true
+        number:
+          type: integer
+          nullable: true
+      required:
+      - code
+      - name
+      - number
+      - slug
+    SeasonList:
+      type: object
+      description: 'Row of the season list. TODO: champions are null until the standings
+        module exists.'
+      properties:
+        year:
+          type: integer
+        name:
+          type: string
+          readOnly: true
+          nullable: true
+        rounds_count:
+          type: integer
+          description: All rounds, cancelled included.
+        cancelled_rounds:
+          type: integer
+        sprint_rounds:
+          type: integer
+        driver_champion:
+          allOf:
+          - $ref: '#/components/schemas/DriverRef'
+          readOnly: true
+          nullable: true
+        constructor_champion:
+          allOf:
+          - $ref: '#/components/schemas/TeamRef'
+          readOnly: true
+          nullable: true
+      required:
+      - cancelled_rounds
+      - constructor_champion
+      - driver_champion
+      - name
+      - rounds_count
+      - sprint_rounds
+      - year
+    SessionResults:
+      oneOf:
+      - $ref: '#/components/schemas/RaceSessionResults'
+      - $ref: '#/components/schemas/QualifyingSessionResults'
+    StandingRow:
+      type: object
+      properties:
+        position:
+          type: integer
+          nullable: true
+        position_text:
+          type: string
+        entity:
+          $ref: '#/components/schemas/Entity'
+        points:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+        wins:
+          type: integer
+        podiums:
+          type: integer
+        gap_to_leader:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+      required:
+      - entity
+      - gap_to_leader
+      - podiums
+      - points
+      - position
+      - position_text
+      - wins
+    Standings:
+      type: object
+      properties:
+        season:
+          type: integer
+          nullable: true
+          description: Season year.
+        after_round:
+          type: integer
+          nullable: true
+        rounds:
+          type: array
+          items:
+            type: integer
+          description: Rounds that have a table for this season.
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandingRow'
+      required:
+      - after_round
+      - results
+      - rounds
+      - season
+    TeamRef:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        color:
+          type: string
+          nullable: true
+          description: '#rrggbb or null (neutral colour).'
+      required:
+      - color
+      - name
+      - slug
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
