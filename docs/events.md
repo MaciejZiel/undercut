@@ -14,6 +14,12 @@ version, never copies of data. Delivery is at-least-once, so every handler must 
 | `StandingsUpdated` | `season:<year>` | `season_id`, `after_round` | standings | web cache |
 | `PredictionsClosed` | `round:<id>` | `round_id` | scheduler | predictions |
 | `PredictionsScored` | `round:<id>` | `round_id` | predictions | notifications, web cache |
+| `UserDeleted` | `user:<id>` | `user_id` | accounts | predictions (anonymise / clean up what the user owned) |
 | `AnalyticsImported` | `session:<id>` | `session_id` | ingestion | web cache |
 
 "web cache" = a handler that asks the Next.js frontend to revalidate tagged pages.
+
+`UserDeleted` is published in the same transaction that deletes the account. The user row is already
+gone when handlers run, so they only get the id: they must be idempotent and must not look the user
+up. Rows with a database-level cascade are removed by the deletion itself; the event exists for data
+that must outlive the user in anonymised form (e.g. predictions kept in rankings as "Deleted user").

@@ -5,6 +5,7 @@ description = "Undercut backend (Django modular monolith)"
 requires-python = ">=3.13"
 dependencies = [
     "django>=6.0,<7",
+    "django-allauth[headless]==65.19.6",
     "django-environ>=0.14.0",
     "django-redis>=7.0.0",
     "djangorestframework>=3.16",
@@ -111,10 +112,25 @@ forbidden_modules = [
 allow_indirect_imports = true
 
 [[tool.importlinter.contracts]]
+name = "accounts does not reach into other modules' models"
+type = "forbidden"
+source_modules = ["apps.accounts"]
+forbidden_modules = [
+    "apps.catalog.models",
+    "apps.ingestion.models",
+    "apps.standings.models",
+    "apps.analytics.models",
+    "apps.predictions.models",
+    "apps.notifications.models",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
 name = "notifications does not reach into other modules' models"
 type = "forbidden"
 source_modules = ["apps.notifications"]
 forbidden_modules = [
+    "apps.accounts.models",
     "apps.catalog.models",
     "apps.ingestion.models",
     "apps.standings.models",

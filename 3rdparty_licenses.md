@@ -15,3 +15,8 @@
 | https://github.com/TanStack/query | @tanstack/react-query | MIT | https://github.com/TanStack/query/blob/main/LICENSE |
 | https://github.com/openapi-ts/openapi-typescript | openapi-fetch, openapi-typescript | MIT | https://github.com/openapi-ts/openapi-typescript/blob/main/LICENSE |
 | https://github.com/tailwindlabs/tailwindcss | tailwindcss | MIT | https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE |
+| https://github.com/pennersr/django-allauth | django-allauth[headless] 65.19.6 | MIT | https://github.com/pennersr/django-allauth/blob/main/LICENSE |
+| https://github.com/jpadilla/pyjwt | PyJWT 2.15.1 (allauth headless, transitive) | MIT | https://github.com/jpadilla/pyjwt/blob/master/LICENSE |
+| https://github.com/pyca/cryptography | cryptography 50.0.2 (PyJWT crypto extra, transitive) | Apache-2.0 OR BSD-3-Clause | https://github.com/pyca/cryptography/blob/main/LICENSE |
+| https://github.com/python-cffi/cffi | cffi 2.1.1 (cryptography, transitive) | MIT-0 | https://github.com/python-cffi/cffi/blob/main/LICENSE |
+| https://github.com/eliben/pycparser | pycparser 3.11 (cffi, transitive) | BSD-3-Clause | https://github.com/eliben/pycparser/blob/main/LICENSE |

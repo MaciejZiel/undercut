@@ -30,6 +30,9 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "rest_framework",
     "drf_spectacular",
+    "allauth",
+    "allauth.account",
+    "allauth.headless",
     # Undercut modules. Import rules between them are enforced by import-linter.
     "apps.accounts",
     "apps.events",
@@ -43,6 +46,11 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = "accounts.User"
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -51,6 +59,8 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+    "apps.accounts.middleware.DemoRestrictionsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -143,3 +153,63 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_REFERRER_POLICY = "same-origin"
+
+
+# --- Accounts (django-allauth in headless mode, session based) ---------------------------------
+# Google login (FR-502) is not configured: it needs allauth's "socialaccount" extra, which pulls
+# in requests -> certifi (MPL-2.0, copyleft). That requires written approval first.
+ACCOUNT_ADAPTER = "apps.accounts.adapter.AccountAdapter"
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
+ACCOUNT_SIGNUP_FORM_CLASS = "apps.accounts.forms.SignupExtraFieldsForm"
+# "optional": an unverified account may log in and browse, but cannot act (see can_predict).
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+ACCOUNT_UNIQUE_EMAIL = True
+
+
+def ACCOUNT_USER_DISPLAY(user):  # noqa: N802 (allauth setting name)
+    """Name used in e-mails: the public display name, never the generated username."""
+    return user.display_name or "there"
+
+
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Undercut] "
+# Login attempts: 5 failures per 15 minutes per IP and per account (cache based; the local-memory
+# cache is enough on a single-host deployment).
+ACCOUNT_RATE_LIMITS = {"login_failed": "5/15m/ip,5/15m/key"}
+# Password reset links are valid for one hour (the allauth token generator uses this setting).
+PASSWORD_RESET_TIMEOUT = 60 * 60
+
+HEADLESS_ONLY = True
+HEADLESS_CLIENTS = ("browser",)
+HEADLESS_FRONTEND_URLS = {
+    "account_confirm_email": "/account/verify-email/{key}",
+    "account_reset_password": "/account/password/reset",
+    "account_reset_password_from_key": "/account/password/reset/key/{key}",
+    "account_signup": "/account/signup",
+}
+# Same knob as DRF_NUM_PROXIES: number of trusted reverse proxies in front of Django. Needed so the
+# login rate limit sees the visitor's IP and not the proxy's.
+ALLAUTH_TRUSTED_PROXY_COUNT = env.int("DRF_NUM_PROXIES", default=0) or 0
+
+# --- E-mail ------------------------------------------------------------------------------------
+# Django 6.1 MAILERS (the EMAIL_* settings are deprecated). Console in DEBUG, SMTP otherwise; the
+# SMTP server comes from env vars. Tests swap in the in-memory backend automatically.
+if DEBUG:
+    MAILERS = {"default": {"BACKEND": "django.core.mail.backends.console.EmailBackend"}}
+else:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "OPTIONS": {
+                "host": env("EMAIL_HOST", default="localhost"),
+                "port": env.int("EMAIL_PORT", default=587),
+                "username": env("EMAIL_HOST_USER", default=""),
+                "password": env("EMAIL_HOST_PASSWORD", default=""),
+                "use_tls": env.bool("EMAIL_USE_TLS", default=True),
+                "use_ssl": env.bool("EMAIL_USE_SSL", default=False),
+                "timeout": env.int("EMAIL_TIMEOUT", default=10),
+            },
+        }
+    }
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Undercut <noreply@localhost>")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
