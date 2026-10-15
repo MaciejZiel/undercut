@@ -13,7 +13,8 @@ Publiczny serwis dla fanów F1 na prawdziwych danych od 1950 r. Flagowy projekt 
 | 4 | Harmonogram | Własny scheduler, który publikuje zdarzenia do outboxa |
 | 5 | Moduły | `catalog`, `ingestion`, `standings`, `analytics`, `accounts`, `predictions`, `notifications`, `events`. Moduły nie importują swoich modeli nawzajem (`import-linter` w CI) |
 | 6 | Zdarzenia | Cienkie (identyfikatory + wersja), handlery idempotentne, dostarczenie „co najmniej raz”, kolejność per klucz (np. per sesja) |
-| 7 | Hosting | DigitalOcean, jeden droplet, Docker Compose, Postgres w kontenerze, backup `pg_dump` do Spaces |
+| 7 | Hosting | Domowy serwer (Termux, aarch64) za Cloudflare Tunnel i nginx, pod `undercut.maciejzielinski.dev`. Bez Dockera na produkcji: Postgres 18 natywnie, procesy pod pętlami nadzorczymi, Next.js jako serwer Node. Compose tylko do dev i CI. Bez Redisa i Caddy. Backup `pg_dump` do `~/backups/`. Zasady hosta: `~/hosting/RULES.md`, `DEPLOYMENT.md` |
+| 7a | Licencje | Repo prywatne (nie firmowe), więc `psycopg` (LGPL-3.0) jest akceptowany. Gdyby projekt stał się firmowy, wymaga zgody |
 | 8 | Dane czasowe | Zwykłe tabele Postgresa, indeks `(session_id, driver_id, ts)`. Partycjonowanie tylko dla `LocationSample`, jeśli wejdzie |
 | 9 | Auth | Sesje Django + CSRF, `django-allauth` headless, 2FA admina (`django-otp`) |
 | 10 | Nazwa | Undercut (do zmiany w każdej chwili) |
