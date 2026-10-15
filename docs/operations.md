@@ -147,6 +147,7 @@ anonymous throttle (60 requests per minute per address) answers 429, which count
 |---|---|
 | `import_practice [--since 2023] [--all]` | practice results (FP1 to FP3) for sessions that have none, from OpenF1 `session_result`. The scheduler does the same hourly after each practice session |
 | `import_circuit_outlines [--year Y] [--force]` | draws the track outline of every circuit raced since 2023 from one lap of the race winner (3 requests per circuit). Done automatically after a race's analytics import |
+| `import_circuit_geojson [--force]` | draws the outline of circuits OpenF1 has no data for (before 2023) from the bundled `f1-circuits` GeoJSON (MIT, `backend/apps/catalog/data/`). No network. Current layout only and no start mark. Circuits not in the file (defunct tracks) stay without an outline. Run once after `import_circuit_outlines` |
 | `resync_round <year> <round>` | queues a fresh results, practice and analytics sync of one round |
 
 The circuit page derives the lap record (fastest race lap on record, Jolpica data from 2004) and, until a real length

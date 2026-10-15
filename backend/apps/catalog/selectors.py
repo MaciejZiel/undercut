@@ -583,6 +583,9 @@ def circuit_outline(circuit: Circuit) -> dict | None:
         "width": outline["width"],
         "height": outline["height"],
         "points": outline["points"],
+        # Outlines drawn from one OpenF1 lap know where the start line is; the others do not say.
+        "marker": outline.get("marker", True),
+        "origin": outline.get("origin", "openf1"),
     }
 
 

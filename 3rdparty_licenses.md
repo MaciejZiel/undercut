@@ -38,5 +38,6 @@
 | https://github.com/typeddjango/djangorestframework-stubs | djangorestframework-stubs (dev, type information for pyright) | MIT | https://github.com/typeddjango/djangorestframework-stubs/blob/master/LICENSE.txt |
 | https://github.com/python/typeshed | types-PyYAML (dev, transitive dependency of the Django stubs) | Apache-2.0 | https://github.com/python/typeshed/blob/main/LICENSE |
 | https://github.com/google/osv-scanner | osv-scanner (CI only, binary) | Apache-2.0 | https://github.com/google/osv-scanner/blob/main/LICENSE |
-| https://github.com/googlefonts/dm-fonts | DM Serif Display (font, served by next/font/google) | OFL-1.1 | https://openfontlicense.org/open-font-license-official-text/ |
-| https://github.com/googlefonts/manrope | Manrope (font, served by next/font/google) | OFL-1.1 | https://openfontlicense.org/open-font-license-official-text/ |
+| https://github.com/Omnibus-Type/Archivo | Archivo (font, served by next/font/google) | OFL-1.1 | https://openfontlicense.org/open-font-license-official-text/ |
+| https://github.com/IBM/plex | IBM Plex Mono (font, served by next/font/google) | OFL-1.1 | https://openfontlicense.org/open-font-license-official-text/ |
+| https://github.com/bacinger/f1-circuits | f1-circuits (track centre lines as GeoJSON, backend/apps/catalog/data/f1-circuits.geojson) | MIT | https://github.com/bacinger/f1-circuits/blob/master/LICENSE.md |

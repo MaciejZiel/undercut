@@ -212,6 +212,15 @@ class CircuitOutlineSerializer(serializers.Serializer):
         child=serializers.ListField(child=serializers.IntegerField(), min_length=2, max_length=2),
         help_text="Closed racing line, [x, y] pairs; y grows downwards (SVG).",
     )
+    marker = serializers.BooleanField(
+        default=True,
+        help_text="False when the start line is not known, so none should be drawn.",
+    )
+    origin = serializers.ChoiceField(
+        choices=["openf1", "geojson"],
+        default="openf1",
+        help_text="openf1: one lap of a race winner; geojson: current layout (f1-circuits, MIT).",
+    )
 
 
 class CircuitDetailSerializer(serializers.Serializer):

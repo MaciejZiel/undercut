@@ -79,7 +79,12 @@ def test_outline_is_exposed_only_when_it_has_points():
         "width": 1000,
         "height": 400,
         "points": [[0, 0], [1000, 400]],
+        "marker": True,
+        "origin": "openf1",
     }
+    unmarked = {**shape, "marker": False, "origin": "geojson"}
+    drawn = selectors.circuit_outline(f.CircuitFactory(outline=unmarked))
+    assert drawn["marker"] is False and drawn["origin"] == "geojson"
 
 
 def test_circuit_page_serialises_record_length_and_outline(client):
@@ -91,7 +96,13 @@ def test_circuit_page_serialises_record_length_and_outline(client):
     body = client.get("/api/v1/circuits/suzuka/").json()
     assert body["lap_record_ms"] == 90_000 and body["lap_record_year"] == 2023
     assert body["length_m"] == 5800 and body["length_is_estimate"] is True
-    assert body["outline"] == {"width": 1000, "height": 600, "points": [[1, 2], [3, 4]]}
+    assert body["outline"] == {
+        "width": 1000,
+        "height": 600,
+        "points": [[1, 2], [3, 4]],
+        "marker": True,
+        "origin": "openf1",
+    }
 
 
 def test_round_page_uses_the_estimated_length(client):

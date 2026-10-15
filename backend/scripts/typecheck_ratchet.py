@@ -1,9 +1,9 @@
 """Type-check gate that only ever tightens (NFR-501).
 
-mypy is not used (its dependency `pathspec` is MPL-2.0); pyright is. With the Django stubs it still reports
-some false positives on the ORM, so a zero-error gate is not realistic. Instead the number of errors
-may never rise above the committed baseline, and a lower number asks for the baseline to be
-lowered, so the count only goes down.
+mypy is not used (its dependency `pathspec` is MPL-2.0); pyright is. With the Django stubs it
+still reports some false positives on the ORM, so a zero-error gate is not realistic. Instead the
+number of errors may never rise above the committed baseline, and a lower number asks for the
+baseline to be lowered, so the count only goes down.
 
 Usage: python scripts/typecheck_ratchet.py [--update]   (run from backend/)
 """

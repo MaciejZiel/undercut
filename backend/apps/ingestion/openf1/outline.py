@@ -68,9 +68,11 @@ def path_length(points: list[tuple[float, float]]) -> float:
     return sum(math.dist(a, b) for a, b in zip(points, points[1:], strict=False))
 
 
-def build_outline(samples: list[tuple[float, float]]) -> dict | None:
+def build_outline(
+    samples: list[tuple[float, float]], *, min_samples: int = MIN_SAMPLES
+) -> dict | None:
     """Closed, simplified, normalised outline from raw x/y samples of one lap; None if unusable."""
-    if len(samples) < MIN_SAMPLES:
+    if len(samples) < min_samples:
         return None
     xs, ys = [p[0] for p in samples], [p[1] for p in samples]
     width, height = max(xs) - min(xs), max(ys) - min(ys)
