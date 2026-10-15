@@ -73,6 +73,9 @@ class Circuit(models.Model):
     lap_record_ms = models.PositiveIntegerField(null=True, blank=True)
     lap_record_driver = models.CharField(max_length=200, blank=True)
     lap_record_year = models.PositiveSmallIntegerField(null=True, blank=True)
+    # Track outline from one OpenF1 lap: {"width", "height", "points": [[x, y], ...], "length_m",
+    # "source": {"year", "round"}}. Written by the ingestion module, never by hand.
+    outline = models.JSONField(null=True, blank=True)
 
     class Meta:
         ordering = ["name"]

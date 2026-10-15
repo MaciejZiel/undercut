@@ -162,6 +162,8 @@ class CircuitDetailView(PublicDetailView):
         if circuit is None:
             get_object_or_404(Circuit, slug=slug)  # raises the 404
         winners = selectors.circuit_winners(circuit)
+        record = selectors.circuit_lap_record(circuit)
+        length_m, length_is_estimate = selectors.circuit_length(circuit)
         data = {
             "slug": circuit.slug,
             "name": circuit.name,
@@ -170,10 +172,12 @@ class CircuitDetailView(PublicDetailView):
             "lat": None if circuit.lat is None else float(circuit.lat),
             "lng": None if circuit.lng is None else float(circuit.lng),
             "timezone": circuit.timezone or None,
-            "length_m": circuit.length_m,
-            "lap_record_ms": circuit.lap_record_ms,
-            "lap_record_driver": circuit.lap_record_driver or None,
-            "lap_record_year": circuit.lap_record_year,
+            "length_m": length_m,
+            "length_is_estimate": length_is_estimate,
+            "lap_record_ms": record["time_ms"] if record else None,
+            "lap_record_driver": record["driver"] if record else None,
+            "lap_record_year": record["year"] if record else None,
+            "outline": selectors.circuit_outline(circuit),
             "gp_count": circuit.gp_count,
             "last_gp_date": circuit.last_gp_date,
             "winners": winners,

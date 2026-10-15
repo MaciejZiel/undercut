@@ -533,6 +533,57 @@ def most_wins(winners: list[dict], key: str) -> list[dict]:
     return [{**ref, "wins": count} for ref, count in counts.values() if count == top]
 
 
+def circuit_lap_record(circuit: Circuit) -> dict | None:
+    """The fastest race lap on record here. A hand-entered record on the circuit wins.
+
+    Derived from the fastest-lap result of every race held on the circuit (Jolpica has them from
+    2004). Layouts change over the years, so the year is part of the answer.
+    """
+    if circuit.lap_record_ms:
+        return {
+            "time_ms": circuit.lap_record_ms,
+            "driver": circuit.lap_record_driver or None,
+            "year": circuit.lap_record_year,
+        }
+    best = (
+        Result.objects.filter(
+            session__round__circuit=circuit,
+            session__type=RACE,
+            fastest_lap_rank=1,
+            best_lap_ms__isnull=False,
+        )
+        .select_related("driver", "session__round__season")
+        .order_by("best_lap_ms", "-session__round__date")
+        .first()
+    )
+    if best is None:
+        return None
+    return {
+        "time_ms": best.best_lap_ms,
+        "driver": f"{best.driver.given_name} {best.driver.family_name}",
+        "year": best.session.round.season.year,
+    }
+
+
+def circuit_length(circuit: Circuit) -> tuple[int | None, bool]:
+    """(metres, is_estimate). The length measured on the outline is rounded to 100 m."""
+    if circuit.length_m:
+        return circuit.length_m, False
+    measured = (circuit.outline or {}).get("length_m")
+    return (round(measured / 100) * 100, True) if measured else (None, False)
+
+
+def circuit_outline(circuit: Circuit) -> dict | None:
+    outline = circuit.outline
+    if not outline or not outline.get("points"):
+        return None
+    return {
+        "width": outline["width"],
+        "height": outline["height"],
+        "points": outline["points"],
+    }
+
+
 def driver_ref(driver: Driver) -> dict:
     return {
         "slug": driver.slug,
@@ -621,7 +672,7 @@ def round_detail(round_: Round) -> dict:
             "name": round_.circuit.name,
             "country": round_.circuit.country or None,
             "locality": round_.circuit.locality or None,
-            "length_m": round_.circuit.length_m,
+            "length_m": circuit_length(round_.circuit)[0],
         },
         "sessions": [
             {

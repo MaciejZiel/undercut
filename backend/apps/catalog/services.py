@@ -586,3 +586,8 @@ def drivers_by_code(code: str) -> list[DriverRef]:
     if not code:
         return []
     return _driver_refs(m.Driver.objects.filter(code__iexact=code).order_by("pk"))
+
+
+def set_circuit_outline(circuit_id: int, outline: dict) -> None:
+    """Store a track outline (see apps.ingestion.openf1.outline for the format)."""
+    m.Circuit.objects.filter(pk=circuit_id).update(outline=outline)

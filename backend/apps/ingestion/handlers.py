@@ -15,6 +15,7 @@ from .jolpica import sync
 from .jolpica.client import shared_client
 from .openf1.client import OpenF1Client
 from .openf1.importer import run_import
+from .openf1.outline import import_outlines
 
 log = logging.getLogger(__name__)
 
@@ -70,6 +71,8 @@ def on_analytics_due(event) -> None:
         dry_run=False,
     )
     run = summary.run
+    if ref.type == "RACE" and run.status != run.Status.FAILED:
+        _draw_outline(ref)
     if run.status == run.Status.FAILED:
         raise RuntimeError(f"OpenF1 import failed for session {ref.id}")  # retried by the outbox
     if run.errors:
@@ -78,6 +81,14 @@ def on_analytics_due(event) -> None:
         log.warning(
             "OpenF1 import for session %s finished with %s problem(s)", ref.id, len(run.errors)
         )
+
+
+def _draw_outline(ref) -> None:
+    """Give a circuit its track outline after its first analysed race. Never fails the event."""
+    try:
+        import_outlines(OpenF1Client(), years=[ref.year], round_number=ref.round)
+    except Exception:
+        log.exception("Track outline for %s round %s failed", ref.year, ref.round)
 
 
 def on_session_results_due(event) -> None:

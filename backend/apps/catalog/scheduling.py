@@ -153,3 +153,19 @@ def sessions_ended_between(
         round__round__isnull=False,
     )
     return [_ref(s) for s in sessions]
+
+
+@dataclass(frozen=True)
+class OutlineTarget:
+    circuit_id: int
+    slug: str
+    has_outline: bool
+
+
+def outline_target(session_id: int) -> OutlineTarget | None:
+    """The circuit of a session and whether it already has a track outline."""
+    session = m.Session.objects.filter(pk=session_id).select_related("round__circuit").first()
+    if session is None:
+        return None
+    circuit = session.round.circuit
+    return OutlineTarget(circuit.id, circuit.slug, bool(circuit.outline))

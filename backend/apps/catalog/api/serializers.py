@@ -205,6 +205,15 @@ class MostWinsTeamSerializer(TeamRefSerializer):
     wins = serializers.IntegerField()
 
 
+class CircuitOutlineSerializer(serializers.Serializer):
+    width = serializers.IntegerField(help_text="SVG viewBox width (the outline fits 0..1000).")
+    height = serializers.IntegerField()
+    points = serializers.ListField(
+        child=serializers.ListField(child=serializers.IntegerField(), min_length=2, max_length=2),
+        help_text="Closed racing line, [x, y] pairs; y grows downwards (SVG).",
+    )
+
+
 class CircuitDetailSerializer(serializers.Serializer):
     slug = serializers.CharField()
     name = serializers.CharField()
@@ -214,9 +223,15 @@ class CircuitDetailSerializer(serializers.Serializer):
     lng = serializers.FloatField(allow_null=True)
     timezone = serializers.CharField(allow_null=True)
     length_m = serializers.IntegerField(allow_null=True)
-    lap_record_ms = serializers.IntegerField(allow_null=True)
+    length_is_estimate = serializers.BooleanField(
+        help_text="True when the length was measured on the outline (rounded to 100 m)."
+    )
+    lap_record_ms = serializers.IntegerField(
+        allow_null=True, help_text="Fastest race lap on record."
+    )
     lap_record_driver = serializers.CharField(allow_null=True)
     lap_record_year = serializers.IntegerField(allow_null=True)
+    outline = CircuitOutlineSerializer(allow_null=True)
     gp_count = serializers.IntegerField()
     last_gp_date = serializers.DateField(allow_null=True)
     winners = CircuitWinnerSerializer(many=True, help_text="Newest first.")
