@@ -21,7 +21,7 @@ User = get_user_model()
 @pytest.fixture
 def catalog():
     DriverFactory(given_name="Max", family_name="Verstappen", slug="max-verstappen")
-    DriverFactory(given_name="Lando", family_name="Norris", slug="lando-norris")
+    DriverFactory(given_name="Lando", family_name="Norris", slug="norris")
     DriverFactory(given_name="Someone", family_name="Else", slug="someone-else")
     ConstructorFactory(slug="red-bull")
     ConstructorFactory(slug="mclaren")
@@ -56,7 +56,7 @@ def test_seed_creates_a_locked_demo_user(demo):
     assert not demo.has_usable_password()
     assert demo.email == ""
     assert not (demo.is_staff or demo.is_superuser)
-    assert favorites(demo) == ["lando-norris", "max-verstappen", "mclaren", "red-bull"]
+    assert favorites(demo) == ["max-verstappen", "mclaren", "norris", "red-bull"]
 
 
 def test_seed_is_idempotent(demo):
@@ -179,7 +179,7 @@ def test_reset_restores_the_starting_favorites(demo):
     Favorite.objects.filter(user=demo).delete()
     Favorite.objects.create(user=demo, driver=services_driver("someone-else"))
     services.reset_demo_account()
-    assert favorites(demo) == ["lando-norris", "max-verstappen", "mclaren", "red-bull"]
+    assert favorites(demo) == ["max-verstappen", "mclaren", "norris", "red-bull"]
 
 
 def services_driver(slug):

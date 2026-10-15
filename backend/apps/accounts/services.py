@@ -30,7 +30,7 @@ THEMES = ("system", "light", "dark")
 DEMO_USERNAME = "demo"
 DEMO_DISPLAY_NAME = "Demo"
 # Starting favourites of the demo account (slugs; entries missing from the catalog are skipped).
-DEMO_FAVORITE_DRIVERS = ("max-verstappen", "lando-norris", "charles-leclerc")
+DEMO_FAVORITE_DRIVERS = ("max-verstappen", "norris", "leclerc")
 DEMO_FAVORITE_CONSTRUCTORS = ("red-bull", "mclaren")
 
 FavoriteKind = Literal["driver", "constructor"]
