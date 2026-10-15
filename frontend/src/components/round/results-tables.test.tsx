@@ -136,4 +136,42 @@ describe("QualifyingResultsTable", () => {
     render(<QualifyingResultsTable caption="Qualifying" results={[q("a", { q2_ms: null, q3_ms: null })]} />);
     expect(screen.getAllByRole("columnheader").map((h) => h.textContent)).toEqual(["Pos", "Driver", "Team", "Time"]);
   });
+
+  it("draws a cut line where the knocked-out session changes", () => {
+    const { container } = render(
+      <QualifyingResultsTable
+        caption="Qualifying"
+        results={[
+          q("a"),
+          q("b", { position: 2, eliminated_in: null }),
+          q("c", { position: 3, q3_ms: null, eliminated_in: "Q2" }),
+          q("d", { position: 4, q2_ms: null, q3_ms: null, eliminated_in: "Q1" }),
+        ]}
+      />,
+    );
+    const cuts = Array.from(container.querySelectorAll('tr[aria-hidden="true"]')).map((r) => r.textContent);
+    expect(cuts).toEqual(["Q3 cut", "Q2 cut"]);
+  });
+});
+
+describe("gap column", () => {
+  it("draws a bar for cars on the winner's lap and none for lapped or retired cars", () => {
+    const { container } = render(
+      <RaceResultsTable
+        caption="r"
+        results={[
+          race({ slug: "a" }),
+          race({ slug: "b", position: 2, position_text: "2", time_ms: 5527123 + 8000 }),
+          race({ slug: "c", position: 3, position_text: "3", time_ms: 5527123 + 16000 }),
+          race({ slug: "d", position: 15, position_text: "15", laps: 56, status: "Lapped", time_ms: 5600000 }),
+          race({ slug: "e", position: null, position_text: "R", laps: 30, status: "Engine", time_ms: null }),
+        ]}
+      />,
+    );
+    const bars = container.querySelectorAll('span[aria-hidden="true"].bg-accent\\/40');
+    expect(bars).toHaveLength(2);
+    expect((bars[1] as HTMLElement).style.width).toBe("100%");
+    expect((bars[0] as HTMLElement).style.width).toBe("50%");
+    expect(screen.getByText("Engine, lap 30")).toBeInTheDocument();
+  });
 });

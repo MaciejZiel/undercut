@@ -19,11 +19,13 @@ Team colours are data: a 3 px bar beside a name, never a panel colour.
 
 ## Type
 
-DM Serif Display (`.display` for page titles, `.heading` for section titles, `.numeral` for big figures) and Manrope for everything else, with tabular figures wherever digits line up (`.mono`, tables). Labels are sentence case. Both fonts come through `next/font/google`, so there is no external request at runtime.
+Manrope for everything, DM Serif Display only for proper names: race names, driver, team and circuit names on their own pages, and the "this day in F1" sentence (`.display`). Section titles (`.heading`) are Manrope 800 at 20 to 22 px. Big figures (`.numeral`, countdown, stats) are Manrope 800 with tabular digits, so they read like timing. Labels are sentence case. Both fonts come through `next/font/google`, so there is no external request at runtime.
 
 ## Layout
 
-Content width 1240 px, gutters 16 / 24 / 40 px. The home page is two columns (about 1.9 : 1) for the weekend, then two columns for the last race and the championship. Different information has different forms: the schedule is a card, results are tables, the podium is a numbered list, the calendar is a hairline list. No rows of equal tiles.
+Content width 1240 px, gutters 16 / 24 / 40 px. The home page is two columns (about 1.9 : 1) for the weekend, then two columns for the last race and the championship. Different information has different forms: the schedule is the one card (plus the yellow invitation), results are tables, the podium is a numbered list, the calendar is a hairline list grouped by month. Everything else sits on the page with hairlines, not in tinted panels. No rows of equal tiles. Radii are 8 px at most.
+
+Result tables carry the information of a race: the gap column has a bar drawn to scale, laps down and retirements are words, and below 640 px the rows become two-line list items instead of scrolling sideways (`table.stack` in `globals.css`). The round page has two levels of navigation: sessions, then views (Results, Positions, Lap times, Tyres, Pit stops, Weather, Race control, Replay). Old `?view=analysis` and `?view=strategy` links still work.
 
 ## Imagery
 

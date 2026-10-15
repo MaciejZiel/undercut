@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { EntityHeader } from "@/components/ui/entity-header";
 import { ConstructorLink, Nationality } from "@/components/ui/entity-links";
 import { StatTiles } from "@/components/ui/stat-tiles";
+import { DriverFormRow } from "@/components/catalog/driver-form";
 import { DriverLastResultsTable, DriverSeasonsTable } from "@/components/catalog/driver-tables";
 import { getDriver } from "@/lib/api/queries";
 import { formatDate, formatInteger, formatPoints, fullName } from "@/lib/format";
@@ -77,7 +78,7 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
         <FavoriteButton kind="driver" slug={driver.slug} name={name} />
         <Link
           href={buildHref("/compare", { a: driver.slug })}
-          className="t-fast inline-block rounded-sm border border-line px-3.5 py-2 text-sm font-semibold hover:border-accent"
+          className="t-fast inline-block rounded-md border border-line-strong px-3.5 py-2 text-sm font-bold text-accent hover:border-accent hover:bg-surface"
         >
           Compare with&hellip;
         </Link>
@@ -98,6 +99,11 @@ async function DriverDetail({ params }: { params: PageProps<"/drivers/[slug]">["
           },
         ]}
       />
+      {seasons[0] && (
+        <Suspense fallback={null}>
+          <DriverFormRow slug={driver.slug} year={seasons[0].year} />
+        </Suspense>
+      )}
       <section aria-labelledby="seasons-h" className="mb-10">
         <h2 id="seasons-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
           Seasons

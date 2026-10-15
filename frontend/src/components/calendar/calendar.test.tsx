@@ -103,4 +103,21 @@ describe("CalendarView", () => {
     );
     expect(screen.getByText("Time to be confirmed")).toBeInTheDocument();
   });
+
+  it("groups rounds under their month and names the winner of a completed round", () => {
+    mockFetch({ "GET /api/v1/auth/me/": { body: ME_ANON } });
+    renderWithProviders(
+      <CalendarView
+        year={2099}
+        rounds={[
+          entry({ round: 1, name: "March GP", date: "2099-03-15", status: "completed", winner: { driver: { slug: "ann", name: "Ann Fast", code: null, number: null }, team: { slug: "t", name: "Team", color: "#ff0000" } } }),
+          entry({ round: 2, name: "April GP", date: "2099-04-05" }),
+        ]}
+      />,
+    );
+    expect(screen.getByRole("heading", { name: "March" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "April" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ann Fast" })).toHaveAttribute("href", "/drivers/ann");
+    expect(screen.queryByRole("link", { name: /Add to calendar/ })).toHaveAttribute("href", "/api/v1/calendar/ics/?year=2099&round=2");
+  });
 });
