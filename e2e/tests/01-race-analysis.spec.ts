@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { trackCspViolations } from "../helpers/csp";
 
 test("dashboard to race analysis: positions chart renders and has a table alternative", async ({ page }) => {
+  const violations = trackCspViolations(page);
   await page.goto("/");
   const lastRace = page.getByRole("link", { name: /Full results and analysis/ });
   await expect(lastRace).toBeVisible();
@@ -30,4 +32,5 @@ test("dashboard to race analysis: positions chart renders and has a table altern
 
   await page.getByRole("button", { name: "Show as chart" }).click();
   await expect(page.getByRole("img", { name: /position by lap/i })).toBeVisible();
+  expect(violations, violations.join("\n")).toEqual([]);
 });
