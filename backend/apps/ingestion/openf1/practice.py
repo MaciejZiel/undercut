@@ -99,8 +99,7 @@ def import_practice_session(
         resolution = matching.resolve_drivers(ms.year, drivers)
         rows, problems = build_rows(ms.year, results, drivers, resolution.mapping)
         outcome.problems = problems + [
-            f"car {item.get('driver_number')} ({item.get('full_name') or item.get('name_acronym')}) "
-            f"is not in the catalog (practice-only driver)"
+            f"car {item.get('driver_number')} ({item.get('full_name')}) is not in the catalog"
             for item in resolution.unmatched
         ]
         counts = catalog.upsert_practice_results(ms.session_id, rows)
