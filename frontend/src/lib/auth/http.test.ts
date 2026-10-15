@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mockFetch } from "@/test/fetch-mock";
 import { HttpError, apiRequest, parseError } from "./http";
 import { describeError, formErrors, rateLimitMessage } from "./messages";
-import { loginHref, safeNext } from "./redirect";
+import { decodeKey, loginHref, safeNext } from "./redirect";
 
 function clearCookies() {
   for (const c of document.cookie.split(";")) document.cookie = `${c.split("=")[0].trim()}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
@@ -99,5 +99,23 @@ describe("redirect helpers", () => {
   it("keeps the target in the login link", () => {
     expect(loginHref("/predict/2026/3?x=1")).toBe("/login?next=%2Fpredict%2F2026%2F3%3Fx%3D1");
     expect(loginHref("//evil.com")).toBe("/login");
+  });
+});
+
+describe("decodeKey", () => {
+  it("decodes the percent-encoded key Next passes to a page", () => {
+    expect(decodeKey("MQ%3A1abc-_xyz")).toBe("MQ:1abc-_xyz");
+  });
+
+  it("leaves a plain key and a malformed one untouched", () => {
+    expect(decodeKey("MQ:1abc")).toBe("MQ:1abc");
+    expect(decodeKey("100%")).toBe("100%");
+  });
+
+  it("round-trips through the alias redirect without double encoding", () => {
+    const fromMail = "MQ:1abc";
+    const params = encodeURIComponent(fromMail); // what Next gives the alias page
+    expect(encodeURIComponent(decodeKey(params))).toBe("MQ%3A1abc");
+    expect(decodeKey(decodeKey(params))).toBe(fromMail);
   });
 });
