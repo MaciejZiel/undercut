@@ -16,6 +16,7 @@ from .jolpica.client import shared_client
 from .openf1.client import OpenF1Client
 from .openf1.importer import run_import
 from .openf1.outline import import_outlines
+from .openf1.practice import import_practice
 
 log = logging.getLogger(__name__)
 
@@ -28,6 +29,11 @@ CORRECTIONS_WINDOW = dt.timedelta(days=8)
 ANALYTICS_AFTER = dt.timedelta(hours=2)
 ANALYTICS_UNTIL = dt.timedelta(hours=24)
 ANALYTICS_TYPES = ("RACE", "SPRINT")
+
+# Practice results (OpenF1): first poll half an hour after the session, then hourly for 12 hours.
+PRACTICE_AFTER = dt.timedelta(minutes=30)
+PRACTICE_UNTIL = dt.timedelta(hours=12)
+OPENF1_FIRST_YEAR = 2023
 
 
 def results_due(now: dt.datetime):
@@ -56,6 +62,28 @@ def analytics_due(now: dt.datetime):
             key=f"session:{ref.id}",
             payload={"session_id": ref.id},
         )
+
+
+def practice_due(now: dt.datetime):
+    """One `PracticeResultsDue` per practice session per hour until its results are final."""
+    hour = now.replace(minute=0, second=0, microsecond=0)
+    for ref in scheduling.practice_awaiting_results(
+        now, after=PRACTICE_AFTER, until=PRACTICE_UNTIL, since_year=OPENF1_FIRST_YEAR
+    ):
+        yield DueEvent(
+            job=f"practice-results:{ref.id}",
+            slot=hour,
+            event_type="PracticeResultsDue",
+            key=f"session:{ref.id}",
+            payload={"session_id": ref.id},
+        )
+
+
+def on_practice_results_due(event) -> None:
+    ref = scheduling.session_ref(event.payload["session_id"])
+    if ref is None or ref.round is None or ref.year < OPENF1_FIRST_YEAR:
+        return
+    import_practice(OpenF1Client(), years=[ref.year], only_missing=False, session_id=ref.id)
 
 
 def on_analytics_due(event) -> None:
@@ -123,3 +151,5 @@ def register() -> None:
     register_provider(results_due)
     subscribe("AnalyticsDue")(on_analytics_due)
     register_provider(analytics_due)
+    subscribe("PracticeResultsDue")(on_practice_results_due)
+    register_provider(practice_due)

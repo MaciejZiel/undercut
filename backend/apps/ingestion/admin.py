@@ -62,7 +62,8 @@ class SyncRunAdmin(admin.ModelAdmin):
             else:
                 self.message_user(
                     request,
-                    f"Queued {queued['SessionResultsDue']} results sync(s) and "
+                    f"Queued {queued['SessionResultsDue']} results sync(s), "
+                    f"{queued['PracticeResultsDue']} practice import(s) and "
                     f"{queued['AnalyticsDue']} analytics import(s).",
                     messages.SUCCESS,
                 )

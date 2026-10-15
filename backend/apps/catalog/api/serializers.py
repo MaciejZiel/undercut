@@ -327,12 +327,30 @@ class QualifyingResultSerializer(serializers.Serializer):
     q1_ms = serializers.IntegerField(allow_null=True)
     q2_ms = serializers.IntegerField(allow_null=True)
     q3_ms = serializers.IntegerField(allow_null=True)
-    eliminated_in = serializers.ChoiceField(choices=["Q1", "Q2"], allow_null=True)
+    eliminated_in = serializers.ChoiceField(choices=["Q1", "Q2", "SQ1", "SQ2"], allow_null=True)
 
 
 class ResultsSessionSerializer(serializers.Serializer):
     type = serializers.CharField()
     status = serializers.CharField()
+
+
+class PracticeResultSerializer(serializers.Serializer):
+    position = serializers.IntegerField(allow_null=True)
+    driver = DriverRefSerializer()
+    team = TeamRefSerializer()
+    laps = serializers.IntegerField(allow_null=True)
+    best_lap_ms = serializers.IntegerField(allow_null=True, help_text="Null when no time was set.")
+    gap_ms = serializers.IntegerField(allow_null=True, help_text="Behind the fastest car.")
+
+
+class PracticeSessionResultsSerializer(serializers.Serializer):
+    """Practice results (FP1 to FP3)."""
+
+    year = serializers.IntegerField()
+    round = serializers.IntegerField()
+    session = ResultsSessionSerializer()
+    results = PracticeResultSerializer(many=True)
 
 
 class RaceSessionResultsSerializer(serializers.Serializer):
@@ -345,7 +363,7 @@ class RaceSessionResultsSerializer(serializers.Serializer):
 
 
 class QualifyingSessionResultsSerializer(serializers.Serializer):
-    """Qualifying results."""
+    """Qualifying and sprint qualifying results."""
 
     year = serializers.IntegerField()
     round = serializers.IntegerField()

@@ -59,6 +59,8 @@ LAST_RESULTS_LIMIT = 10
 RACE = Session.Type.RACE
 SPRINT = Session.Type.SPRINT
 QUALIFYING = Session.Type.Q
+SPRINT_QUALIFYING = Session.Type.SQ
+PRACTICE = (Session.Type.FP1, Session.Type.FP2, Session.Type.FP3)
 
 DRIVER_ORDERINGS = {
     "family_name": ("family_name", "given_name"),
@@ -702,7 +704,9 @@ def session_results(round_: Round, session: Session) -> list[dict]:
             result.constructor.slug, result.constructor.name, colors.get(result.constructor_id)
         )
 
-    if session.type == QUALIFYING:
+    if session.type in PRACTICE:
+        return _practice_results(session, team)
+    if session.type in (QUALIFYING, SPRINT_QUALIFYING):
         rows = list(
             QualifyingResult.objects.filter(session=session).select_related("driver", "constructor")
         )
@@ -716,7 +720,7 @@ def session_results(round_: Round, session: Session) -> list[dict]:
                 "q1_ms": r.q1_ms,
                 "q2_ms": r.q2_ms,
                 "q3_ms": r.q3_ms,
-                "eliminated_in": _eliminated_in(r, has_q2, has_q3),
+                "eliminated_in": _eliminated_in(r, has_q2, has_q3, session.type),
             }
             for r in rows
         ]
@@ -747,12 +751,36 @@ def _position_change(grid: int | None, position: int | None) -> int | None:
     return grid - position
 
 
-def _eliminated_in(result: QualifyingResult, has_q2: bool, has_q3: bool) -> str | None:
+def _eliminated_in(
+    result: QualifyingResult, has_q2: bool, has_q3: bool, session_type: str = QUALIFYING
+) -> str | None:
+    prefix = "SQ" if session_type == SPRINT_QUALIFYING else "Q"
     if has_q3 and result.q3_ms is None and result.q2_ms is not None:
-        return "Q2"
+        return f"{prefix}2"
     if has_q2 and result.q2_ms is None and result.q1_ms is not None:
-        return "Q1"
+        return f"{prefix}1"
     return None
+
+
+def _practice_results(session: Session, team) -> list[dict]:
+    """Practice classification: best lap, gap to the fastest car and laps driven."""
+    rows = list(
+        Result.objects.filter(session=session)
+        .select_related("driver", "constructor")
+        .order_by(F("position").asc(nulls_last=True), "driver_id")
+    )
+    leader = next((r.best_lap_ms for r in rows if r.best_lap_ms), None)
+    return [
+        {
+            "position": r.position,
+            "driver": driver_ref(r.driver),
+            "team": team(r),
+            "laps": r.laps,
+            "best_lap_ms": r.best_lap_ms,
+            "gap_ms": None if r.best_lap_ms is None or leader is None else r.best_lap_ms - leader,
+        }
+        for r in rows
+    ]
 
 
 # --- Search ----------------------------------------------------------------------------------

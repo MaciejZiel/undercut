@@ -8,6 +8,7 @@ version, never copies of data. Delivery is at-least-once, so every handler must 
 |---|---|---|---|---|
 | `CalendarSyncDue` | `calendar-sync` | `slot` | scheduler | ingestion |
 | `ResultsCorrectionsDue` | `results-corrections` | `slot` | scheduler | ingestion |
+| `PracticeResultsDue` | `practice-results:<session>` | `session_id` | scheduler | ingestion (OpenF1 `session_result`: practice classification, hourly for 12 h after a practice session ends) |
 | `DemoResetDue` | `demo-reset` | `slot` | scheduler | accounts |
 | `WeeklyHealthMailDue` | `weekly-health-mail` | `slot` | scheduler | ops (mails `ALERT_EMAIL_TO` the pipeline state; keeps the SMTP key in use) |
 | `HistoryImported` | `history` | `sync_run_id` | ingestion | standings, web cache |

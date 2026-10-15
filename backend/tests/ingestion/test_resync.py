@@ -33,7 +33,7 @@ def events():
 
 def test_queues_results_for_every_session_and_analytics_for_the_race(weekend):
     queued = services.request_round_resync(2025, 16)
-    assert queued == {"SessionResultsDue": 2, "AnalyticsDue": 1}
+    assert queued == {"SessionResultsDue": 2, "AnalyticsDue": 1, "PracticeResultsDue": 0}
     kinds = [t for t, _ in events()]
     assert kinds.count("SessionResultsDue") == 2 and kinds.count("AnalyticsDue") == 1
     race = Session.objects.get(round=weekend, type=Session.Type.RACE)
@@ -61,7 +61,9 @@ def test_unknown_round_queues_nothing(weekend):
 def test_management_command_reports_what_it_queued(weekend):
     out = StringIO()
     call_command("resync_round", "2025", "16", stdout=out)
-    assert "Queued 2 results sync(s) and 1 analytics import(s)" in out.getvalue()
+    assert (
+        "Queued 2 results sync(s), 0 practice import(s) and 1 analytics import(s)" in out.getvalue()
+    )
     with pytest.raises(CommandError, match="No round 99"):
         call_command("resync_round", "2025", "99")
 
@@ -84,3 +86,13 @@ def test_admin_page_queues_the_round(weekend, client, django_user_model):
 def test_admin_page_needs_a_staff_login(weekend, client):
     res = client.get("/admin/ingestion/syncrun/resync/")
     assert res.status_code == 302 and "login" in res["Location"]
+
+
+def test_practice_sessions_are_queued_for_the_practice_import(weekend):
+    start = dt.datetime(2025, 9, 5, 11, tzinfo=dt.UTC)
+    Session.objects.create(round=weekend, type=Session.Type.FP1, start_utc=start)
+    queued = services.request_round_resync(2025, 16)
+    assert queued["PracticeResultsDue"] == 1
+    assert queued["SessionResultsDue"] == 2
+    fp = Session.objects.get(round=weekend, type=Session.Type.FP1)
+    assert ("PracticeResultsDue", f"session:{fp.id}") in events()

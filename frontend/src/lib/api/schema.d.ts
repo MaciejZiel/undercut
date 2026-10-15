@@ -1150,9 +1150,13 @@ export interface components {
             lng: number | null;
             timezone: string | null;
             length_m: number | null;
+            /** @description True when the length was measured on the outline (rounded to 100 m). */
+            length_is_estimate: boolean;
+            /** @description Fastest race lap on record. */
             lap_record_ms: number | null;
             lap_record_driver: string | null;
             lap_record_year: number | null;
+            outline: components["schemas"]["CircuitOutline"] | null;
             gp_count: number;
             /** Format: date */
             last_gp_date: string | null;
@@ -1170,6 +1174,13 @@ export interface components {
             gp_count: number;
             /** Format: date */
             last_gp_date: string | null;
+        };
+        CircuitOutline: {
+            /** @description SVG viewBox width (the outline fits 0..1000). */
+            width: number;
+            height: number;
+            /** @description Closed racing line, [x, y] pairs; y grows downwards (SVG). */
+            points: number[][];
         };
         CircuitRef: {
             slug: string;
@@ -1371,9 +1382,11 @@ export interface components {
         /**
          * @description * `Q1` - Q1
          *     * `Q2` - Q2
+         *     * `SQ1` - SQ1
+         *     * `SQ2` - SQ2
          * @enum {string}
          */
-        EliminatedInEnum: "Q1" | "Q2";
+        EliminatedInEnum: "Q1" | "Q2" | "SQ1" | "SQ2";
         Entity: {
             id: number;
             slug: string;
@@ -1803,6 +1816,23 @@ export interface components {
             /** @description Lap numbers with a pit stop. */
             pit_laps: (number | null)[];
         };
+        PracticeResult: {
+            position: number | null;
+            driver: components["schemas"]["DriverRef"];
+            team: components["schemas"]["TeamRef"];
+            laps: number | null;
+            /** @description Null when no time was set. */
+            best_lap_ms: number | null;
+            /** @description Behind the fastest car. */
+            gap_ms: number | null;
+        };
+        /** @description Practice results (FP1 to FP3). */
+        PracticeSessionResults: {
+            year: number;
+            round: number;
+            session: components["schemas"]["ResultsSession"];
+            results: components["schemas"]["PracticeResult"][];
+        };
         PredictionError: {
             detail: string;
             code: string;
@@ -1840,7 +1870,7 @@ export interface components {
             q3_ms: number | null;
             eliminated_in: (components["schemas"]["EliminatedInEnum"] | components["schemas"]["NullEnum"]) | null;
         };
-        /** @description Qualifying results. */
+        /** @description Qualifying and sprint qualifying results. */
         QualifyingSessionResults: {
             year: number;
             round: number;
@@ -2105,7 +2135,7 @@ export interface components {
             type: components["schemas"]["TypeEnum"];
             status: string;
         };
-        SessionResults: components["schemas"]["RaceSessionResults"] | components["schemas"]["QualifyingSessionResults"];
+        SessionResults: components["schemas"]["RaceSessionResults"] | components["schemas"]["QualifyingSessionResults"] | components["schemas"]["PracticeSessionResults"];
         /**
          * @description * `system` - system
          *     * `light` - light
@@ -3868,13 +3898,17 @@ export interface operations {
         parameters: {
             query?: {
                 /**
-                 * @description RACE (default), SPRINT or Q (qualifying).
+                 * @description RACE (default), SPRINT, Q (qualifying), SQ (sprint qualifying) or FP1-FP3.
                  *
                  *     * `RACE` - RACE
                  *     * `SPRINT` - SPRINT
                  *     * `Q` - Q
+                 *     * `SQ` - SQ
+                 *     * `FP1` - FP1
+                 *     * `FP2` - FP2
+                 *     * `FP3` - FP3
                  */
-                session?: "RACE" | "SPRINT" | "Q";
+                session?: "RACE" | "SPRINT" | "Q" | "SQ" | "FP1" | "FP2" | "FP3";
             };
             header?: never;
             path: {

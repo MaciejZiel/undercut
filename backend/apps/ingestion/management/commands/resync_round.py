@@ -24,7 +24,8 @@ class Command(BaseCommand):
         except services.RoundNotFound as exc:
             raise CommandError(str(exc)) from exc
         self.stdout.write(
-            f"Queued {queued['SessionResultsDue']} results sync(s) and "
+            f"Queued {queued['SessionResultsDue']} results sync(s), "
+            f"{queued['PracticeResultsDue']} practice import(s) and "
             f"{queued['AnalyticsDue']} analytics import(s) for {options['year']} round "
             f"{options['round']}."
         )

@@ -591,3 +591,63 @@ def drivers_by_code(code: str) -> list[DriverRef]:
 def set_circuit_outline(circuit_id: int, outline: dict) -> None:
     """Store a track outline (see apps.ingestion.openf1.outline for the format)."""
     m.Circuit.objects.filter(pk=circuit_id).update(outline=outline)
+
+
+@dataclass(frozen=True)
+class PracticeData:
+    """One driver's result in a practice session, with catalog ids (no Jolpica ids needed)."""
+
+    driver_id: int
+    constructor_id: int
+    position: int | None
+    laps: int | None
+    best_lap_ms: int | None
+
+
+def upsert_practice_results(session_id: int, rows: Sequence[PracticeData]) -> Counts:
+    wanted = {
+        r.driver_id: {
+            "constructor_id": r.constructor_id,
+            "position": r.position,
+            "position_text": str(r.position) if r.position is not None else "",
+            "grid": None,
+            "laps": r.laps,
+            "status": "",
+            "time_ms": None,
+            "best_lap_ms": r.best_lap_ms,
+            "points": 0,
+            "fastest_lap_rank": None,
+        }
+        for r in rows
+    }
+    return _bulk_sync(m.Result, session_id, wanted, _RESULT_FIELDS, honour_manual=True)
+
+
+def _alnum(value: str) -> str:
+    return "".join(ch for ch in value.casefold() if ch.isalnum())
+
+
+def resolve_constructor_id(driver_id: int, year: int, team_name: str | None) -> int | None:
+    """The constructor a driver raced for in a season, for sessions that have no team in the data.
+
+    First choice is what the driver's own results that season say (qualifying and races); a
+    reserve driver with no results is matched by team name, and only when exactly one catalog
+    constructor fits ("Red Bull Racing" -> "Red Bull").
+    """
+    latest = (
+        m.Result.objects.filter(driver_id=driver_id, session__round__season__year=year)
+        .order_by("-session__round__date", "-session_id")
+        .values_list("constructor_id", flat=True)
+        .first()
+    )
+    if latest is not None:
+        return latest
+    wanted = _alnum(team_name or "")
+    if len(wanted) < 3:
+        return None
+    fits = {
+        c.pk
+        for c in m.Constructor.objects.all()
+        if len(_alnum(c.name)) >= 3 and (_alnum(c.name) in wanted or wanted in _alnum(c.name))
+    }
+    return fits.pop() if len(fits) == 1 else None

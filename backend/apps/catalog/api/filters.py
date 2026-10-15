@@ -59,9 +59,9 @@ class CircuitFiltersSerializer(serializers.Serializer):
 class ResultsQuerySerializer(serializers.Serializer):
     session = serializers.ChoiceField(
         required=False,
-        choices=["RACE", "SPRINT", "Q"],
+        choices=["RACE", "SPRINT", "Q", "SQ", "FP1", "FP2", "FP3"],
         default="RACE",
-        help_text="RACE (default), SPRINT or Q (qualifying).",
+        help_text="RACE (default), SPRINT, Q (qualifying), SQ (sprint qualifying) or FP1-FP3.",
     )
 
 

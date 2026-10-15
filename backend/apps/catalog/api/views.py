@@ -250,6 +250,7 @@ class RoundResultsView(PublicDetailView):
             serializers=[
                 serializers.RaceSessionResultsSerializer,
                 serializers.QualifyingSessionResultsSerializer,
+                serializers.PracticeSessionResultsSerializer,
             ],
             resource_type_field_name=None,
         ),
@@ -264,11 +265,12 @@ class RoundResultsView(PublicDetailView):
             "session": {"type": session.type, "status": session.status},
             "results": selectors.session_results(round_, session),
         }
-        serializer_class = (
-            serializers.QualifyingSessionResultsSerializer
-            if session.type == Session.Type.Q
-            else serializers.RaceSessionResultsSerializer
-        )
+        if session.type in (Session.Type.Q, Session.Type.SQ):
+            serializer_class = serializers.QualifyingSessionResultsSerializer
+        elif session.type in selectors.PRACTICE:
+            serializer_class = serializers.PracticeSessionResultsSerializer
+        else:
+            serializer_class = serializers.RaceSessionResultsSerializer
         return Response(serializer_class(body).data)
 
 

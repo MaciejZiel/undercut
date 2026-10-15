@@ -457,8 +457,9 @@ def test_sprint_and_qualifying_results(client):
 def test_results_errors(client):
     rnd = make_round()
     f.SessionFactory(round=rnd, type=RACE)
-    assert get(client, "/api/v1/rounds/2024/1/results/", session="FP1").status_code == 400
+    assert get(client, "/api/v1/rounds/2024/1/results/", session="FP9").status_code == 400
     assert get(client, "/api/v1/rounds/2024/1/results/", session="SPRINT").status_code == 404
+    assert get(client, "/api/v1/rounds/2024/1/results/", session="FP1").status_code == 404
     assert get(client, "/api/v1/rounds/2024/7/results/").status_code == 404
     assert get(client, "/api/v1/rounds/2024/1/results/").json()["results"] == []
 

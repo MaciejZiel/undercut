@@ -56,6 +56,24 @@ def sessions_awaiting_results(
     return [_ref(s) for s in sessions]
 
 
+def practice_awaiting_results(
+    now: dt.datetime, *, after: dt.timedelta, until: dt.timedelta, since_year: int
+) -> list[SessionRef]:
+    """Practice sessions that ended between `until` and `after` ago and are not final yet."""
+    sessions = (
+        m.Session.objects.select_related("round__season")
+        .filter(
+            type__in=("FP1", "FP2", "FP3"),
+            end_utc__lte=now - after,
+            end_utc__gte=now - until,
+            round__is_cancelled=False,
+            round__season__year__gte=since_year,
+        )
+        .exclude(status=m.Session.Status.RESULTS_FINAL)
+    )
+    return [_ref(s) for s in sessions]
+
+
 def set_session_status(session_id: int, status: str) -> bool:
     """Returns True when the status changed."""
     return bool(
@@ -169,3 +187,11 @@ def outline_target(session_id: int) -> OutlineTarget | None:
         return None
     circuit = session.round.circuit
     return OutlineTarget(circuit.id, circuit.slug, bool(circuit.outline))
+
+
+def has_results(session_id: int) -> bool:
+    """Whether the session has race-style or qualifying rows."""
+    return (
+        m.Result.objects.filter(session_id=session_id).exists()
+        or m.QualifyingResult.objects.filter(session_id=session_id).exists()
+    )

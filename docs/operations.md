@@ -140,3 +140,14 @@ INTERNAL_API_TOKEN=... python scripts/perf/load_test.py https://undercut.maciejz
 
 Run it against your own deployment only, and keep the load modest on the home server. Without `INTERNAL_API_TOKEN` the
 anonymous throttle (60 requests per minute per address) answers 429, which counts as errors.
+
+## Catalog data commands (OpenF1)
+
+| Command | What it does |
+|---|---|
+| `import_practice [--since 2023] [--all]` | practice results (FP1 to FP3) for sessions that have none, from OpenF1 `session_result`. The scheduler does the same hourly after each practice session |
+| `import_circuit_outlines [--year Y] [--force]` | draws the track outline of every circuit raced since 2023 from one lap of the race winner (3 requests per circuit). Done automatically after a race's analytics import |
+| `resync_round <year> <round>` | queues a fresh results, practice and analytics sync of one round |
+
+The circuit page derives the lap record (fastest race lap on record, Jolpica data from 2004) and, until a real length
+is entered, an estimated length measured on the outline (rounded to 100 m, flagged `length_is_estimate`).

@@ -1810,15 +1810,23 @@ paths:
           - RACE
           - SPRINT
           - Q
+          - SQ
+          - FP1
+          - FP2
+          - FP3
           type: string
           default: RACE
           minLength: 1
         description: |-
-          RACE (default), SPRINT or Q (qualifying).
+          RACE (default), SPRINT, Q (qualifying), SQ (sprint qualifying) or FP1-FP3.
 
           * `RACE` - RACE
           * `SPRINT` - SPRINT
           * `Q` - Q
+          * `SQ` - SQ
+          * `FP1` - FP1
+          * `FP2` - FP2
+          * `FP3` - FP3
       - in: path
         name: year
         schema:
@@ -2314,14 +2322,23 @@ components:
         length_m:
           type: integer
           nullable: true
+        length_is_estimate:
+          type: boolean
+          description: True when the length was measured on the outline (rounded to
+            100 m).
         lap_record_ms:
           type: integer
           nullable: true
+          description: Fastest race lap on record.
         lap_record_driver:
           type: string
           nullable: true
         lap_record_year:
           type: integer
+          nullable: true
+        outline:
+          allOf:
+          - $ref: '#/components/schemas/CircuitOutline'
           nullable: true
         gp_count:
           type: integer
@@ -2350,12 +2367,14 @@ components:
       - lap_record_year
       - last_gp_date
       - lat
+      - length_is_estimate
       - length_m
       - lng
       - locality
       - most_wins_drivers
       - most_wins_teams
       - name
+      - outline
       - slug
       - timezone
       - winners
@@ -2388,6 +2407,27 @@ components:
       - locality
       - name
       - slug
+    CircuitOutline:
+      type: object
+      properties:
+        width:
+          type: integer
+          description: SVG viewBox width (the outline fits 0..1000).
+        height:
+          type: integer
+        points:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+            maxItems: 2
+            minItems: 2
+          description: Closed racing line, [x, y] pairs; y grows downwards (SVG).
+      required:
+      - height
+      - points
+      - width
     CircuitRef:
       type: object
       properties:
@@ -2914,10 +2954,14 @@ components:
       enum:
       - Q1
       - Q2
+      - SQ1
+      - SQ2
       type: string
       description: |-
         * `Q1` - Q1
         * `Q2` - Q2
+        * `SQ1` - SQ1
+        * `SQ2` - SQ2
     Entity:
       type: object
       properties:
@@ -3995,6 +4039,53 @@ components:
       - full_name
       - pit_laps
       - positions
+    PracticeResult:
+      type: object
+      properties:
+        position:
+          type: integer
+          nullable: true
+        driver:
+          $ref: '#/components/schemas/DriverRef'
+        team:
+          $ref: '#/components/schemas/TeamRef'
+        laps:
+          type: integer
+          nullable: true
+        best_lap_ms:
+          type: integer
+          nullable: true
+          description: Null when no time was set.
+        gap_ms:
+          type: integer
+          nullable: true
+          description: Behind the fastest car.
+      required:
+      - best_lap_ms
+      - driver
+      - gap_ms
+      - laps
+      - position
+      - team
+    PracticeSessionResults:
+      type: object
+      description: Practice results (FP1 to FP3).
+      properties:
+        year:
+          type: integer
+        round:
+          type: integer
+        session:
+          $ref: '#/components/schemas/ResultsSession'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PracticeResult'
+      required:
+      - results
+      - round
+      - session
+      - year
     PredictionError:
       type: object
       properties:
@@ -4113,7 +4204,7 @@ components:
       - team
     QualifyingSessionResults:
       type: object
-      description: Qualifying results.
+      description: Qualifying and sprint qualifying results.
       properties:
         year:
           type: integer
@@ -4823,6 +4914,7 @@ components:
       oneOf:
       - $ref: '#/components/schemas/RaceSessionResults'
       - $ref: '#/components/schemas/QualifyingSessionResults'
+      - $ref: '#/components/schemas/PracticeSessionResults'
     SettingsUpdateThemeEnum:
       enum:
       - system
