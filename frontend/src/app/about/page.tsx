@@ -86,21 +86,9 @@ export default function AboutPage() {
 
         <section id="credits" aria-labelledby="credits-h">
           <h2 id="credits-h" className={h2}>
-            Photograph and fonts
+            Fonts
           </h2>
           <ul className="flex list-disc flex-col gap-3 pl-5">
-            <li>
-              Photograph on the home page:{" "}
-              <a className={link} href="https://commons.wikimedia.org/wiki/File:Crowds_at_Circuit_of_the_Americas.jpg" rel="noopener noreferrer">
-                Crowds at Circuit of the Americas
-              </a>
-              , 18 November 2012, by Earl McGehee, licensed under{" "}
-              <a className={link} href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener noreferrer">
-                CC BY-SA 3.0
-              </a>
-              . The image is only cropped by the page layout; colours are unchanged. It shows a grandstand at a real
-              circuit and is not a picture of the race it appears next to.
-            </li>
             <li>
               Type: DM Serif Display (Colophon Foundry, for Google Fonts) and Manrope (Mikhail Sharanda and
               contributors), both under the{" "}

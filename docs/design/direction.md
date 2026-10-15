@@ -25,9 +25,9 @@ DM Serif Display (`.display` for page titles, `.heading` for section titles, `.n
 
 Content width 1240 px, gutters 16 / 24 / 40 px. The home page is two columns (about 1.9 : 1) for the weekend, then two columns for the last race and the championship. Different information has different forms: the schedule is a card, results are tables, the podium is a numbered list, the calendar is a hairline list. No rows of equal tiles.
 
-## Photograph
+## Imagery
 
-One photograph: a grandstand at Circuit of the Americas (Earl McGehee, 2012, CC BY-SA 3.0). It sets the mood and is not a picture of the race next to it, so the caption always names the place. The credit links to `/about#credits`, which carries the licence and the font licences. The file is in `frontend/public/images/` and recorded in `3rdparty_licenses.md`.
+There is no photograph. The one picture of the site is the racing line of the circuit, drawn from OpenF1 car positions (`Circuit.outline`): different for every round, from the site's own data, and no licence to carry. It is a large line on a pale casing with the start and finish marked on the home page and the circuit page. A circuit without an outline shows no image; nothing pretends to be the track. (An earlier version used a CC BY-SA photograph of Circuit of the Americas; it was dropped because it was not a picture of the race next to it.)
 
 ## Deliberately left out
 

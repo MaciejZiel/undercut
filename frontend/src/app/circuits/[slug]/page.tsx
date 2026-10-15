@@ -42,16 +42,16 @@ function OsmMap({ lat, lng, name }: { lat: number; lng: number; name: string }) 
       <h2 id="map-h" className="mb-3 heading text-xl sm:text-[1.375rem]">
         Location
       </h2>
+      {/* Not lazy: a lazily loaded frame lets the map measure a container that has no width yet and draw only part of it. */}
       <iframe
         title={`Map of ${name}`}
         src={src}
-        loading="lazy"
         referrerPolicy="no-referrer"
-        className="h-72 w-full rounded-xl bg-surface-2"
+        className="h-72 w-full rounded-lg bg-surface-2"
       />
       <p className="mt-2 text-sm text-muted">
         <a
-          className="underline underline-offset-2 hover:text-fg"
+          className="underline underline-offset-4 hover:text-accent"
           href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`}
           rel="noopener noreferrer"
         >
@@ -79,15 +79,15 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
       >
         {c.locality && <p className="mt-3 text-muted">{c.locality}</p>}
       </EntityHeader>
-      <div className={`mb-12 grid gap-x-12 gap-y-8 ${c.outline ? "lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]" : ""}`}>
-        {c.outline && <TrackOutline outline={c.outline} name={c.name} />}
+      <div className={`mb-12 grid gap-x-12 gap-y-8 ${c.outline ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]" : ""}`}>
+        {c.outline && <TrackOutline outline={c.outline} name={c.name} className="mx-auto w-full max-h-[28rem]" />}
         <dl aria-label={`${c.name} facts`} className="self-center border-t border-line">
           <div className="border-b border-line py-4">
             <dt className="label">Lap record</dt>
             <dd className="mt-1">
               {lapRecord ? (
                 <>
-                  <span className="numeral block text-6xl">{lapRecord}</span>
+                  <span className="numeral block text-5xl">{lapRecord}</span>
                   {(c.lap_record_driver || c.lap_record_year) && (
                     <span className="mt-1 block text-muted">
                       {[c.lap_record_driver, c.lap_record_year].filter(Boolean).join(", ")}

@@ -40,4 +40,3 @@
 | https://github.com/google/osv-scanner | osv-scanner (CI only, binary) | Apache-2.0 | https://github.com/google/osv-scanner/blob/main/LICENSE |
 | https://github.com/googlefonts/dm-fonts | DM Serif Display (font, served by next/font/google) | OFL-1.1 | https://openfontlicense.org/open-font-license-official-text/ |
 | https://github.com/googlefonts/manrope | Manrope (font, served by next/font/google) | OFL-1.1 | https://openfontlicense.org/open-font-license-official-text/ |
-| https://commons.wikimedia.org/wiki/File:Crowds_at_Circuit_of_the_Americas.jpg | Crowds at Circuit of the Americas, Earl McGehee, 2012 (photograph, frontend/public/images/crowd-cota.jpg) | CC-BY-SA-3.0 | https://creativecommons.org/licenses/by-sa/3.0/legalcode |

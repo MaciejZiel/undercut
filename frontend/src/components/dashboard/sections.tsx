@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { connection } from "next/server";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
+import { getCircuit } from "@/lib/api/queries";
 import { getDashboard } from "./data";
 import { NextRaceCard } from "./next-race-card";
 import { PodiumCards } from "./podium-cards";
@@ -35,8 +36,11 @@ export async function NextRaceSection() {
         />
       );
     }
+    // The circuit page has the drawing and the records; the weekend is still useful without them.
+    const circuit = await getCircuit(next.circuit.slug).catch(() => null);
     return (
       <NextRaceCard
+        circuitDetail={circuit}
         year={next.year}
         round={next.round}
         name={next.name}

@@ -9,9 +9,10 @@ import { DetailPageSkeleton } from "@/components/states/page-skeletons";
 import { EmptyState } from "@/components/states/empty-state";
 import { Badge, CircuitLink, Nationality } from "@/components/ui/entity-links";
 import { RaceSummary } from "@/components/round/race-summary";
+import { TrackOutline } from "@/components/catalog/track-outline";
 import { BiggestMovers } from "@/components/round/biggest-movers";
 import { PracticeResultsTable, QualifyingResultsTable, RaceResultsTable } from "@/components/round/results-tables";
-import { getRound, getRoundResults, type PracticeResults, type QualifyingResults, type RaceResults } from "@/lib/api/queries";
+import { getCircuit, getRound, getRoundResults, type PracticeResults, type QualifyingResults, type RaceResults } from "@/lib/api/queries";
 import { formatDate, formatLength } from "@/lib/format";
 import { roundHref, seasonHref } from "@/lib/routes";
 import { availableTabs, pickTab } from "@/lib/sessions";
@@ -63,6 +64,7 @@ async function RoundDetail({ params, searchParams }: Props) {
   const base = roundHref(round.year, round.round);
   const sessionInfo = active ? round.sessions.find((s) => s.type === active.type) : undefined;
   const results = active ? await getRoundResults(round.year, round.round, active.type) : null;
+  const circuit = await getCircuit(round.circuit.slug).catch(() => null);
 
   return (
     <>
@@ -90,9 +92,14 @@ async function RoundDetail({ params, searchParams }: Props) {
             { label: round.name },
           ]}
         />
-        <h1 className="display text-4xl sm:text-6xl">
-          {round.year} {round.name}
-        </h1>
+        <div className="flex items-start justify-between gap-6">
+          <h1 className="display text-4xl sm:text-6xl">
+            {round.year} {round.name}
+          </h1>
+          {circuit?.outline && (
+            <TrackOutline outline={circuit.outline} name={round.circuit.name} variant="mark" className="mt-1 w-16 shrink-0 sm:w-28" />
+          )}
+        </div>
         <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted">
           <span>Round {round.round}</span>
           <span>{formatDate(round.date)}</span>
