@@ -195,14 +195,18 @@ ALLAUTH_TRUSTED_PROXY_COUNT = env.int("DRF_NUM_PROXIES", default=0) or 0
 # --- E-mail ------------------------------------------------------------------------------------
 # Django 6.1 MAILERS (the EMAIL_* settings are deprecated). Console in DEBUG, SMTP otherwise; the
 # SMTP server comes from env vars. Tests swap in the in-memory backend automatically.
-if DEBUG:
+# Without EMAIL_HOST (no SMTP provider configured yet) mail is written to stdout instead of failing
+# every sign-up with a connection error; the supervisors keep that in the service log.
+# (not named EMAIL_HOST: Django 6.1 rejects the deprecated setting names next to MAILERS)
+_smtp_host = env("EMAIL_HOST", default="")
+if DEBUG or not _smtp_host:
     MAILERS = {"default": {"BACKEND": "django.core.mail.backends.console.EmailBackend"}}
 else:
     MAILERS = {
         "default": {
             "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
             "OPTIONS": {
-                "host": env("EMAIL_HOST", default="localhost"),
+                "host": _smtp_host,
                 "port": env.int("EMAIL_PORT", default=587),
                 "username": env("EMAIL_HOST_USER", default=""),
                 "password": env("EMAIL_HOST_PASSWORD", default=""),
