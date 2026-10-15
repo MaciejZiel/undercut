@@ -88,7 +88,7 @@ export function SeasonMatrix({ matrix }: { matrix: Matrix | null }) {
           Did not take part
         </li>
       </ul>
-      <div className="overflow-x-auto rounded-lg border border-line bg-bg" tabIndex={0} role="region" aria-label={`${matrix.year} results matrix, scrolls horizontally`}>
+      <div className="relative overflow-x-auto rounded-lg border border-line bg-bg" tabIndex={0} role="region" aria-label={`${matrix.year} results matrix, scrolls horizontally`}>
         <table className="border-collapse text-sm">
           <caption className="sr-only">
             {matrix.year} race results by driver and round. Each cell shows the finishing position and a symbol for the category.
