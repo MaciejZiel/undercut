@@ -24,6 +24,10 @@ const MODES: { value: Mode; label: string }[] = [
 export function CalendarView({ year, rounds }: { year: number; rounds: Entry[] }) {
   const viewerZone = useViewerZone();
   const [mode, setMode] = useState<Mode>("viewer");
+  // Finished rounds fold away once the season has a round still to come, so "next" is the first thing seen.
+  const firstOpen = rounds.findIndex((r) => r.status !== "completed" && r.status !== "cancelled");
+  const done = firstOpen > 0 ? rounds.slice(0, firstOpen) : [];
+  const open = firstOpen > 0 ? rounds.slice(firstOpen) : rounds;
 
   return (
     <div>
@@ -47,20 +51,38 @@ export function CalendarView({ year, rounds }: { year: number; rounds: Entry[] }
           {mode === "viewer" ? `Times shown in ${viewerZone}.` : "Times shown in each circuit's local time."}
         </p>
       </div>
-      <div>
-        {groupByMonth(rounds).map((g) => (
-          <section key={g.key} aria-labelledby={`month-${g.key}`} className="mt-8 first:mt-0">
-            <h3 id={`month-${g.key}`} className="eyebrow mb-2">
-              {g.label}
-            </h3>
-            <ol className="border-t border-line">
-              {g.entries.map(({ entry, index }) => (
-                <RoundCard key={`${entry.round ?? "x"}-${index}`} year={year} entry={entry} mode={mode} viewerZone={viewerZone} />
-              ))}
-            </ol>
-          </section>
-        ))}
-      </div>
+      {done.length > 0 && (
+        <details className="group mb-8 border-y border-fg">
+          <summary className="t-fast flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 py-2 text-sm font-bold hover:text-accent">
+            <span>
+              {done.length} completed {done.length === 1 ? "round" : "rounds"}
+            </span>
+            <span className="eyebrow group-open:hidden">Show</span>
+            <span className="eyebrow hidden group-open:inline">Hide</span>
+          </summary>
+          <Months year={year} rounds={done} mode={mode} viewerZone={viewerZone} />
+        </details>
+      )}
+      <Months year={year} rounds={open} mode={mode} viewerZone={viewerZone} />
+    </div>
+  );
+}
+
+function Months({ year, rounds, mode, viewerZone }: { year: number; rounds: Entry[]; mode: Mode; viewerZone: string }) {
+  return (
+    <div>
+      {groupByMonth(rounds).map((g) => (
+        <section key={g.key} aria-labelledby={`month-${g.key}`} className="mt-8 first:mt-0">
+          <h3 id={`month-${g.key}`} className="eyebrow mb-2">
+            {g.label}
+          </h3>
+          <ol className="border-t border-line">
+            {g.entries.map(({ entry, index }) => (
+              <RoundCard key={`${entry.round ?? "x"}-${index}`} year={year} entry={entry} mode={mode} viewerZone={viewerZone} />
+            ))}
+          </ol>
+        </section>
+      ))}
     </div>
   );
 }
@@ -96,7 +118,7 @@ function RoundCard({ year, entry, mode, viewerZone }: { year: number; entry: Ent
         aria-labelledby={headId}
         aria-current={highlight ? "step" : undefined}
         className={`grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-4 gap-y-3 py-4 sm:grid-cols-[4.5rem_minmax(0,1fr)_auto] sm:gap-x-6 ${
-          highlight ? "-mx-3 rounded-xl bg-surface px-3 sm:-mx-5 sm:px-5 sm:py-5" : ""
+          highlight ? "-mx-3 bg-surface px-3 sm:-mx-5 sm:px-5 sm:py-5" : ""
         } ${cancelled ? "text-muted" : ""}`}
       >
         <p className="timing leading-tight text-muted">

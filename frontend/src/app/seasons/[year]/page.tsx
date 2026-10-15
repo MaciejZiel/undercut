@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { connection } from "next/server";
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
@@ -42,6 +43,8 @@ async function SeasonDetail({ params }: { params: PageProps<"/seasons/[year]">["
   const season = year ? await getSeason(year) : null;
   if (!season) notFound();
 
+  // The "next season" link depends on today's date, so this page renders per request.
+  await connection();
   const today = new Date().toISOString().slice(0, 10);
   const held = season.rounds.filter((r) => !r.is_cancelled);
   const completed = held.filter((r) => r.winner).length;

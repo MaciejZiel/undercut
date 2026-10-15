@@ -82,13 +82,14 @@ export function NextRaceCard({
             <br />
             <span className="text-muted">{place}</span>
           </p>
-          <Link
-            href={roundHref(year, round)}
-            className="t-fast ml-auto border-b-2 border-accent pb-1.5 text-[0.8125rem] font-bold hover:text-accent"
-          >
-            Weekend details →
-          </Link>
         </div>
+        <Link
+          href={roundHref(year, round)}
+          className="t-fast mt-6 inline-flex min-h-11 w-fit items-center gap-3 border-2 border-fg px-5 text-[0.8125rem] font-bold hover:bg-fg hover:text-bg"
+        >
+          Weekend details
+          <span aria-hidden="true">→</span>
+        </Link>
         <div className="mt-auto hidden pt-8 lg:block">
           <CircuitFacts detail={circuitDetail} />
         </div>
@@ -137,7 +138,7 @@ function CircuitFacts({ detail }: { detail: CircuitDetail | null }) {
   const length = formatLength(detail.length_m);
   const items = [
     record && { label: "Lap record", value: record, note: [detail.lap_record_driver, detail.lap_record_year].filter(Boolean).join(", ") },
-    length && { label: "Lap length", value: `${detail.length_is_estimate ? "≈ " : ""}${length}` },
+    length && { label: "Lap length", value: length },
     detail.gp_count > 0 && { label: "Grands Prix here", value: formatInteger(detail.gp_count) ?? "" },
   ].filter((i): i is { label: string; value: string; note?: string } => Boolean(i));
   if (items.length === 0) return null;

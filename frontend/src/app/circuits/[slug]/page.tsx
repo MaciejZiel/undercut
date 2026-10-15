@@ -125,7 +125,7 @@ async function CircuitDetail({ params }: { params: PageProps<"/circuits/[slug]">
             <div className="border-b border-line py-4">
               <dt className="label">Lap length</dt>
               <dd className="numeral mt-1 text-4xl">
-                {c.length_is_estimate && c.length_m ? "≈ " : ""}
+                
                 {orDash(formatLength(c.length_m))}
               </dd>
             </div>
