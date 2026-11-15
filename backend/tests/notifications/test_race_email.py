@@ -120,7 +120,8 @@ def test_round_without_a_result_sends_nothing(mailoutbox):
     round_ = RoundFactory(round=9)
     event = publish("PredictionsScored", key="round:x", payload={"round_id": round_.pk})
     handlers.handle_race_result(event)
-    assert mailoutbox == [] and SentEmail.objects.count() == 0
+    assert mailoutbox == []
+    assert SentEmail.objects.count() == 0
 
 
 def test_session_results_finalized_alone_sends_nothing(race, mailoutbox):
@@ -174,7 +175,8 @@ def test_content_podium_favourites_pick_links_and_headers(race, mailoutbox, sett
     assert "P1: you picked Max Verstappen, actual Max Verstappen" in text
     assert "P2: you picked Charles Leclerc, actual Lando Norris" in text
     assert "Pole: you picked Max Verstappen" in text
-    assert "Pole position: 3" in text and "Total: 15" in text
+    assert "Pole position: 3" in text
+    assert "Total: 15" in text
     assert "https://example.test/seasons/2025/5" in text
     unsubscribe = f"https://example.test/api/v1/notifications/unsubscribe/{token}/"
     assert unsubscribe in text
@@ -184,12 +186,15 @@ def test_content_podium_favourites_pick_links_and_headers(race, mailoutbox, sett
     ((html, mimetype),) = mail.alternatives
     assert mimetype == "text/html"
     assert '<html lang="en">' in html
-    assert "<caption" in html and 'scope="col"' in html
-    assert "Max Verstappen" in html and "Monaco Grand Prix" in html
+    assert "<caption" in html
+    assert 'scope="col"' in html
+    assert "Max Verstappen" in html
+    assert "Monaco Grand Prix" in html
     assert 'href="https://example.test/seasons/2025/5"' in html
     assert f'href="{unsubscribe}"' in html
     assert "http://" not in html.replace("https://", "")  # no external assets
-    assert "<img" not in html and "<script" not in html
+    assert "<img" not in html
+    assert "<script" not in html
 
 
 def test_mail_without_favourites_or_pick_still_has_podium(race, mailoutbox):
@@ -197,14 +202,16 @@ def test_mail_without_favourites_or_pick_still_has_podium(race, mailoutbox):
     handlers.handle_race_result(scored_event(race))
     (mail,) = mailoutbox
     assert "Podium" in mail.body
-    assert "Your favourites" not in mail.body and "Your picks" not in mail.body
+    assert "Your favourites" not in mail.body
+    assert "Your picks" not in mail.body
 
 
 def test_html_escapes_user_supplied_names(race, mailoutbox):
     opted_in(display_name="<b>Eve</b>")
     handlers.handle_race_result(scored_event(race))
     html = mailoutbox[0].alternatives[0][0]
-    assert "<b>Eve</b>" not in html and "&lt;b&gt;Eve&lt;/b&gt;" in html
+    assert "<b>Eve</b>" not in html
+    assert "&lt;b&gt;Eve&lt;/b&gt;" in html
 
 
 def test_retired_favourite_is_reported_without_a_position(race, mailoutbox):
@@ -222,7 +229,8 @@ def test_redelivery_does_not_mail_twice(race, mailoutbox):
     event = scored_event(race)
     handlers.handle_race_result(event)
     handlers.handle_race_result(event)
-    assert len(mailoutbox) == 1 and SentEmail.objects.count() == 1
+    assert len(mailoutbox) == 1
+    assert SentEmail.objects.count() == 1
 
 
 def test_a_second_scoring_event_does_not_mail_again(race, mailoutbox):

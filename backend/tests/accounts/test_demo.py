@@ -52,10 +52,12 @@ def favorites(user):
 
 def test_seed_creates_a_locked_demo_user(demo):
     assert demo.is_demo
-    assert demo.email_verified and demo.can_predict
+    assert demo.email_verified
+    assert demo.can_predict
     assert not demo.has_usable_password()
     assert demo.email == ""
-    assert not (demo.is_staff or demo.is_superuser)
+    assert not demo.is_staff
+    assert not demo.is_superuser
     assert favorites(demo) == ["max-verstappen", "mclaren", "norris", "red-bull"]
 
 

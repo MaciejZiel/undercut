@@ -42,6 +42,8 @@ def _run(paths):
 
 def test_worker_records_latencies_and_errors_separately():
     ok = _run(["/fine"])
-    assert ok["ms"] and ok["errors"] == 0
+    assert ok["ms"]
+    assert ok["errors"] == 0
     mixed = _run(["/fine", "/boom"])
-    assert mixed["ms"] and mixed["errors"] > 0
+    assert mixed["ms"]
+    assert mixed["errors"] > 0

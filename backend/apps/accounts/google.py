@@ -21,7 +21,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
-TOKEN_URL = "https://oauth2.googleapis.com/token"
+TOKEN_URL = "https://oauth2.googleapis.com/token"  # noqa: S105 (an endpoint, not a secret)
 ISSUERS = ("https://accounts.google.com", "accounts.google.com")
 TIMEOUT_SECONDS = 10
 MAX_RESPONSE_BYTES = 64 * 1024

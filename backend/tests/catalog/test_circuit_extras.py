@@ -84,7 +84,8 @@ def test_outline_is_exposed_only_when_it_has_points():
     }
     unmarked = {**shape, "marker": False, "origin": "geojson"}
     drawn = selectors.circuit_outline(f.CircuitFactory(outline=unmarked))
-    assert drawn["marker"] is False and drawn["origin"] == "geojson"
+    assert drawn["marker"] is False
+    assert drawn["origin"] == "geojson"
 
 
 def test_circuit_page_serialises_record_length_and_outline(client):
@@ -94,8 +95,10 @@ def test_circuit_page_serialises_record_length_and_outline(client):
     )
     race_on(circuit, 2023, best_lap_ms=90_000)
     body = client.get("/api/v1/circuits/suzuka/").json()
-    assert body["lap_record_ms"] == 90_000 and body["lap_record_year"] == 2023
-    assert body["length_m"] == 5800 and body["length_is_estimate"] is True
+    assert body["lap_record_ms"] == 90_000
+    assert body["lap_record_year"] == 2023
+    assert body["length_m"] == 5800
+    assert body["length_is_estimate"] is True
     assert body["outline"] == {
         "width": 1000,
         "height": 600,

@@ -103,7 +103,8 @@ def test_rescoring_after_a_disqualification_is_idempotent_and_corrects_points():
     assert corrected.points != first.points
     assert score(after) == corrected
     assert score(before) == first
-    assert corrected.breakdown["p1"] == 0 and corrected.breakdown["p3"] == 2
+    assert corrected.breakdown["p1"] == 0
+    assert corrected.breakdown["p3"] == 2
 
 
 @pytest.mark.parametrize("slot", ["p1", "p2", "p3"])

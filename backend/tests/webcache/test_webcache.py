@@ -80,7 +80,8 @@ def test_a_refusal_raises_so_the_outbox_retries():
 @override_settings(**CONFIGURED)
 def test_no_tags_means_no_request():
     recorder = Recorder()
-    assert client.revalidate([], post=recorder) == 0 and recorder.calls == []
+    assert client.revalidate([], post=recorder) == 0
+    assert recorder.calls == []
 
 
 def test_tags_match_the_frontend_grammar():
@@ -157,6 +158,7 @@ def test_an_unreachable_frontend_is_retried_later(race, monkeypatch):
     process_batch()
 
     event.refresh_from_db()
-    assert event.status == "pending" and event.attempts == 1
+    assert event.status == "pending"
+    assert event.attempts == 1
     assert event.available_at > dt.datetime.now(dt.UTC)
     registry.clear()

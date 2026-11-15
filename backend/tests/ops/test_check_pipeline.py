@@ -74,4 +74,5 @@ def test_exit_one_when_a_sync_job_keeps_failing(healthy_heartbeats):
         )
     code, out = run()
     assert code == 1
-    assert "sync_failing" in out and "jolpica-api/standings" in out
+    assert "sync_failing" in out
+    assert "jolpica-api/standings" in out

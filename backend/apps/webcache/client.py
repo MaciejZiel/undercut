@@ -21,7 +21,7 @@ class RevalidateError(Exception):
 
 
 def _post(url: str, secret: str, tags: list[str]) -> int:
-    request = urllib.request.Request(
+    request = urllib.request.Request(  # noqa: S310 (REVALIDATE_URL from settings)
         url,
         data=json.dumps({"tags": tags}).encode(),
         method="POST",

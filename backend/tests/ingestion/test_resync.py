@@ -35,7 +35,8 @@ def test_queues_results_for_every_session_and_analytics_for_the_race(weekend):
     queued = services.request_round_resync(2025, 16)
     assert queued == {"SessionResultsDue": 2, "AnalyticsDue": 1, "PracticeResultsDue": 0}
     kinds = [t for t, _ in events()]
-    assert kinds.count("SessionResultsDue") == 2 and kinds.count("AnalyticsDue") == 1
+    assert kinds.count("SessionResultsDue") == 2
+    assert kinds.count("AnalyticsDue") == 1
     race = Session.objects.get(round=weekend, type=Session.Type.RACE)
     assert ("AnalyticsDue", f"session:{race.id}") in events()
 
@@ -73,19 +74,22 @@ def test_admin_page_queues_the_round(weekend, client, django_user_model):
     client.force_login(admin)
     assert client.get("/admin/ingestion/syncrun/").status_code == 200
     page = client.get("/admin/ingestion/syncrun/resync/")
-    assert page.status_code == 200 and b"Queue the sync" in page.content
+    assert page.status_code == 200
+    assert b"Queue the sync" in page.content
     res = client.post(
         "/admin/ingestion/syncrun/resync/", {"year": 2025, "round": 16, "analytics": "on"}
     )
     assert res.status_code == 302
     assert len(events()) == 3
     bad = client.post("/admin/ingestion/syncrun/resync/", {"year": 2025, "round": 30})
-    assert bad.status_code == 200 and b"No round 30" in bad.content
+    assert bad.status_code == 200
+    assert b"No round 30" in bad.content
 
 
 def test_admin_page_needs_a_staff_login(weekend, client):
     res = client.get("/admin/ingestion/syncrun/resync/")
-    assert res.status_code == 302 and "login" in res["Location"]
+    assert res.status_code == 302
+    assert "login" in res["Location"]
 
 
 def test_practice_sessions_are_queued_for_the_practice_import(weekend):

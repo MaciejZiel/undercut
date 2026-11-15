@@ -26,7 +26,8 @@ def test_every_annotated_id_is_a_foreign_key_with_matching_nullability():
     checked = 0
     for model, name, hint in _annotated_ids():
         field = model._meta.get_field(name.removesuffix("_id"))
-        assert field.is_relation and field.attname == name, f"{model.__name__}.{name}"
+        assert field.is_relation, f"{model.__name__}.{name}"
+        assert field.attname == name, f"{model.__name__}.{name}"
         optional = _optional(hint)
         assert optional == field.null, f"{model.__name__}.{name}: null={field.null}, hint {hint}"
         checked += 1

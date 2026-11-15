@@ -136,8 +136,10 @@ def test_positions_on_a_full_race_has_expected_shape(client):
     assert body["laps"] == list(range(1, 61))
     assert len(body["drivers"]) == 20
     first = body["drivers"][0]
-    assert len(first["positions"]) == 60 and None not in first["positions"]
-    assert first["pit_laps"] == [30] and first["color_hex"] == "#abcdef"
+    assert len(first["positions"]) == 60
+    assert None not in first["positions"]
+    assert first["pit_laps"] == [30]
+    assert first["color_hex"] == "#abcdef"
     assert body["neutralisations"] == [{"kind": "SC", "start_lap": 10, "end_lap": 12}]
     assert body["session"] == {
         "year": 2024,
@@ -185,7 +187,8 @@ def test_pit_stops_endpoint_reports_the_method(client):
     session = build_race(drivers=4, laps=40, samples_per_driver=3)
     body = client.get(url("pit-stops")).json()
     assert body["method"] == "stop_duration"
-    assert body["ranking"][0]["rank"] == 1 and body["ranking"][0]["duration_ms"] == 2000
+    assert body["ranking"][0]["rank"] == 1
+    assert body["ranking"][0]["duration_ms"] == 2000
     assert body["stops"][0]["compound_from"] == "MEDIUM"
     assert body["stops"][0]["compound_to"] == "HARD"
     PitStop.objects.filter(session=session).update(stop_ms=None)
@@ -195,7 +198,8 @@ def test_pit_stops_endpoint_reports_the_method(client):
 def test_weather_endpoint_downsamples(client):
     build_race(drivers=2, laps=3, samples_per_driver=3)
     body = client.get(url("weather")).json()
-    assert body["total_samples"] == 400 and len(body["samples"]) == 120
+    assert body["total_samples"] == 400
+    assert len(body["samples"]) == 120
 
 
 def test_race_control_endpoint_filters_by_category(client):
@@ -206,7 +210,8 @@ def test_race_control_endpoint_filters_by_category(client):
         "SAFETY CAR IN THIS LAP",
     ]
     assert body["categories"] == ["Flag", "SafetyCar"]
-    assert body["messages"][0]["lap_number"] == 10 and body["messages"][0]["driver_code"] is None
+    assert body["messages"][0]["lap_number"] == 10
+    assert body["messages"][0]["driver_code"] is None
     assert len(client.get(url("race-control")).json()["messages"]) == 3
 
 
@@ -273,7 +278,8 @@ def test_race_control_with_unknown_category_is_empty_not_missing(client):
     session = make_session()
     add_rcm(session, at(1), "GREEN", category="Flag")
     response = client.get(url("race-control"), {"category": "Drs"})
-    assert response.status_code == 200 and response.json()["messages"] == []
+    assert response.status_code == 200
+    assert response.json()["messages"] == []
 
 
 # --- Access and schema -----------------------------------------------------------------------

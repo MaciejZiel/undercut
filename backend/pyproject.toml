@@ -62,7 +62,12 @@ target-version = "py313"
 extend-exclude = ["migrations"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "DJ"]
+# SIM, RET, PT: simpler code and pytest idioms. S: bandit security checks.
+select = ["E", "F", "I", "UP", "B", "DJ", "SIM", "RET", "PT", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+# pytest's assertion rewriting needs plain assert; tests sign in with fixed throwaway passwords.
+"tests/**" = ["S101", "S105", "S106", "S107"]
 
 [tool.importlinter]
 root_packages = ["apps"]

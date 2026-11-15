@@ -18,7 +18,8 @@ def test_report_lists_problems(healthy_heartbeats, make_event):
     make_event(status=OutboxEvent.Status.DEAD)
     subject, body = handlers.build_report()
     assert "needs attention" in subject
-    assert "outbox_dead" in body and "1 dead" in body
+    assert "outbox_dead" in body
+    assert "1 dead" in body
 
 
 def test_healthy_report_and_mail(healthy_heartbeats):
@@ -40,5 +41,5 @@ def test_a_mail_failure_is_raised_for_the_outbox_to_retry(healthy_heartbeats, mo
         raise OSError("smtp down")
 
     monkeypatch.setattr("django.core.mail.EmailMessage.send", boom)
-    with pytest.raises(OSError):
+    with pytest.raises(OSError, match="smtp down"):
         handlers.on_weekly_health_due(object())

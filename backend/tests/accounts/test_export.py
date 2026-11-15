@@ -57,14 +57,14 @@ def test_registering_a_name_again_replaces_the_provider(user, isolated_exports):
 
 @pytest.mark.parametrize("name", ["profile", "favorites", "exported_at"])
 def test_reserved_names_are_refused(name):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="is reserved"):
         exports.register_export_provider(name, lambda u: None)
 
 
 def test_invalid_registration_is_refused():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="needs a name and a callable"):
         exports.register_export_provider("", lambda u: None)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="needs a name and a callable"):
         exports.register_export_provider("x", "not callable")
 
 

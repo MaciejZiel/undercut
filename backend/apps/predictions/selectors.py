@@ -46,8 +46,10 @@ def round_state(user, round_: dict) -> dict:
     start = locking.closes_at(round_["id"])
     if start is None:
         status = "unavailable"
+    elif locking.now() >= start:
+        status = "closed"
     else:
-        status = "closed" if locking.now() >= start else "open"
+        status = "open"
     my_pick = None
     if user is not None and user.is_authenticated:
         prediction = Prediction.objects.filter(user=user, round_id=round_["id"]).first()

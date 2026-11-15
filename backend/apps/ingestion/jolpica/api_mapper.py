@@ -7,6 +7,7 @@ names sprint qualifying differently across seasons, and race start is `date` + `
 
 from __future__ import annotations
 
+import contextlib
 import datetime as dt
 from collections.abc import Iterable
 from dataclasses import dataclass, field
@@ -82,10 +83,8 @@ def circuit_data(circuit: dict) -> CircuitData:
 
 def driver_data(driver: dict) -> DriverData:
     dob = None
-    try:
+    with contextlib.suppress(ValueError):
         dob = dt.date.fromisoformat(driver.get("dateOfBirth", ""))
-    except ValueError:
-        pass
     return DriverData(
         jolpica_id=driver["driverId"],
         given_name=driver.get("givenName", ""),

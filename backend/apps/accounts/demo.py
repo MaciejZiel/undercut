@@ -121,7 +121,8 @@ def _pick_for(
     player, round_id: int, pool: list[int], today: dt.date, *, outcome: dict | None
 ) -> None:
     """Create a reproducible pick; score it against `outcome` when the round is finished."""
-    rng = random.Random(f"demo:{today.isoformat()}:{player.username}:{round_id}")
+    # Seeded on purpose so a reset reproduces the same picks; nothing secret depends on it.
+    rng = random.Random(f"demo:{today.isoformat()}:{player.username}:{round_id}")  # noqa: S311
     picks = _picks(rng, pool)
     if picks is None:
         return

@@ -35,9 +35,11 @@ def test_projection_keeps_a_circle_roughly_round_in_metres():
 
 def test_outline_from_feature_has_no_start_mark_and_uses_the_declared_length():
     result = geo.outline_from_feature(feature())
-    assert result["marker"] is False and result["origin"] == "geojson"
+    assert result["marker"] is False
+    assert result["origin"] == "geojson"
     assert result["length_m"] == 4350
-    assert result["width"] == 1000 and result["points"][0] == result["points"][-1]
+    assert result["width"] == 1000
+    assert result["points"][0] == result["points"][-1]
 
 
 def test_import_draws_only_circuits_without_an_outline(db, tmp_path):
@@ -50,10 +52,12 @@ def test_import_draws_only_circuits_without_an_outline(db, tmp_path):
     f.CircuitFactory(slug="estoril")
     f.CircuitFactory(slug="istanbul", outline={"width": 1, "height": 1, "points": [[0, 0]]})
     summary = geo.import_geojson(path)
-    assert summary.written == ["estoril"] and summary.skipped == ["istanbul"]
+    assert summary.written == ["estoril"]
+    assert summary.skipped == ["istanbul"]
     assert Circuit.objects.get(slug="estoril").outline["origin"] == "geojson"
     again = geo.import_geojson(path)
-    assert again.written == [] and set(again.skipped) == {"estoril", "istanbul"}
+    assert again.written == []
+    assert set(again.skipped) == {"estoril", "istanbul"}
     forced = geo.import_geojson(path, force=True)
     assert set(forced.written) == {"estoril", "istanbul"}
 
@@ -62,7 +66,8 @@ def test_import_reports_circuits_missing_from_the_catalog_or_the_file(db, tmp_pa
     path = tmp_path / "circuits.geojson"
     path.write_text(json.dumps({"type": "FeatureCollection", "features": [feature("pt-1972")]}))
     summary = geo.import_geojson(path)
-    assert summary.written == [] and len(summary.failed) == len(geo.SLUGS)
+    assert summary.written == []
+    assert len(summary.failed) == len(geo.SLUGS)
 
 
 def test_the_bundled_file_covers_every_mapped_circuit():

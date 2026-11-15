@@ -323,7 +323,8 @@ def test_circuit_list_and_detail(client):
     assert body["length_m"] is None
     assert body["lap_record_driver"] is None
     empty = get(client, "/api/v1/circuits/new/").json()
-    assert empty["winners"] == [] and empty["lat"] is None
+    assert empty["winners"] == []
+    assert empty["lat"] is None
     assert get(client, "/api/v1/circuits/nope/").status_code == 404
 
 
@@ -419,10 +420,12 @@ def test_race_results(client):
     assert rows[0]["time_ms"] == 5_400_000
     assert rows[1]["position_change"] == -1
     assert rows[1]["fastest_lap"] is None
-    assert rows[1]["time_ms"] is None and rows[1]["laps"] is None
+    assert rows[1]["time_ms"] is None
+    assert rows[1]["laps"] is None
     assert rows[2]["position_change"] is None  # pit lane start
     assert rows[2]["status"] is None
-    assert rows[3]["position"] is None and rows[3]["position_text"] == "R"
+    assert rows[3]["position"] is None
+    assert rows[3]["position_text"] == "R"
     assert rows[3]["position_change"] is None
 
 
@@ -450,7 +453,8 @@ def test_sprint_and_qualifying_results(client):
     assert sprint["results"][0]["points"] == 8.0
     rows = get(client, "/api/v1/rounds/2024/1/results/", session="Q").json()["results"]
     assert [r["eliminated_in"] for r in rows] == [None, "Q2", "Q1"]
-    assert rows[2]["q2_ms"] is None and rows[2]["q3_ms"] is None
+    assert rows[2]["q2_ms"] is None
+    assert rows[2]["q3_ms"] is None
     assert rows[0]["driver"]["slug"] == names[1]
 
 

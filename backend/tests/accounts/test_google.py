@@ -103,7 +103,8 @@ def test_start_redirects_to_google_with_pkce_state_and_nonce(flow):
     assert query["scope"] == "openid email profile"
     assert query["code_challenge_method"] == "S256"
     saved = flow.flow
-    assert query["state"] == saved["state"] and query["nonce"] == saved["nonce"]
+    assert query["state"] == saved["state"]
+    assert query["nonce"] == saved["nonce"]
     assert saved["next"] == "/predict"
     assert "verifier" not in query
     assert "no-store" in response["Cache-Control"]
@@ -140,15 +141,18 @@ def test_new_google_user_is_created_verified_and_logged_in(db, flow, client):
     response = flow.run(next="/predict")
     assert location(response) == "/predict"
     user = User.objects.get(email="ada@example.com")
-    assert user.email_verified and user.can_predict
+    assert user.email_verified
+    assert user.can_predict
     assert not user.has_usable_password()
     assert user.display_name == "Ada Lovelace"
     assert user.username.startswith("g_")
     address = EmailAddress.objects.get(user=user)
-    assert address.primary and address.verified
+    assert address.primary
+    assert address.verified
     assert GoogleIdentity.objects.get(user=user).sub == "sub-1"
     assert me(client)["user"]["email"] == "ada@example.com"
-    assert flow.exchanged and flow.exchanged[0][0] == "the-code"
+    assert flow.exchanged
+    assert flow.exchanged[0][0] == "the-code"
 
 
 def test_display_name_is_made_unique_and_valid(db, flow):
@@ -383,4 +387,5 @@ def test_tokens_and_secret_never_reach_the_log(db, flow, caplog):
     with caplog.at_level("DEBUG"):
         flow.run(claims={"nonce": "wrong"})
     text = " ".join(record.getMessage() for record in caplog.records)
-    assert "client-secret" not in text and "the-code" not in text
+    assert "client-secret" not in text
+    assert "the-code" not in text

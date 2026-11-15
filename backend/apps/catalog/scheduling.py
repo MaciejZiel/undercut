@@ -83,13 +83,12 @@ def set_session_status(session_id: int, status: str) -> bool:
 
 def current_season_year(today: dt.date) -> int | None:
     """The season being run: the latest one that has rounds starting on or before next month."""
-    year = (
+    return (
         m.Round.objects.filter(date__lte=today + dt.timedelta(days=45))
         .order_by("-season__year")
         .values_list("season__year", flat=True)
         .first()
     )
-    return year
 
 
 def latest_finished_round(now: dt.datetime, *, within: dt.timedelta) -> tuple[int, int] | None:

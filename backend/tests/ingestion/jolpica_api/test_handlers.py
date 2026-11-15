@@ -111,7 +111,9 @@ def test_failing_source_is_retried_through_the_outbox(season, monkeypatch):
     process_batch()
 
     event.refresh_from_db()
-    assert event.status == "pending" and event.attempts == 1 and "down" in event.last_error
+    assert event.status == "pending"
+    assert event.attempts == 1
+    assert "down" in event.last_error
 
 
 def test_calendar_event_refreshes_the_current_season(season, monkeypatch):

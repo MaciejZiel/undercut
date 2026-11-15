@@ -90,7 +90,8 @@ def test_get_returns_rows_and_sends_user_agent():
     assert request.get_header("User-agent") == USER_AGENT
     assert request.get_header("Authorization") is None
     assert timeout == client.timeout
-    assert client.requests == 1 and client.by_endpoint["laps"] == 1
+    assert client.requests == 1
+    assert client.by_endpoint["laps"] == 1
 
 
 def test_404_means_empty_result_without_retry():
@@ -103,7 +104,8 @@ def test_404_means_empty_result_without_retry():
 def test_retries_with_exponential_backoff(code):
     client, opener, t = make_client(http_error(code), http_error(code), [{"ok": 1}])
     assert client.get("pit") == [{"ok": 1}]
-    assert len(opener.requests) == 3 and client.requests == 3
+    assert len(opener.requests) == 3
+    assert client.requests == 3
     backoffs = [x for x in t.sleeps if x >= 2]
     assert backoffs[:2] == [2.0, 4.0]
 
@@ -130,7 +132,8 @@ def test_other_4xx_fail_immediately():
     client, opener, _ = make_client(http_error(401))
     with pytest.raises(OpenF1Error) as exc:
         client.get("pit")
-    assert exc.value.status == 401 and len(opener.requests) == 1
+    assert exc.value.status == 401
+    assert len(opener.requests) == 1
 
 
 def test_size_cap():
@@ -168,7 +171,8 @@ def test_no_token_by_default(monkeypatch):
 def test_token_bucket_blocks_until_refilled():
     t = FakeTime()
     bucket = TokenBucket(rate=2.0, capacity=2, clock=t.clock, sleep=t.sleep)
-    assert bucket.acquire() == 0 and bucket.acquire() == 0
+    assert bucket.acquire() == 0
+    assert bucket.acquire() == 0
     assert bucket.acquire() == pytest.approx(0.5)
 
 

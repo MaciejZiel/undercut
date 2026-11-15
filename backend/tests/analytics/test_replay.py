@@ -121,8 +121,10 @@ def test_compact_encoding_shape(client, race):
     assert set(body["drivers"][0]) >= {"driver_id", "code", "full_name", "constructor_name"}
     assert body["drivers"][0]["color_hex"] == "#112233"
     frames = body["frames"]
-    assert frames["step_s"] == 5 and frames["count"] == 102
-    assert frames["t"][:3] == [0, 5, 10] and frames["t"][-1] == 505
+    assert frames["step_s"] == 5
+    assert frames["count"] == 102
+    assert frames["t"][:3] == [0, 5, 10]
+    assert frames["t"][-1] == 505
     assert len(frames["drivers"]) == 3
     for block in frames["drivers"]:
         for dense in ("pos", "gap", "int"):
@@ -138,15 +140,23 @@ def test_carry_forward_of_positions_and_gaps(client, race):
     # pre-race samples (t = -60) feed frame 0
     assert (ver["pos"][0], nor["pos"][0], lec["pos"][0]) == (1, 2, 3)
     # NOR changes to P3 at t = 250 (frame 50), exactly on the frame: "at or before"
-    assert nor["pos"][49] == 2 and nor["pos"][50] == 3 and nor["pos"][101] == 3
-    assert lec["pos"][49] == 3 and lec["pos"][50] == 2
+    assert nor["pos"][49] == 2
+    assert nor["pos"][50] == 3
+    assert nor["pos"][101] == 3
+    assert lec["pos"][49] == 3
+    assert lec["pos"][50] == 2
     # no interval sample before t = 7: null, then carried
-    assert nor["gap"][1] is None and nor["gap"][2] == 3500 and nor["gap"][25] == 3500
-    assert nor["int"][2] == 3500 and nor["int"][25] == 3500
+    assert nor["gap"][1] is None
+    assert nor["gap"][2] == 3500
+    assert nor["gap"][25] == 3500
+    assert nor["int"][2] == 3500
+    assert nor["int"][25] == 3500
     # a newer sample replaces both values (text gap, no interval)
-    assert nor["gap"][26] == "+1 LAP" and nor["gap"][101] == "+1 LAP"
+    assert nor["gap"][26] == "+1 LAP"
+    assert nor["gap"][101] == "+1 LAP"
     assert nor["int"][26] is None
-    assert ver["gap"][2] == 0 and ver["gap"][100] == 0
+    assert ver["gap"][2] == 0
+    assert ver["gap"][100] == 0
     assert lec["gap"] == [None] * 102
 
 
@@ -177,7 +187,10 @@ def test_pit_flag_window_uses_lane_duration(client, race):
     # pit entry t = 190, lane 22 s: inside [190, 212); frame 38 = 190 s, frame 43 = 215 s
     assert nor["pit"] == {"at": [0, 38, 43], "v": [0, 1, 0]}
     flags = expand(nor["pit"], 102)
-    assert flags[37] == 0 and flags[38] == 1 and flags[42] == 1 and flags[43] == 0
+    assert flags[37] == 0
+    assert flags[38] == 1
+    assert flags[42] == 1
+    assert flags[43] == 0
     assert ver["pit"] == {"at": [0], "v": [0]}
 
 
@@ -205,7 +218,8 @@ def test_vsc_without_end_lasts_to_the_end(client, race):
 
 def test_step_parameter(client, race):
     _, body = fetch(client, step=30)
-    assert body["frames"]["count"] == 17 and body["frames"]["t"][:3] == [0, 30, 60]
+    assert body["frames"]["count"] == 17
+    assert body["frames"]["t"][:3] == [0, 30, 60]
     _, body = fetch(client, step=1)
     assert body["frames"]["count"] == 506
     for bad in ("0", "31", "abc", "-5", "2.5"):
@@ -215,7 +229,8 @@ def test_step_parameter(client, race):
 
 def test_cache_header_only_for_finished_sessions(client, race):
     response, _ = fetch(client)
-    assert "max-age=300" in response["Cache-Control"] and "public" in response["Cache-Control"]
+    assert "max-age=300" in response["Cache-Control"]
+    assert "public" in response["Cache-Control"]
     race.status = "live"
     race.save(update_fields=["status"])
     response, _ = fetch(client)
@@ -250,7 +265,8 @@ def test_jump_to_lap_offsets(client, race):
     response = client.get("/api/v1/rounds/2024/1/replay/laps/")
     assert response.status_code == 200
     body = response.json()
-    assert body["total_laps"] == 5 and body["duration_s"] == 505.0
+    assert body["total_laps"] == 5
+    assert body["duration_s"] == 505.0
     assert body["laps"] == [{"lap": n, "t": 100.0 * (n - 1)} for n in range(1, 6)]
     assert "max-age=300" in response["Cache-Control"]
     assert client.get("/api/v1/rounds/2024/9/replay/laps/").status_code == 404

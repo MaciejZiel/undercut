@@ -26,7 +26,8 @@ def test_submit_one_second_before_lock_is_ok(user, drivers, clock):
     make_weekend(2025, 1, quali_start=start)
     clock.now = start - dt.timedelta(seconds=1)
     prediction, created = services.submit_prediction(user, 2025, 1, pick(drivers))
-    assert created and prediction.pk
+    assert created
+    assert prediction.pk
 
 
 def test_submit_one_second_after_lock_is_rejected(user, drivers, clock):
@@ -115,7 +116,8 @@ def test_unknown_driver_is_rejected(user, drivers, weekend):
 def test_resubmit_updates_instead_of_duplicating(user, drivers, weekend):
     first, created = services.submit_prediction(user, 2025, 1, pick(drivers))
     second, created2 = services.submit_prediction(user, 2025, 1, pick(drivers, pole=drivers[5].id))
-    assert created and not created2
+    assert created
+    assert not created2
     assert first.pk == second.pk
     assert Prediction.objects.count() == 1
     assert Prediction.objects.get().pole_id == drivers[5].id
@@ -198,7 +200,8 @@ def test_score_round_without_results_leaves_points_null(user, drivers, weekend):
     services.submit_prediction(user, 2025, 1, pick(drivers))
     services.score_round(round_.id)
     prediction = Prediction.objects.get()
-    assert prediction.points is None and prediction.breakdown == {}
+    assert prediction.points is None
+    assert prediction.breakdown == {}
 
 
 def test_rescore_is_idempotent(user, drivers, weekend):
