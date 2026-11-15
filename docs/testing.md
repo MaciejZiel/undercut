@@ -2,7 +2,7 @@
 
 | Suite | Where | Runs |
 |---|---|---|
-| Backend (pytest, real PostgreSQL) | `backend/tests` | CI (`ci.yml`) and locally, one folder at a time |
+| Backend (pytest, real PostgreSQL, N+1 gate with pytest-queryguard, see [n-plus-one.md](n-plus-one.md)) | `backend/tests` | CI (`ci.yml`) and locally, one folder at a time |
 | Frontend (Vitest, lint, typecheck, build) | `frontend` | CI (`ci.yml`) and locally |
 | End to end (Playwright, Chromium) | `e2e` | **GitHub Actions only** (`e2e.yml`) |
 
