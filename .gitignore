@@ -5,6 +5,7 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+backend/queryguard.json
 node_modules/
 .next/
 backend/staticfiles/

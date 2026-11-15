@@ -173,8 +173,8 @@ def reset_favorites(user, *, drivers=(), constructors=()) -> None:
     )
     for kind, slugs in kinds:
         # One lookup per kind, not per slug; order and the per-kind limit are kept.
-        found = _target_model(kind)._default_manager.in_bulk(list(slugs), field_name="slug")
         wanted = list(dict.fromkeys(slugs))
+        found = _target_model(kind)._default_manager.in_bulk(wanted, field_name="slug")
         for slug in wanted:
             if slug not in found:
                 logger.warning("Demo favourite %s %r is not in the catalog", kind, slug)
@@ -182,7 +182,8 @@ def reset_favorites(user, *, drivers=(), constructors=()) -> None:
         rows.extend(Favorite(user=user, **{kind: target}) for target in targets)
     with transaction.atomic():
         Favorite.objects.filter(user=user).delete()
-        Favorite.objects.bulk_create(rows)
+        # A favourite added by a visitor between the delete and the insert is simply kept.
+        Favorite.objects.bulk_create(rows, ignore_conflicts=True)
 
 
 # --- Export -----------------------------------------------------------------------------------

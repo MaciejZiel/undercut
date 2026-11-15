@@ -14,8 +14,8 @@ records the SQL of every test body and reports two kinds of problems for Django:
 - **repeated-statement**: the same statement, with different parameters, run many times in one
   test (a lookup inside a loop).
 
-It needs no settings change: `uv add --dev "pytest-queryguard[django]"`, and every test is
-checked. The first run used `--queryguard-mode=warn --queryguard-json=queryguard.json` in CI to
+It needs no settings change: `uv add --dev "pytest-queryguard[django]==1.0.0"` (pinned, because
+its Django support is still marked experimental), and every test is checked. The first run used `--queryguard-mode=warn --queryguard-json=queryguard.json` in CI to
 get the full list without failing the build (the backend tests need PostgreSQL, which runs in
 GitHub Actions).
 
@@ -37,14 +37,15 @@ GitHub Actions).
 | a service called in a loop by the test itself | five tests (arrange steps, worker driven once per attempt) | not application code: `@pytest.mark.queryguard_ignore(kind="repeated-statement")` with the reason next to it |
 
 Effect on the demo reset, measured by the same JSON report: a test that runs one reset went from
-**130 SQL statements to 60**, the outbox-driven reset test from 199 to 77, and the number no longer
-grows with the number of bots or sample rounds.
+**130 SQL statements to 60**, the outbox-driven reset test from 199 to 77. The reads no longer grow
+with the number of bots or sample rounds; what is left per bot is its own row and its picks.
 
 ## The gate
 
 The suite now runs with queryguard in its default *fail* mode. Every accepted exception is a line
-in `backend/pyproject.toml` (`queryguard_ignore`) scoped to one file and function, with the reason
-in a comment above it, so a new loop elsewhere, or a new lazy load in an API view, fails CI. Each
+in `backend/pyproject.toml` (`queryguard_ignore`) scoped to one function, and for shared helpers
+also to the one caller that is allowed to loop (`stack=file:function`), with the reason in a comment
+above it, so a new loop elsewhere, or a new lazy load in an API view, fails CI. Each
 CI run uploads `queryguard.json` (statements, database time and findings per test) as an artifact.
 
 ## Lessons

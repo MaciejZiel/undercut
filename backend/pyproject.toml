@@ -25,6 +25,7 @@ dev = [
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "pytest-django>=4.14.0",
+    # Pinned: its Django support is experimental and may change findings in a minor release.
     "pytest-queryguard[django]==1.0.0",
     "ruff>=0.17.0",
 ]
@@ -43,15 +44,16 @@ queryguard_ignore = [
     "repeated-statement * file=apps/catalog/services.py function=_create_with_slug",
     "repeated-statement * file=apps/catalog/services.py function=_bulk_sync",
     "repeated-statement * file=apps/catalog/services.py function=upsert_constructor_season",
-    # OpenF1 import matches a session's drivers once per imported session (two queries).
-    "repeated-statement * file=apps/catalog/services.py function=_driver_refs",
+    # OpenF1 import matches drivers once per imported session: the season pool, a code lookup for
+    # a driver missing from it and a DriverNumberMap row the first time a number is seen.
+    "repeated-statement * function=_driver_refs stack=apps/ingestion/openf1/matching.py:resolve_drivers",
     "repeated-statement * file=apps/ingestion/openf1/matching.py function=resolve_drivers",
     # Post-race e-mail: each recipient is re-checked and marked in its own transaction on
     # purpose (exactly-once per user and round); SMTP, not the database, is the cost here.
     "repeated-statement * file=apps/notifications/handlers.py function=_send_one",
-    "repeated-statement * file=apps/accounts/selectors_public.py function=get_race_email_recipient",
+    "repeated-statement * function=get_race_email_recipient stack=apps/notifications/handlers.py:_send_one",
     # Demo reset: one driver pool per sample round, at most three rounds.
-    "repeated-statement * file=apps/catalog/summaries.py function=grid_driver_ids",
+    "repeated-statement * function=grid_driver_ids stack=apps/accounts/demo.py:reset_demo_data",
 ]
 
 [tool.ruff]
