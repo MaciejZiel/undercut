@@ -1,0 +1,82 @@
+name: Perf
+
+# Load test against the full Docker Compose stack on a GitHub-hosted runner. It never targets the
+# production server. Results go to the job summary and an artifact; docs/performance.md keeps the
+# latest published run.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - scripts/perf/**
+      - .github/workflows/perf.yml
+      - scripts/e2e/load-data.sh
+
+concurrency:
+  group: perf-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  load-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      E2E_BASE_URL: http://localhost:8080
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Write .env for the stack (DEBUG off, as in production)
+        run: |
+          bash scripts/e2e/write-env.sh
+          sed -i 's/^DJANGO_DEBUG=.*/DJANGO_DEBUG=false/' .env
+          secret_key="$(openssl rand -hex 32)"
+          echo "::add-mask::${secret_key}"
+          echo "DJANGO_SECRET_KEY=${secret_key}" >> .env
+
+      - name: Build and start the stack
+        run: docker compose up -d --build
+
+      - name: Wait for the stack
+        run: bash scripts/e2e/wait-for-stack.sh
+
+      - name: Load history and one race of analytics
+        env:
+          LOAD_SEED: "false"
+        run: bash scripts/e2e/load-data.sh
+
+      - name: Runner hardware
+        run: |
+          {
+            echo "### Runner"
+            echo
+            echo "- CPU: $(lscpu | sed -n 's/^Model name: *//p'), $(nproc) vCPUs"
+            echo "- Memory: $(free -g | awk '/^Mem:/ {print $2}') GB"
+            echo "- Stack: docker compose (Caddy, Next.js, gunicorn with 3 workers, PostgreSQL 16, Redis), load generator on the same runner"
+            echo
+          } | tee perf-runner.md >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Load test
+        env:
+          INTERNAL_API_TOKEN: ${{ env.E2E_INTERNAL_TOKEN }}
+        run: |
+          status=0
+          bash scripts/perf/ci.sh || status=$?
+          cat perf-summary.md >> "${GITHUB_STEP_SUMMARY}"
+          exit "${status}"
+
+      - name: Upload the results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: perf-results
+          path: |
+            perf-results.jsonl
+            perf-summary.md
+            perf-runner.md
+          if-no-files-found: ignore
+
+      - name: Container logs
+        if: failure()
+        run: docker compose logs --tail 200

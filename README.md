@@ -21,6 +21,7 @@ outbox, no broker) and a Next.js frontend, self-hosted and updating itself after
 | Exactly-once post-race e-mail on top of at-least-once delivery | [`notifications/handlers.py`](backend/apps/notifications/handlers.py) |
 | Predictions locked server-side at qualifying start, scoring as a pure function, recomputed after corrections | [`apps/predictions`](backend/apps/predictions) |
 | ~930 backend tests on real PostgreSQL, 90% coverage gate, query-count tests and an N+1 gate (pytest-queryguard) | [testing](docs/testing.md), [N+1 write-up](docs/n-plus-one.md) |
+| Load test per endpoint in GitHub Actions against the Compose stack, p50/p95/p99 published | [performance](docs/performance.md), [`perf.yml`](.github/workflows/perf.yml) |
 | Playwright end-to-end tests against the full Docker Compose stack in GitHub Actions | [`e2e/`](e2e), [`e2e.yml`](.github/workflows/e2e.yml) |
 | Type check with zero pyright errors (annotated ORM shapes instead of ignores), weekly dependency audit | [`pyrightconfig.json`](backend/pyrightconfig.json), [`audit.yml`](.github/workflows/audit.yml) |
 | Operations: health and readiness, pipeline alerts, JSON logs with request ids, backups with a restore test | [operations](docs/operations.md) |
