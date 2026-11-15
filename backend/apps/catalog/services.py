@@ -588,10 +588,13 @@ def drivers_by_code(code: str) -> list[DriverRef]:
     return _driver_refs(m.Driver.objects.filter(code__iexact=code).order_by("pk"))
 
 
-def circuit_for_outline(slug: str) -> tuple[int, bool] | None:
-    """(circuit id, whether it already has an outline) for a slug, or None when it is unknown."""
-    row = m.Circuit.objects.filter(slug=slug).values_list("pk", "outline").first()
-    return None if row is None else (row[0], bool(row[1]))
+def circuits_for_outline(slugs: Iterable[str]) -> dict[str, tuple[int, bool]]:
+    """Slug -> (circuit id, whether it already has an outline); unknown slugs are left out.
+
+    One query for all slugs (a lookup per slug ran once per circuit of the import).
+    """
+    rows = m.Circuit.objects.filter(slug__in=list(slugs)).values_list("slug", "pk", "outline")
+    return {slug: (pk, bool(outline)) for slug, pk, outline in rows}
 
 
 def set_circuit_outline(circuit_id: int, outline: dict) -> None:
