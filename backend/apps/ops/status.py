@@ -200,13 +200,16 @@ def pipeline_problems(now: datetime | None = None) -> list[Problem]:
     for source, job, failures in failing_jobs(now):
         problems.append(Problem("sync_failing", f"{source}/{job} failed {failures} times in a row"))
     race = data_freshness(now)["latest_race"]
-    if race and not race["results_final"]:
-        if race["ended_age_seconds"] > RESULTS_GRACE.total_seconds():
-            hours = race["ended_age_seconds"] // 3600
-            problems.append(
-                Problem(
-                    "results_missing",
-                    f"{race['season']} {race['name']} ended {hours} h ago without final results",
-                )
+    if (
+        race
+        and not race["results_final"]
+        and race["ended_age_seconds"] > RESULTS_GRACE.total_seconds()
+    ):
+        hours = race["ended_age_seconds"] // 3600
+        problems.append(
+            Problem(
+                "results_missing",
+                f"{race['season']} {race['name']} ended {hours} h ago without final results",
             )
+        )
     return problems

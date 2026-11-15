@@ -32,9 +32,13 @@ def test_publish_inside_a_transaction_records_a_pending_event():
 
 @pytest.mark.django_db
 def test_rolled_back_transaction_leaves_no_event():
-    with pytest.raises(RuntimeError), transaction.atomic():
-        publish("Ping")
-        raise RuntimeError("boom")
+    def publish_then_fail():
+        with transaction.atomic():
+            publish("Ping")
+            raise RuntimeError("boom")
+
+    with pytest.raises(RuntimeError, match="boom"):
+        publish_then_fail()
     assert OutboxEvent.objects.count() == 0
 
 

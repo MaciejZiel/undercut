@@ -77,7 +77,8 @@ def test_season_totals_sum_rounds_and_count_exact_podiums(drivers, clock):
         "predictions": 2,
     }
     only_r2 = selectors.leaderboard(season=2025, round_number=2)
-    assert names(only_r2) == ["a"] and only_r2["results"][0]["points"] == 5
+    assert names(only_r2) == ["a"]
+    assert only_r2["results"][0]["points"] == 5
 
 
 def test_default_season_is_latest_scored_and_unscored_are_skipped(drivers, clock):
@@ -102,7 +103,9 @@ def test_pagination_keeps_global_rank(drivers, clock):
     for points in (9, 8, 7):
         direct(make_user(f"p{points}"), round_, drivers, points)
     page = selectors.leaderboard(season=2025, limit=1, offset=1)
-    assert names(page) == ["p8"] and page["results"][0]["rank"] == 2 and page["count"] == 3
+    assert names(page) == ["p8"]
+    assert page["results"][0]["rank"] == 2
+    assert page["count"] == 3
 
 
 def test_league_leaderboard_only_members(drivers, clock):
@@ -224,7 +227,9 @@ def test_stats_after_lock(drivers, weekend, clock):
     stats = selectors.pick_stats(catalog.find_round(2025, 1))
     assert stats["total"] == 4
     top = stats["slots"]["p1"][0]
-    assert top["driver"]["id"] == drivers[0].id and top["percent"] == 75.0 and top["count"] == 3
+    assert top["driver"]["id"] == drivers[0].id
+    assert top["percent"] == 75.0
+    assert top["count"] == 3
     assert stats["slots"]["p1"][1]["percent"] == 25.0
     assert set(stats["slots"]) == {"p1", "p2", "p3", "pole", "fastest_lap"}
 
@@ -232,7 +237,8 @@ def test_stats_after_lock(drivers, weekend, clock):
 def test_stats_with_no_predictions(weekend, clock):
     clock.now = NOW + dt.timedelta(hours=2)
     stats = selectors.pick_stats(catalog.find_round(2025, 1))
-    assert stats["total"] == 0 and stats["slots"]["p1"] == []
+    assert stats["total"] == 0
+    assert stats["slots"]["p1"] == []
 
 
 # --- History, round state, export -----------------------------------------------------------------
@@ -246,12 +252,14 @@ def test_history_shows_pick_result_and_points(user, drivers, weekend, clock):
                            pole=drivers[3].id, fastest_lap=drivers[4].id),
     )  # fmt: skip
     rows = selectors.history(user)
-    assert rows[0]["result"] is None and rows[0]["points"] is None
+    assert rows[0]["result"] is None
+    assert rows[0]["points"] is None
     set_race_result(race, drivers[:3], pole=drivers[3], fastest_lap=drivers[4], quali=quali,
                     extra=drivers[3:])  # fmt: skip
     services.score_round(round_.id)
     row = selectors.history(user)[0]
-    assert row["points"] == 25 and row["round"]["year"] == 2025
+    assert row["points"] == 25
+    assert row["round"]["year"] == 2025
     assert row["result"]["p1"]["id"] == drivers[0].id
     assert row["result"]["pole"]["id"] == drivers[3].id
     assert row["pick"]["fastest_lap"]["id"] == drivers[4].id
@@ -276,7 +284,8 @@ def test_history_query_count_is_constant(user, drivers, clock):
 def test_round_state_open_closed_unavailable(user, drivers, weekend, clock):
     ref = catalog.find_round(2025, 1)
     state = selectors.round_state(user, ref)
-    assert state["status"] == "open" and state["closes_at"] == NOW + dt.timedelta(hours=1)
+    assert state["status"] == "open"
+    assert state["closes_at"] == NOW + dt.timedelta(hours=1)
     assert state["my_pick"] is None
     clock.now = NOW + dt.timedelta(hours=2)
     assert selectors.round_state(user, ref)["status"] == "closed"
@@ -300,8 +309,10 @@ def test_export_contains_predictions_and_leagues(user, drivers, weekend):
     )  # fmt: skip
     services.create_league(user, "L")
     data = exports.export_user_data(user)
-    assert data["predictions"][0]["season"] == 2025 and data["predictions"][0]["round"] == 1
-    assert data["leagues"][0]["name"] == "L" and data["leagues"][0]["is_owner"] is True
+    assert data["predictions"][0]["season"] == 2025
+    assert data["predictions"][0]["round"] == 1
+    assert data["leagues"][0]["name"] == "L"
+    assert data["leagues"][0]["is_owner"] is True
 
 
 def test_export_registration_tolerates_missing_accounts_hook(monkeypatch):

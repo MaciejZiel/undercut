@@ -95,7 +95,8 @@ def test_future_and_cancelled_races_are_ignored(healthy_heartbeats, make_race):
     cancelled = make_race(ended_ago=timedelta(days=5))
     cancelled.round.is_cancelled = True
     cancelled.round.save()
-    assert future and status.pipeline_problems() == []
+    assert future
+    assert status.pipeline_problems() == []
 
 
 def test_race_without_end_time_uses_start_plus_three_hours(healthy_heartbeats, make_race):

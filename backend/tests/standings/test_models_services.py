@@ -106,9 +106,9 @@ def test_replace_rejects_duplicates_and_bad_round_without_changes():
     d = DriverFactory()
     DriverStandingFactory(season=season, driver=d)
     dup = {"driver_id": d.pk, "position": 1, "position_text": "1", "points": 1}
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="duplicate driver_id"):
         services.replace_driver_standings(season.pk, 1, [dup, dup])
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="after_round must be >= 1"):
         services.replace_driver_standings(season.pk, 0, [dup])
     assert DriverStanding.objects.get().points == 25
 

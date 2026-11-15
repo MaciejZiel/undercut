@@ -61,7 +61,8 @@ def test_lock_boundary_over_http(api, user, drivers, clock):
     assert response.status_code == 403
     assert response.data["code"] == "predictions_locked"
     state = api.get(ROUND_URL).data
-    assert state["status"] == "closed" and state["my_pick"]["pole"]["id"] == drivers[3].id
+    assert state["status"] == "closed"
+    assert state["my_pick"]["pole"]["id"] == drivers[3].id
 
 
 def test_client_clock_is_irrelevant(api, drivers, weekend, clock):
@@ -76,7 +77,8 @@ def test_unverified_email_is_403(drivers, weekend):
     client = APIClient()
     client.force_login(make_user(verified=False))
     response = client.put(ROUND_URL, body(drivers), format="json")
-    assert response.status_code == 403 and response.data["code"] == "email_not_verified"
+    assert response.status_code == 403
+    assert response.data["code"] == "email_not_verified"
 
 
 def test_duplicate_drivers_are_400(api, drivers, weekend):
@@ -95,7 +97,8 @@ def test_unknown_driver_is_400(api, drivers, weekend):
 def test_no_qualifying_time_is_409(api, drivers, clock):
     make_weekend(2025, 1, with_quali=False)
     response = api.put(ROUND_URL, body(drivers), format="json")
-    assert response.status_code == 409 and response.data["code"] == "qualifying_time_unknown"
+    assert response.status_code == 409
+    assert response.data["code"] == "qualifying_time_unknown"
     assert api.get(ROUND_URL).data["status"] == "unavailable"
 
 
@@ -112,7 +115,8 @@ def test_history_requires_auth_and_lists_picks(anon, api, drivers, weekend):
     assert anon.get("/api/v1/predictions/history/").status_code in (401, 403)
     api.put(ROUND_URL, body(drivers), format="json")
     rows = api.get("/api/v1/predictions/history/").data
-    assert len(rows) == 1 and rows[0]["round"]["round"] == 1
+    assert len(rows) == 1
+    assert rows[0]["round"]["round"] == 1
 
 
 def _score(user, drivers, weekend, clock):
@@ -177,7 +181,8 @@ def test_league_lifecycle(api, user, drivers, weekend, clock):
     friend_client = APIClient()
     friend_client.force_login(friend)
     joined = friend_client.post("/api/v1/leagues/join/", {"code": code.lower()}, format="json")
-    assert joined.status_code == 200 and joined.data["member_count"] == 2
+    assert joined.status_code == 200
+    assert joined.data["member_count"] == 2
     assert (
         friend_client.post("/api/v1/leagues/join/", {"code": code}, format="json").status_code
         == 409
@@ -190,13 +195,15 @@ def test_league_lifecycle(api, user, drivers, weekend, clock):
     assert api.get(picks_url).status_code == 403
     clock.now = NOW + dt.timedelta(hours=2)
     picks = api.get(picks_url)
-    assert picks.status_code == 200 and picks.data[0]["name"] == "friend"
+    assert picks.status_code == 200
+    assert picks.data[0]["name"] == "friend"
 
     # only the owner manages
     assert friend_client.post(f"/api/v1/leagues/{code}/renew-code/").status_code == 403
     assert friend_client.delete(f"/api/v1/leagues/{code}/members/{user.pk}/").status_code == 403
     renewed = api.post(f"/api/v1/leagues/{code}/renew-code/")
-    assert renewed.status_code == 200 and renewed.data["invite_code"] != code
+    assert renewed.status_code == 200
+    assert renewed.data["invite_code"] != code
     new_code = renewed.data["invite_code"]
     assert api.get(f"/api/v1/leagues/{code}/").status_code == 404
     assert api.delete(f"/api/v1/leagues/{new_code}/members/{friend.pk}/").status_code == 204
@@ -210,7 +217,8 @@ def test_league_limits_over_http(api):
     for i in range(10):
         assert api.post("/api/v1/leagues/", {"name": f"L{i}"}, format="json").status_code == 201
     response = api.post("/api/v1/leagues/", {"name": "x"}, format="json")
-    assert response.status_code == 409 and response.data["code"] == "league_limit_reached"
+    assert response.status_code == 409
+    assert response.data["code"] == "league_limit_reached"
 
 
 def test_league_writes_need_auth(anon):

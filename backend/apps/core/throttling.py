@@ -3,7 +3,7 @@ import hmac
 from django.conf import settings
 from rest_framework.throttling import AnonRateThrottle
 
-INTERNAL_TOKEN_META = "HTTP_X_INTERNAL_TOKEN"
+INTERNAL_TOKEN_META = "HTTP_X_INTERNAL_TOKEN"  # noqa: S105 (a header name)
 
 
 class PublicAnonRateThrottle(AnonRateThrottle):

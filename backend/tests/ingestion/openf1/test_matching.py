@@ -46,7 +46,8 @@ def test_matches_round_and_sessions_and_stores_keys(bahrain):
     assert Session.objects.get(pk=bahrain["quali"].pk).openf1_session_key == 9468
     assert any("Practice 1" in n for n in result.notes)  # no FP session in the catalog: a note
     again = matching.match_year(2024, meetings(), sessions())
-    assert again.keys_set == 0 and again.errors == []
+    assert again.keys_set == 0
+    assert again.errors == []
 
 
 def test_date_tolerance_is_three_days(bahrain):
@@ -96,7 +97,8 @@ def test_cancelled_and_testing_meetings_are_skipped_quietly(bahrain):
         s.Meeting(meeting_key=2, meeting_name="Imola", is_cancelled=True),
     ]
     result = matching.match_year(2024, extra, [])
-    assert result.errors == [] and len(result.notes) == 2
+    assert result.errors == []
+    assert len(result.notes) == 2
 
 
 def test_existing_different_key_is_reported_not_overwritten(bahrain):
@@ -132,7 +134,8 @@ def test_admin_fix_in_driver_number_map_is_used_and_kept(bahrain):
     # a wrong automatic guess is never silently replaced either
     DriverNumberMap.objects.filter(driver_number=1).update(driver=ham)
     res = matching.resolve_drivers(2024, drivers)
-    assert res.mapping[44] == ham.id and res.mapping[1] == ham.id
+    assert res.mapping[44] == ham.id
+    assert res.mapping[1] == ham.id
     assert len(res.unmatched) == 15
 
 
@@ -141,4 +144,5 @@ def test_ambiguous_code_is_not_guessed(bahrain):
     DriverFactory(jolpica_id="b", family_name="Beta", code="ZZZ")
     row = s.Driver(driver_number=9, name_acronym="ZZZ", last_name="Unknownson")
     res = matching.resolve_drivers(2024, [row])
-    assert res.mapping == {} and len(res.unmatched) == 1
+    assert res.mapping == {}
+    assert len(res.unmatched) == 1

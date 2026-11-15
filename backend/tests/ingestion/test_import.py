@@ -36,7 +36,8 @@ def test_import_creates_the_catalog():
     assert Constructor.objects.count() == 3
     assert ConstructorSeason.objects.count() == 5
     assert Round.objects.count() == 3
-    assert Session.objects.count() == 2 + 4 and totals["session"].created == 6
+    assert Session.objects.count() == 2 + 4
+    assert totals["session"].created == 6
     assert Result.objects.count() == 3 + 3 + 2
     assert QualifyingResult.objects.count() == 3 + 3 + 3
     assert Driver.objects.get(jolpica_id="leclerc").code == "LEC"
@@ -49,7 +50,8 @@ def test_import_creates_the_catalog():
 def test_cancelled_round_is_kept_without_number():
     run_import(FIXTURES, today=TODAY)
     cancelled = Round.objects.get(is_cancelled=True)
-    assert cancelled.round is None and cancelled.season.year == 2023
+    assert cancelled.round is None
+    assert cancelled.season.year == 2023
     assert cancelled.sessions.count() == 0
 
 
@@ -77,7 +79,9 @@ def test_result_keeps_team_on_race_day():
 def test_second_run_creates_nothing():
     run_import(FIXTURES, today=TODAY)
     run, totals = run_import(FIXTURES, today=TODAY)
-    assert run.created == 0 and run.updated == 0 and run.skipped == 0
+    assert run.created == 0
+    assert run.updated == 0
+    assert run.skipped == 0
     assert all(c.created == 0 and c.updated == 0 for c in totals.values())
     assert totals["result"].unchanged == 8
     assert Result.objects.count() == 8
@@ -87,7 +91,8 @@ def test_changed_source_row_is_updated_not_duplicated():
     run_import(FIXTURES, today=TODAY)
     Result.objects.filter(driver__code="VER", session__round__season__year=2022).update(points=0)
     run, totals = run_import(FIXTURES, today=TODAY)
-    assert totals["result"].updated == 1 and run.created == 0
+    assert totals["result"].updated == 1
+    assert run.created == 0
     assert Result.objects.get(driver__code="VER", session__round__season__year=2022).points == 25
 
 
@@ -107,10 +112,12 @@ def test_manual_override_is_never_overwritten():
 def test_dry_run_changes_nothing_but_reports_counts():
     run, totals = run_import(FIXTURES, dry_run=True, today=TODAY)
     assert totals["result"].created == 8
-    assert Season.objects.count() == 0 and Result.objects.count() == 0
+    assert Season.objects.count() == 0
+    assert Result.objects.count() == 0
     assert OutboxEvent.objects.count() == 0
     stored = SyncRun.objects.get(pk=run.pk)
-    assert stored.scope["dry_run"] is True and stored.status == SyncRun.Status.SUCCESS
+    assert stored.scope["dry_run"] is True
+    assert stored.status == SyncRun.Status.SUCCESS
 
 
 def test_year_range_limits_the_import():
@@ -122,7 +129,8 @@ def test_year_range_limits_the_import():
 def test_event_is_published_once_per_successful_import():
     run, _ = run_import(FIXTURES, today=TODAY)
     event = OutboxEvent.objects.get(type="HistoryImported")
-    assert event.payload["sync_run_id"] == run.pk and event.payload["rounds"] == 3
+    assert event.payload["sync_run_id"] == run.pk
+    assert event.payload["rounds"] == 3
 
 
 def test_failed_round_is_recorded_and_the_rest_imported(monkeypatch):
@@ -148,7 +156,8 @@ def test_failed_round_is_recorded_and_the_rest_imported(monkeypatch):
     )
     run, _ = run_import(FIXTURES, today=TODAY)
     assert run.status == SyncRun.Status.PARTIAL
-    assert len(run.errors) == 1 and "boom" in run.errors[0]["error"]
+    assert len(run.errors) == 1
+    assert "boom" in run.errors[0]["error"]
     assert Round.objects.filter(season__year=2022).count() == 0  # that round rolled back as a unit
     assert Round.objects.filter(season__year=2023).count() == 2
 
@@ -162,7 +171,8 @@ def test_management_command_with_zip(tmp_path):
             z.write(p, p.name)
     out = io.StringIO()
     call_command("import_history", dump=archive, stdout=out)
-    assert "result" in out.getvalue() and "created=8" in out.getvalue()
+    assert "result" in out.getvalue()
+    assert "created=8" in out.getvalue()
     out = io.StringIO()
     call_command("import_history", dump=FIXTURES, stdout=out)
     assert "created=0" in out.getvalue()

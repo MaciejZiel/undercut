@@ -42,7 +42,8 @@ def race_client(*rows, **extra):
 def test_calendar_creates_rounds_circuits_and_session_times():
     run = sync.sync_calendar(calendar_client(d.BAHRAIN, d.CHINA), 2024)
 
-    assert run.status == SyncRun.Status.SUCCESS and run.errors == []
+    assert run.status == SyncRun.Status.SUCCESS
+    assert run.errors == []
     assert Round.objects.filter(season__year=2024).count() == 2
     qualifying = Session.objects.get(round__round=1, type="Q")
     assert qualifying.start_utc == dt.datetime(2024, 3, 1, 16, 0, tzinfo=dt.UTC)
@@ -90,7 +91,8 @@ def test_results_are_stored_and_published_once(season):
     first = sync.sync_session_results(client, race_session().id, now=NOW)
     second = sync.sync_session_results(client, race_session().id, now=NOW)
 
-    assert first.available and first.changed
+    assert first.available
+    assert first.changed
     assert not second.changed  # nothing new: no second event
     assert Result.objects.filter(session=race_session()).count() == 2
     assert race_session().status == "results_final"
@@ -137,7 +139,8 @@ def test_results_not_published_yet_change_nothing(season):
     result = sync.sync_session_results(
         d.FakeClient(results=d.results()), race_session().id, now=NOW
     )
-    assert not result.available and not result.changed
+    assert not result.available
+    assert not result.changed
     assert race_session().status != "results_final"
     assert not events("SessionResultsFinalized")
 
@@ -178,7 +181,8 @@ def test_failure_is_recorded_and_raised(season):
     with pytest.raises(RuntimeError):
         sync.sync_session_results(Boom(), race_session().id, now=NOW)
     run = SyncRun.objects.filter(job="session-results").latest("id")
-    assert run.status == SyncRun.Status.FAILED and "source down" in run.errors[0]["error"]
+    assert run.status == SyncRun.Status.FAILED
+    assert "source down" in run.errors[0]["error"]
 
 
 def test_sessions_without_a_synced_type_are_ignored(season):

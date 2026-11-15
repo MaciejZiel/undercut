@@ -28,7 +28,7 @@ def at(seconds: float) -> datetime:
 # --- Builders (shared with test_api) ---------------------------------------------------------
 
 
-def make_session(year=2024, number=1, type=Session.Type.RACE, status="results_final"):
+def make_session(year=2024, number=1, type=Session.Type.RACE, status="results_final"):  # noqa: A002
     season = f.SeasonFactory._meta.model.objects.filter(year=year).first() or f.SeasonFactory(
         year=year
     )
@@ -93,7 +93,8 @@ def test_session_header_and_drivers_with_colours():
     )
 
     header = lookups.get_session_header(2024, 1, "RACE")
-    assert header is not None and header.is_final
+    assert header is not None
+    assert header.is_final
     assert (header.year, header.round, header.round_name) == (2024, 1, "Round 1")
     assert lookups.get_session_header(2024, 1, "SPRINT") is None
     assert lookups.get_session_header(2024, 9, "RACE") is None
@@ -103,7 +104,8 @@ def test_session_header_and_drivers_with_colours():
     assert drivers[0].color_hex == "#3671c6"
     assert drivers[1].color_hex is None
     assert drivers[0].full_name == "Ver Driver"
-    assert drivers[2].position is None and drivers[2].driver_id == other.driver_id
+    assert drivers[2].position is None
+    assert drivers[2].driver_id == other.driver_id
 
 
 def test_session_drivers_use_qualifying_results_for_q():
@@ -260,7 +262,8 @@ def test_laps_summary_single_lap_has_no_stdev():
     add_laps(session, add_driver(session, "AAA", 1), [90_000])
     header = lookups.get_session_header(2024, 1, "RACE")
     summary = selectors.laps(header, [], hide_slow=False)["drivers"][0]["summary"]
-    assert summary["stdev_ms"] is None and summary["best_ms"] == 90_000
+    assert summary["stdev_ms"] is None
+    assert summary["best_ms"] == 90_000
 
 
 def test_laps_filter_by_driver_codes():
@@ -304,10 +307,12 @@ def test_stints_in_result_order_with_letters_and_gaps_filled():
     result = selectors.stints(header)
     assert [d["code"] for d in result["drivers"]] == ["BBB", "AAA"]
     bbb, aaa = result["drivers"]
-    assert bbb["stints"][0]["lap_end"] == 10 and bbb["stints"][0]["compound_letter"] == "I"
+    assert bbb["stints"][0]["lap_end"] == 10
+    assert bbb["stints"][0]["compound_letter"] == "I"
     assert [s["compound_letter"] for s in aaa["stints"]] == ["S", "H", "?"]
     assert aaa["stints"][0]["laps"] == 20
-    assert aaa["stints"][1]["lap_end"] == 50 and aaa["stints"][1]["laps"] == 30
+    assert aaa["stints"][1]["lap_end"] == 50
+    assert aaa["stints"][1]["laps"] == 30
     assert aaa["stints"][1]["tyre_age_at_start"] == 3
 
 
@@ -378,7 +383,8 @@ def test_pit_stop_table_has_compound_change_and_final_order():
     assert (stops[0]["compound_from"], stops[0]["compound_to"]) == ("MEDIUM", "HARD")
     assert (stops[1]["compound_from"], stops[1]["compound_to"]) == (None, None)
     assert (stops[2]["compound_from"], stops[2]["compound_to"]) == ("SOFT", "MEDIUM")
-    assert stops[0]["lane_ms"] == 21_000 and stops[0]["stop_ms"] == 2400
+    assert stops[0]["lane_ms"] == 21_000
+    assert stops[0]["stop_ms"] == 2400
 
 
 # --- weather / race control ------------------------------------------------------------------
@@ -392,7 +398,8 @@ def test_downsample_indices(count, expected):
     assert len(indices) == expected
     assert indices == sorted(set(indices))
     if count > 1:
-        assert indices[0] == 0 and indices[-1] == count - 1
+        assert indices[0] == 0
+        assert indices[-1] == count - 1
 
 
 def test_weather_is_downsampled():
@@ -404,7 +411,8 @@ def test_weather_is_downsampled():
     result = selectors.weather(lookups.get_session_header(2024, 1, "RACE"))
     assert result["total_samples"] == 300
     assert len(result["samples"]) == 120
-    assert result["samples"][0]["ts"] == at(0) and result["samples"][-1]["ts"] == at(299 * 60)
+    assert result["samples"][0]["ts"] == at(0)
+    assert result["samples"][-1]["ts"] == at(299 * 60)
 
 
 def test_race_control_filter_and_driver_code():

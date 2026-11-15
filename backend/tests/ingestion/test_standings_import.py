@@ -20,7 +20,8 @@ def standing(year, after_round, code):
 def test_standings_are_imported_after_races_only():
     run, totals = run_import(FIXTURES, today=TODAY)
 
-    assert run.status == SyncRun.Status.SUCCESS and run.errors == []
+    assert run.status == SyncRun.Status.SUCCESS
+    assert run.errors == []
     # 2022 R1: three eligible drivers (the ineligible one is dropped); 2023 R1: three entries
     assert DriverStanding.objects.count() == 3 + 3
     assert ConstructorStanding.objects.count() == 3 + 2
@@ -36,7 +37,8 @@ def test_sprint_snapshot_does_not_replace_the_race_table():
 def test_eligible_entry_without_a_position_is_kept_with_null_position():
     run_import(FIXTURES, today=TODAY)
     row = standing(2023, 1, "HAM")
-    assert row.position is None and row.position_text == ""
+    assert row.position is None
+    assert row.position_text == ""
 
 
 def test_podiums_count_classified_finishes_only():

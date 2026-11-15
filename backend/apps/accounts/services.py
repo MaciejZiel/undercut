@@ -7,7 +7,7 @@ from typing import Literal
 
 from allauth.account.models import EmailAddress
 from django.contrib.sessions.models import Session
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
@@ -119,7 +119,8 @@ _KIND_LIMITS = {"driver": MAX_FAVORITE_DRIVERS, "constructor": MAX_FAVORITE_CONS
 def _target_model(kind: FavoriteKind):
     # Resolved through the FK so this module never imports catalog's models.
     model = Favorite._meta.get_field(kind).related_model
-    assert model is not None and not isinstance(model, str)  # a resolved FK target
+    if model is None or isinstance(model, str):  # a lazy "app.Model" string until apps load
+        raise ImproperlyConfigured(f"foreign key target is not resolved: {model!r}")
     return model
 
 

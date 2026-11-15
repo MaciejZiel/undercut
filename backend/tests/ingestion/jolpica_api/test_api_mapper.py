@@ -14,7 +14,8 @@ def test_schedule_maps_sessions_with_assumed_end_times():
         1,
         "Bahrain Grand Prix",
     )
-    assert bahrain.circuit.jolpica_id == "bahrain" and bahrain.circuit.country == "Bahrain"
+    assert bahrain.circuit.jolpica_id == "bahrain"
+    assert bahrain.circuit.country == "Bahrain"
     by_type = {s.type: s for s in bahrain.sessions}
     assert set(by_type) == {"FP1", "FP2", "FP3", "Q", "RACE"}
     q = by_type["Q"]
@@ -34,7 +35,8 @@ def test_missing_times_become_unknown_not_midnight():
     race = d.race(2, "X Grand Prix", d.circuit(), "2024-03-09", time=None)
     race.pop("time")
     [parsed] = m.parse_schedule(d.schedule(race))
-    assert parsed.sessions[-1].type == "RACE" and parsed.sessions[-1].start_utc is None
+    assert parsed.sessions[-1].type == "RACE"
+    assert parsed.sessions[-1].start_utc is None
     assert parsed.sessions[-1].end_utc is None
 
 

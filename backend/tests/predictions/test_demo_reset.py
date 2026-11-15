@@ -78,8 +78,10 @@ def test_reset_builds_bots_league_and_sample_picks(demo_user, world):
 
     assert bots().count() == 8
     for bot in bots():
-        assert bot.is_demo and not bot.has_usable_password()
-        assert bot.email == "" and not bot.email_verified
+        assert bot.is_demo
+        assert not bot.has_usable_password()
+        assert bot.email == ""
+        assert not bot.email_verified
     # Last completed round (scored) and the open round (unscored) for every bot.
     last, previous = world["rounds"][1], world["rounds"][0]
     for bot in bots():
@@ -153,13 +155,15 @@ def test_reset_restores_the_demo_account_and_leaves_real_users_alone(demo_user, 
 
 def test_without_a_demo_user_nothing_happens(world):
     demo.reset_demo_data(TODAY)
-    assert bots().count() == 0 and Prediction.objects.count() == 0
+    assert bots().count() == 0
+    assert Prediction.objects.count() == 0
 
 
 def test_without_finished_rounds_only_the_league_is_built(clock):
     call_command("seed_demo_user")
     demo.reset_demo_data(TODAY)
-    assert bots().count() == 8 and Prediction.objects.count() == 0
+    assert bots().count() == 8
+    assert Prediction.objects.count() == 0
 
 
 def test_bot_name_taken_by_a_real_user_does_not_break_the_reset(demo_user, world):
@@ -172,7 +176,8 @@ def test_bot_name_taken_by_a_real_user_does_not_break_the_reset(demo_user, world
 def test_demo_accounts_are_known_to_other_modules(demo_user, world):
     demo.reset_demo_data(TODAY)
     ids = accounts_public.demo_user_ids()
-    assert demo_user.pk in ids and set(bots().values_list("pk", flat=True)) <= ids
+    assert demo_user.pk in ids
+    assert set(bots().values_list("pk", flat=True)) <= ids
     assert len(ids) == 9
 
 

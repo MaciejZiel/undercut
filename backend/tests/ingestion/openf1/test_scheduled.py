@@ -144,5 +144,6 @@ def test_worker_runs_the_handler(race, monkeypatch):
     process_batch()
 
     event.refresh_from_db()
-    assert event.status == "done" and len(calls) == 1
+    assert event.status == "done"
+    assert len(calls) == 1
     registry.clear()

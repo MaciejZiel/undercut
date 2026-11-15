@@ -23,7 +23,8 @@ def test_simplify_keeps_corners_and_drops_straight_points():
 
 def test_build_outline_fits_the_viewbox_and_closes_the_loop():
     result = outline.build_outline(ring())
-    assert result["width"] == 1000 and 0 < result["height"] < 1000
+    assert result["width"] == 1000
+    assert 0 < result["height"] < 1000
     assert result["points"][0] == result["points"][-1]
     assert 20 < len(result["points"]) < 200
     assert all(0 <= x <= 1000 and 0 <= y <= 1000 for x, y in result["points"])
@@ -96,11 +97,13 @@ class FakeClient:
 def test_fetch_outline_asks_for_the_winners_median_lap_only():
     client = FakeClient(ring())
     result = outline.fetch_outline(client, 11388)
-    assert result and result["width"] == 1000
+    assert result
+    assert result["width"] == 1000
     endpoints = [c[0] for c in client.calls]
     assert endpoints == ["session_result", "laps", "location"]
     location = client.calls[2][1]
-    assert location["driver_number"] == 63 and location["session_key"] == 11388
+    assert location["driver_number"] == 63
+    assert location["session_key"] == 11388
     start = dt.datetime.fromisoformat(location["date>="])
     stop = dt.datetime.fromisoformat(location["date<="])
     assert (stop - start).total_seconds() == pytest.approx(99.0)

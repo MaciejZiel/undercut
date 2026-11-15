@@ -61,7 +61,8 @@ def test_mail_on_the_second_failure_in_a_row_only_once():
     assert len(mail.outbox) == 1
     message = mail.outbox[0]
     assert message.to == ["owner@example.com"]
-    assert "session-results" in message.subject and "2 in a row" in message.subject
+    assert "session-results" in message.subject
+    assert "2 in a row" in message.subject
     assert "HTTP 503 from upstream" in message.body
     second.refresh_from_db()
     assert second.scope["alerted"] is True

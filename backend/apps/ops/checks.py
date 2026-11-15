@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.checks import Tags, Warning, register  # noqa: A004
+from django.core.checks import Tags, Warning, register  # noqa: A004 (Django's check class)
 
 
 @register(Tags.security, deploy=True)

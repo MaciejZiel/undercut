@@ -62,7 +62,14 @@ target-version = "py313"
 extend-exclude = ["migrations"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "DJ"]
+# SIM, RET, PT: simpler code and pytest idioms. S: bandit security checks. A: shadowed builtins.
+# RUF100 keeps every noqa honest (it fails on a suppression that no longer suppresses anything).
+select = ["E", "F", "I", "UP", "B", "DJ", "SIM", "RET", "PT", "S", "A", "RUF100"]
+
+[tool.ruff.lint.per-file-ignores]
+# pytest's assertion rewriting needs plain assert. S105-S107: tests sign in with fixed throwaway
+# passwords and tokens; real secrets only ever come from the environment, never from test code.
+"tests/**" = ["S101", "S105", "S106", "S107"]
 
 [tool.importlinter]
 root_packages = ["apps"]

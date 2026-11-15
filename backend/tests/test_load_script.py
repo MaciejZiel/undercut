@@ -19,7 +19,7 @@ def test_percentile_picks_the_nearest_rank():
 
 
 class _Handler(BaseHTTPRequestHandler):
-    def do_GET(self):  # noqa: N802
+    def do_GET(self):  # the name BaseHTTPRequestHandler dispatches to
         status = 500 if self.path == "/boom" else 200
         self.send_response(status)
         self.end_headers()
@@ -42,6 +42,8 @@ def _run(paths):
 
 def test_worker_records_latencies_and_errors_separately():
     ok = _run(["/fine"])
-    assert ok["ms"] and ok["errors"] == 0
+    assert ok["ms"]
+    assert ok["errors"] == 0
     mixed = _run(["/fine", "/boom"])
-    assert mixed["ms"] and mixed["errors"] > 0
+    assert mixed["ms"]
+    assert mixed["errors"] > 0

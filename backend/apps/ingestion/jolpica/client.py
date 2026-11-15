@@ -55,7 +55,7 @@ class RateLimiter:
 
 
 def _urlopen(url: str) -> tuple[int, dict[str, str], bytes]:
-    request = urllib.request.Request(
+    request = urllib.request.Request(  # noqa: S310 (JolpicaClient passes BASE_URL paths)
         url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"}
     )
     try:

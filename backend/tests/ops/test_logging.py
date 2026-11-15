@@ -155,7 +155,8 @@ def test_scrub_event_drops_pii():
     assert "a@b.co" not in flat
     assert "hunter2" not in flat
     assert "user" not in out
-    assert "cookies" not in out["request"] and "data" not in out["request"]
+    assert "cookies" not in out["request"]
+    assert "data" not in out["request"]
     assert out["request"]["headers"]["Cookie"] == "[redacted]"
     assert out["request"]["headers"]["Accept"] == "json"
 

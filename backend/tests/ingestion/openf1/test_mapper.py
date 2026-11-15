@@ -12,7 +12,8 @@ DRIVERS = {1: 100, 16: 116}
 
 def test_schema_ignores_extra_and_missing_fields():
     lap = s.Lap.from_dict({"driver_number": 1, "lap_number": 2, "new_field": "x"})
-    assert lap.lap_duration is None and lap.driver_number == 1
+    assert lap.lap_duration is None
+    assert lap.driver_number == 1
     assert s.Lap.parse_all([{"lap_number": 1}, "junk"]) == [s.Lap(lap_number=1)]
 
 
@@ -42,7 +43,8 @@ def test_lap_with_missing_or_bad_durations_keeps_the_row():
         1,
         DRIVERS,
     )
-    assert out.duration_ms is None and out.sector1_ms is None
+    assert out.duration_ms is None
+    assert out.sector1_ms is None
 
 
 @pytest.mark.parametrize(

@@ -116,7 +116,8 @@ def test_import_stores_the_classification_and_finalises_the_session(weekend):
         (2, weekend["lando"].id, 92472, 26),
     ]
     assert rows[0].constructor_id == weekend["red_bull"].id
-    assert outcome.rows == 2 and outcome.final is True
+    assert outcome.rows == 2
+    assert outcome.final is True
     assert any("car 99" in p for p in outcome.problems)  # unknown driver is reported, not guessed
     weekend["fp1"].refresh_from_db()
     assert weekend["fp1"].status == "results_final"
@@ -128,7 +129,8 @@ def test_a_second_run_changes_nothing_and_publishes_nothing(weekend):
     practice.import_practice_session(client, matched(weekend["fp1"]), now=NOW)
     events = OutboxEvent.objects.count()
     again = practice.import_practice_session(client, matched(weekend["fp1"]), now=NOW)
-    assert again.created == 0 and again.updated == 0
+    assert again.created == 0
+    assert again.updated == 0
     assert OutboxEvent.objects.count() == events
     assert Result.objects.filter(session=weekend["fp1"]).count() == 2
 
@@ -138,7 +140,8 @@ def test_not_final_while_the_session_is_still_fresh(weekend):
     outcome = practice.import_practice_session(
         FakeClient(RESULTS, DRIVERS), matched(weekend["fp1"]), now=fresh
     )
-    assert outcome.rows == 2 and outcome.final is False
+    assert outcome.rows == 2
+    assert outcome.final is False
     weekend["fp1"].refresh_from_db()
     assert weekend["fp1"].status != "results_final"
 
@@ -174,7 +177,8 @@ def test_backfill_skips_sessions_that_already_have_results(weekend, monkeypatch)
 
     client = Year(RESULTS, DRIVERS)
     first = practice.import_practice(client, years=[2026], now=NOW)
-    assert len(first) == 1 and first[0].rows == 2
+    assert len(first) == 1
+    assert first[0].rows == 2
     second = practice.import_practice(client, years=[2026], now=NOW)
     assert second == []  # already has results
     forced = practice.import_practice(client, years=[2026], only_missing=False, now=NOW)

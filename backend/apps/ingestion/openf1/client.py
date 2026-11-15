@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 BASE_URL = "https://api.openf1.org/v1/"
 USER_AGENT = "Undercut/0.1 (+https://undercut.maciejzielinski.dev)"
-TOKEN_ENV = "OPENF1_TOKEN"
+TOKEN_ENV = "OPENF1_TOKEN"  # noqa: S105 (an environment variable name)
 
 FREE_PER_SECOND = 3.0
 FREE_PER_MINUTE = 30.0
@@ -164,6 +164,8 @@ class OpenF1Client:
         timeout: float = DEFAULT_TIMEOUT,
         max_bytes: int = DEFAULT_MAX_BYTES,
     ):
+        if not base_url.startswith(("https://", "http://")):
+            raise ValueError(f"base_url must be an http(s) URL, got {base_url!r}")
         self.base_url = base_url.rstrip("/") + "/"
         self._token = token or os.environ.get(TOKEN_ENV) or None
         self._sleep = sleep
@@ -212,7 +214,7 @@ class OpenF1Client:
             self.by_endpoint[endpoint] += 1
             retry_after = None
             try:
-                request = urllib.request.Request(url, headers=self._headers())
+                request = urllib.request.Request(url, headers=self._headers())  # noqa: S310 (scheme checked in __init__)
                 with self._opener(request, timeout=self.timeout) as response:
                     body = self._read(response)
                 return self._decode(body, url)

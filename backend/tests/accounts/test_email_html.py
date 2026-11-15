@@ -36,7 +36,8 @@ def test_confirmation_mail_is_multipart_with_a_branded_button(client):
     html = _html(message)
     link = re.search(r"/account/verify-email/[^\s\"'<>]+", message.body)
     assert link, "plain text part must keep the link"
-    assert "UNDERCUT" in html and "Confirm e-mail" in html
+    assert "UNDERCUT" in html
+    assert "Confirm e-mail" in html
     assert link.group(0) in html
     assert "New Fan" in html
 
@@ -70,5 +71,6 @@ def test_password_reset_mail_has_both_parts():
     assert res.status_code < 400, res.content
     message = mail.outbox[-1]
     html = _html(message)
-    assert "Choose a new password" in html and "Reset your password" in html
+    assert "Choose a new password" in html
+    assert "Reset your password" in html
     assert "/account/password/reset/key/" in message.body

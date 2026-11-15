@@ -36,7 +36,7 @@ class DumpError(Exception):
 
 def download_dump(dest: Path, url: str = DUMP_URL, timeout: int = 60) -> Path:
     """Download the zip to `dest` (the endpoint redirects to a short-lived signed URL)."""
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})  # noqa: S310 (https DUMP_URL)
     written = 0
     with urllib.request.urlopen(request, timeout=timeout) as response, dest.open("wb") as out:  # noqa: S310
         while chunk := response.read(1 << 20):

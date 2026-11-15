@@ -35,9 +35,11 @@ def test_practice_results_have_best_lap_gap_and_laps(client, round_):
     rows = body["results"]
     assert [r["position"] for r in rows] == [1, 2, 3]
     assert [r["gap_ms"] for r in rows] == [0, 198, None]
-    assert rows[0]["best_lap_ms"] == 92_274 and rows[0]["laps"] == 28
+    assert rows[0]["best_lap_ms"] == 92_274
+    assert rows[0]["laps"] == 28
     assert rows[0]["team"]["name"] == "McLaren"
-    assert "points" not in rows[0] and "grid" not in rows[0]
+    assert "points" not in rows[0]
+    assert "grid" not in rows[0]
 
 
 def test_unclassified_practice_rows_come_last(client, round_):

@@ -124,7 +124,8 @@ def test_race_result_values(dump):
         5400500,
         Decimal(25),
     )
-    assert ver.fastest_lap_rank == 1 and ver.grid == 1
+    assert ver.fastest_lap_rank == 1
+    assert ver.grid == 1
     assert (lec.position_text, lec.status, lec.laps) == ("R", "Engine", 30)
     assert race.session.status == "results_final"
 
@@ -133,7 +134,8 @@ def test_cancelled_round_has_no_number_and_no_sessions(dump):
     years = mapper.season_years(dump, None, None)
     row = next(r for r in dump.rounds if r.is_cancelled)
     bundle = mapper.map_round(dump, row, years, today=TODAY)
-    assert bundle.round.round is None and bundle.round.is_cancelled
+    assert bundle.round.round is None
+    assert bundle.round.is_cancelled
     assert bundle.sessions == ()
 
 

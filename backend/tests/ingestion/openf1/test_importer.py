@@ -43,7 +43,8 @@ def events():
 def test_imports_the_race(bahrain, client):
     summary = run(client, types=frozenset({"RACE"}))
     run_row = summary.run
-    assert summary.imported and len(summary.imported) == 1
+    assert summary.imported
+    assert len(summary.imported) == 1
     assert counts() == {
         "Lap": 12,
         "Stint": 12,
@@ -54,7 +55,8 @@ def test_imports_the_race(bahrain, client):
         "WeatherSample": 4,
     }
     lap = Lap.objects.get(driver=bahrain["drivers"]["VER"], lap_number=1)
-    assert lap.duration_ms == 97759 and lap.session_id == bahrain["race"].pk
+    assert lap.duration_ms == 97759
+    assert lap.session_id == bahrain["race"].pk
     # 16 drivers of the grid are not in the catalog: reported, never guessed
     assert run_row.status == SyncRun.Status.PARTIAL
     assert sum(e["type"] == "unmatched_driver" for e in run_row.errors) == 16
@@ -125,13 +127,15 @@ def test_resume_after_a_failed_session(bahrain):
     first = run(FakeClient(hook=hook))
     assert len(first.imported) == 1
     failed = [e for e in first.run.errors if e["type"] == "session_failed"]
-    assert len(failed) == 1 and f"key {RACE_KEY}" in failed[0]["session"]
+    assert len(failed) == 1
+    assert f"key {RACE_KEY}" in failed[0]["session"]
     assert Lap.objects.filter(session=bahrain["race"]).count() == 0  # nothing half written
     assert Lap.objects.filter(session=bahrain["quali"]).count() == 12
 
     client = FakeClient()
     second = run(client)
-    assert len(second.imported) == 1 and f"key {RACE_KEY}" in second.imported[0]
+    assert len(second.imported) == 1
+    assert f"key {RACE_KEY}" in second.imported[0]
     assert second.skipped["already imported"] == [first.imported[0]]
     assert Lap.objects.filter(session=bahrain["race"]).count() == 12
     assert client.by_endpoint["laps"] == 1
@@ -148,7 +152,8 @@ def test_dry_run_rolls_everything_back(bahrain, client):
     assert SyncRun.objects.get(pk=summary.run.pk).scope["dry_run"] is True
     # a dry run is not progress: the real run still imports the session
     real = run(FakeClient(), types=frozenset({"RACE"}))
-    assert len(real.imported) == 1 and Lap.objects.count() == 12
+    assert len(real.imported) == 1
+    assert Lap.objects.count() == 12
 
 
 def test_unfinished_session_is_not_imported(bahrain, client):
@@ -156,13 +161,15 @@ def test_unfinished_session_is_not_imported(bahrain, client):
     summary = run(client, types=frozenset({"RACE"}), now=T0 + dt.timedelta(minutes=30))
     # OpenF1 says the session ends 17:00, so at 15:30 it is still running
     assert summary.skipped == {"not finished": [summary.skipped["not finished"][0]]}
-    assert client.by_endpoint["laps"] == 0 and Lap.objects.count() == 0
+    assert client.by_endpoint["laps"] == 0
+    assert Lap.objects.count() == 0
 
 
 def test_session_key_and_round_selection(bahrain):
     c = FakeClient()
     summary = importer.run_import(c, session_key=9468, now=NOW)
-    assert len(summary.imported) == 1 and "Q" in summary.imported[0]
+    assert len(summary.imported) == 1
+    assert "Q" in summary.imported[0]
     assert Lap.objects.filter(session=bahrain["quali"]).exists()
     assert not Lap.objects.filter(session=bahrain["race"]).exists()
     assert c.by_endpoint["position"] == 0  # qualifying has no race-like series
@@ -209,8 +216,10 @@ def test_command_prints_a_summary(bahrain, patched_client):
     call_command("import_openf1", "--year", "2024", "--types", "RACE", stdout=out, stderr=err)
     text = out.getvalue()
     assert "sessions imported: 1" in text
-    assert "requests: 15" in text and "position=4" in text
-    assert "lap" in text and "unmatched_driver" in err.getvalue()
+    assert "requests: 15" in text
+    assert "position=4" in text
+    assert "lap" in text
+    assert "unmatched_driver" in err.getvalue()
     assert Lap.objects.count() == 12
 
 
