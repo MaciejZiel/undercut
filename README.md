@@ -70,6 +70,10 @@ decisions: [docs/adr](docs/adr).
 
 ![Lap-by-lap positions of the 2025 British Grand Prix with safety car periods](docs/img/race-positions.png)
 
+![Replay of the 2024 Bahrain Grand Prix at 60x, laps 34 to 38: gaps, intervals and tyres change as the second pit stops play out](docs/img/replay.gif)
+
+<sub>The replay GIF is recorded by Playwright against the Docker Compose stack in GitHub Actions ([`capture.yml`](.github/workflows/capture.yml)).</sub>
+
 ## Run it
 
 ```bash

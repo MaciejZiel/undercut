@@ -1,0 +1,79 @@
+name: Capture
+
+# Records the README media (replay GIF and still) from the Docker Compose stack with Playwright.
+# On demand and on changes to the capture code; the result is an artifact that is committed by
+# hand to docs/img/ after a look.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - e2e/capture/**
+      - e2e/capture.config.ts
+      - .github/workflows/capture.yml
+
+concurrency:
+  group: capture-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      E2E_BASE_URL: http://localhost:8080
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Write .env for the stack
+        run: bash scripts/e2e/write-env.sh
+
+      - name: Build and start the stack
+        run: docker compose up -d --build
+
+      - name: Wait for the stack
+        run: bash scripts/e2e/wait-for-stack.sh
+
+      - name: Load history, one race of analytics and the seed
+        run: bash scripts/e2e/load-data.sh
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install the e2e dependencies
+        working-directory: e2e
+        run: npm ci
+
+      - name: Install Chromium
+        working-directory: e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Capture
+        working-directory: e2e
+        run: npx playwright test --config capture.config.ts
+
+      - name: Encode the GIF
+        working-directory: e2e/capture-out
+        run: |
+          command -v ffmpeg || { sudo apt-get update -q && sudo apt-get install -y -q ffmpeg; }
+          ffmpeg -loglevel error -framerate 8 -i frames/%03d.png \
+            -vf "crop=1280:640:0:0,scale=960:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=bayer:bayer_scale=4" \
+            -loop 0 replay.gif
+          ls -l replay.gif replay.png
+
+      - name: Upload the media
+        uses: actions/upload-artifact@v7
+        with:
+          name: readme-media
+          path: |
+            e2e/capture-out/replay.gif
+            e2e/capture-out/replay.png
+
+      - name: Container logs
+        if: failure()
+        run: docker compose logs --tail 200
