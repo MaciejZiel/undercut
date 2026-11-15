@@ -3,7 +3,8 @@
 #   1. the real history from the free Jolpica dump,
 #   2. analytics for one race (2024 round 1) from the OpenF1 API, retried because the free API
 #      rate-limits,
-#   3. the deterministic prediction round (seed_e2e).
+#   3. the deterministic prediction round (seed_e2e), skipped with LOAD_SEED=false (seed_e2e only
+#      runs with DEBUG on; the load test runs with DEBUG off and does not need it).
 set -euo pipefail
 
 manage() {
@@ -29,6 +30,8 @@ for attempt in $(seq 1 "${attempts}"); do
 done
 echo "::endgroup::"
 
-echo "::group::seed_e2e"
-manage seed_e2e
-echo "::endgroup::"
+if [[ "${LOAD_SEED:-true}" == "true" ]]; then
+  echo "::group::seed_e2e"
+  manage seed_e2e
+  echo "::endgroup::"
+fi
