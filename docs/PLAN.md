@@ -71,7 +71,7 @@ An example event chain: `SessionResultsFinalized` → standings, prediction poin
 | 4. Analytics | done: OpenF1 import, API, views; not yet verified on a live weekend |
 | 5. Accounts and predictions | done: allauth, favourites, predictions, leagues, e-mail after a race; Google sign-in (ADR 006) done in code, needs keys on the server |
 | 6. Replay | done (API and player); track map and live timing deliberately postponed |
-| 7. Polish | in progress. Done without UI: SEO, "Sources" and "Privacy" pages, backups and a restore test, E2E in CI, Google sign-in (ADR 006), SMTP (Brevo), HTML e-mails, alert on failed syncs, `resync_round`, weekly check-up e-mail, CSP, type-check gate (pyright, ratchet), 96% coverage with a 90% threshold, dependency audit (osv-scanner, npm audit), dependency-free load test. Left: UI (the "Yours" section, career charts, session banner, circuit card), Lighthouse and accessibility, Tailscale for the admin panel, an off-device backup copy |
+| 7. Polish | in progress. Done without UI: SEO, "Sources" and "Privacy" pages, backups and a restore test, E2E in CI, Google sign-in (ADR 006), SMTP (Brevo), HTML e-mails, alert on failed syncs, `resync_round`, weekly check-up e-mail, CSP, type-check gate (pyright, zero errors), 96% coverage with a 90% threshold, dependency audit (osv-scanner, npm audit), dependency-free load test. Left: UI (the "Yours" section, career charts, session banner, circuit card), Lighthouse and accessibility, Tailscale for the admin panel, an off-device backup copy |
 
 Verified on real data: number of world champions, constructors' titles, standings of selected
 seasons, the moment the 2024 title was decided, head-to-head records.
