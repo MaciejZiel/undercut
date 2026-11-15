@@ -8,9 +8,11 @@ requests for a fixed time and the p50/p95/p99 latencies and the error rate are p
 
 Set INTERNAL_API_TOKEN to send X-Internal-Token (skips the anonymous throttle; only use it against
 your own deployment). Exit code 1 when p95 is above --p95-ms or the error rate above --max-errors.
+--json FILE appends the result as one JSON line (scripts/perf/report.py turns those into a table).
 """
 
 import argparse
+import json
 import os
 import statistics
 import sys
@@ -60,6 +62,7 @@ def main() -> int:
     parser.add_argument("--seconds", type=int, default=30)
     parser.add_argument("--p95-ms", type=float, default=500.0)
     parser.add_argument("--max-errors", type=float, default=0.01, help="Allowed error fraction.")
+    parser.add_argument("--json", metavar="FILE", help="Append the result as one JSON line.")
     args = parser.parse_args()
 
     base = args.base_url.rstrip("/")
@@ -94,6 +97,22 @@ def main() -> int:
             f"p99 {percentile(ms, 0.99):.0f}  max {ms[-1]:.0f}  mean {statistics.fmean(ms):.0f}"
         )
     failed = error_rate > args.max_errors or not ms or percentile(ms, 0.95) > args.p95_ms
+    if args.json:
+        row = {
+            "paths": args.paths,
+            "connections": args.connections,
+            "seconds": args.seconds,
+            "requests": total,
+            "errors": results["errors"],
+            "rps": round(total / args.seconds, 1),
+            "p50_ms": round(percentile(ms, 0.5), 1),
+            "p95_ms": round(percentile(ms, 0.95), 1),
+            "p99_ms": round(percentile(ms, 0.99), 1),
+            "max_ms": round(ms[-1], 1) if ms else 0.0,
+            "ok": not failed,
+        }
+        with open(args.json, "a", encoding="utf-8") as out:
+            out.write(json.dumps(row) + "\n")
     print(
         "FAILED" if failed else "OK",
         f"(p95 limit {args.p95_ms:.0f} ms, error rate {error_rate:.2%})",
