@@ -25,6 +25,8 @@ dev = [
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "pytest-django>=4.14.0",
+    # Pinned: its Django support is experimental and may change findings in a minor release.
+    "pytest-queryguard[django]==1.0.0",
     "ruff>=0.17.0",
 ]
 
@@ -32,6 +34,27 @@ dev = [
 DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py"]
 testpaths = ["tests", "apps"]
+# N+1 gate (pytest-queryguard, see docs/n-plus-one.md): a lazy relationship load or a statement
+# repeated in a loop fails the test. The rules below are reviewed exceptions, one reason each.
+queryguard_ignore = [
+    # Import pipeline: idempotent per-entity upserts run by the worker after a session or by the
+    # one-off history import (about 30 s for 1950-today). Bounded by one round's rows.
+    "repeated-statement * file=apps/catalog/services.py function=_sync",
+    "repeated-statement * file=apps/catalog/services.py function=_ids",
+    "repeated-statement * file=apps/catalog/services.py function=_create_with_slug",
+    "repeated-statement * file=apps/catalog/services.py function=_bulk_sync",
+    "repeated-statement * file=apps/catalog/services.py function=upsert_constructor_season",
+    # OpenF1 import matches drivers once per imported session: the season pool, a code lookup for
+    # a driver missing from it and a DriverNumberMap row the first time a number is seen.
+    "repeated-statement * function=_driver_refs stack=apps/ingestion/openf1/matching.py:resolve_drivers",
+    "repeated-statement * file=apps/ingestion/openf1/matching.py function=resolve_drivers",
+    # Post-race e-mail: each recipient is re-checked and marked in its own transaction on
+    # purpose (exactly-once per user and round); SMTP, not the database, is the cost here.
+    "repeated-statement * file=apps/notifications/handlers.py function=_send_one",
+    "repeated-statement * function=get_race_email_recipient stack=apps/notifications/handlers.py:_send_one",
+    # Demo reset: one driver pool per sample round, at most three rounds.
+    "repeated-statement * function=grid_driver_ids stack=apps/accounts/demo.py:reset_demo_data",
+]
 
 [tool.ruff]
 line-length = 100

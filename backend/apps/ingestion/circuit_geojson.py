@@ -79,8 +79,9 @@ class Summary:
 def import_geojson(path: Path = DATA, *, force: bool = False) -> Summary:
     summary = Summary()
     features = {f["properties"]["id"]: f for f in json.loads(path.read_text())["features"]}
+    circuits = catalog.circuits_for_outline(SLUGS.values())
     for geo_id, slug in SLUGS.items():
-        circuit = catalog.circuit_for_outline(slug)
+        circuit = circuits.get(slug)
         feature = features.get(geo_id)
         if circuit is None or feature is None:
             summary.failed.append(f"{slug}: not in the catalog or in the file")

@@ -310,6 +310,7 @@ def test_league_name_required(user):
         services.create_league(user, "  ")
 
 
+@pytest.mark.queryguard_ignore(kind="repeated-statement")  # arrange: ten leagues created in a loop
 def test_max_ten_leagues_per_user(user):
     for i in range(10):
         services.create_league(user, f"L{i}")

@@ -36,6 +36,7 @@ def test_recipients_are_opted_in_verified_real_active_users():
     assert public.get_race_email_recipient(unsubscribed.pk) is None
 
 
+@pytest.mark.queryguard_ignore(kind="repeated-statement")  # arrange: users opted in one by one
 def test_recipients_are_read_in_chunks(monkeypatch):
     monkeypatch.setattr(public, "CHUNK", 2)
     users = [opted_in() for _ in range(5)]

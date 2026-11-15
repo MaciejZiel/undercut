@@ -31,6 +31,9 @@ def test_weekly_slot_on_monday_before_the_hour_is_previous_monday():
 
 
 @pytest.mark.django_db
+@pytest.mark.queryguard_ignore(
+    kind="repeated-statement"
+)  # the test runs the scheduler once per slot
 def test_run_due_publishes_once_per_slot():
     now = at(2026, 10, 15, 9)
     assert run_due(now, [DAILY]) == 1

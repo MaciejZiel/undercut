@@ -142,8 +142,7 @@ def test_failed_round_is_recorded_and_the_rest_imported(monkeypatch):
         "upsert_results",
         lambda sid, rows: (
             (_ for _ in ()).throw(RuntimeError("boom"))
-            if Session.objects.get(pk=sid).round.season.year == 2022
-            and Session.objects.get(pk=sid).type == "RACE"
+            if Session.objects.filter(pk=sid, round__season__year=2022, type="RACE").exists()
             else original(sid, rows)
         ),
     )

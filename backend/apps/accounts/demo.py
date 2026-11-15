@@ -11,8 +11,8 @@ import datetime as dt
 import logging
 import random
 
-from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.db.models.functions import Lower
 
 from apps.catalog import selectors as catalog
 from apps.catalog import summaries
@@ -21,9 +21,9 @@ from apps.predictions import locking, scoring
 from apps.predictions import services as prediction_services
 
 from . import services
+from .models import User
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
 
 BOT_NAMES = ("Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel")
 BOT_USERNAME_PREFIX = "demo-bot-"
@@ -36,19 +36,29 @@ POOL_SIZE = 10
 
 def ensure_bots() -> list:
     """The bot players: demo accounts without password or e-mail. Created when missing."""
+    wanted = {
+        f"{BOT_USERNAME_PREFIX}{index}": f"Demo Bot {name}"
+        for index, name in enumerate(BOT_NAMES, start=1)
+    }
+    # Two reads for all bots instead of two per bot: the existing bots, and who already holds
+    # one of the display names (the names are unique case-insensitively).
+    existing = {u.username: u for u in User.objects.filter(username__in=wanted)}
+    holders = dict(
+        User.objects.annotate(name_ci=Lower("display_name"))
+        .filter(name_ci__in=[d.lower() for d in wanted.values()])
+        .values_list("name_ci", "pk")
+    )
     bots = []
-    for index, name in enumerate(BOT_NAMES, start=1):
-        username = f"{BOT_USERNAME_PREFIX}{index}"
-        display = f"Demo Bot {name}"
-        bot = User.objects.filter(username=username).first() or User(username=username)
+    for username, display in wanted.items():
+        bot = existing.get(username) or User(username=username)
         bot.is_demo = True
         bot.is_active = True
         bot.is_staff = bot.is_superuser = False
         bot.email = ""
         bot.email_verified = False
         bot.set_unusable_password()
-        taken = User.objects.filter(display_name__iexact=display).exclude(pk=bot.pk).exists()
-        bot.display_name = None if taken else display
+        holder = holders.get(display.lower())
+        bot.display_name = display if holder in (None, bot.pk) else None
         bot.save()
         bots.append(bot)
     return bots
@@ -63,8 +73,12 @@ def ensure_league(owner, bots):
     if league.owner_id != owner.pk:
         league.owner = owner
         league.save(update_fields=["owner"])
-    for member in (owner, *bots):
-        league.memberships.get_or_create(user=member)
+    present = set(league.memberships.values_list("user_id", flat=True))
+    missing = [m for m in (owner, *bots) if m.pk not in present]
+    league.memberships.bulk_create(
+        [league.memberships.model(league=league, user=m) for m in missing],
+        ignore_conflicts=True,  # a concurrent reset may have added the same member
+    )
     return league
 
 
@@ -81,8 +95,8 @@ def _picks(rng: random.Random, pool: list[int]) -> dict[str, int] | None:
     }
 
 
-def _scored(round_id: int, picks: dict[str, int]) -> dict:
-    ids = catalog.race_outcome(round_id)
+def _scored(ids: dict, picks: dict[str, int]) -> dict:
+    """Points of a pick against one round's outcome (`catalog.race_outcomes` value)."""
     outcome = scoring.Outcome(
         p1=ids["podium"][0],
         p2=ids["podium"][1],
@@ -103,12 +117,15 @@ def _scored(round_id: int, picks: dict[str, int]) -> dict:
     return {"points": result.points, "breakdown": result.breakdown} if result else {}
 
 
-def _pick_for(player, round_id: int, pool: list[int], today: dt.date, *, score: bool) -> None:
+def _pick_for(
+    player, round_id: int, pool: list[int], today: dt.date, *, outcome: dict | None
+) -> None:
+    """Create a reproducible pick; score it against `outcome` when the round is finished."""
     rng = random.Random(f"demo:{today.isoformat()}:{player.username}:{round_id}")
     picks = _picks(rng, pool)
     if picks is None:
         return
-    extra = _scored(round_id, picks) if score else {}
+    extra = _scored(outcome, picks) if outcome is not None else {}
     player.predictions.create(round_id=round_id, **picks, **extra)
 
 
@@ -129,15 +146,17 @@ def reset_demo_data(today: dt.date | None = None) -> None:
             player.predictions.all().delete()
 
         completed = summaries.latest_completed_round_ids(SAMPLE_ROUNDS)
-        for round_id in completed:  # the demo account's history
-            pool = summaries.grid_driver_ids(round_id, POOL_SIZE)
-            _pick_for(demo, round_id, pool, today, score=True)
         if not completed:
             return
+        # Outcomes and driver pools are read once per round, not once per pick: the same
+        # outcome query used to run for every bot (found by pytest-queryguard).
+        outcomes = catalog.race_outcomes(completed)
+        pools = {round_id: summaries.grid_driver_ids(round_id, POOL_SIZE) for round_id in completed}
+        for round_id in completed:  # the demo account's history
+            _pick_for(demo, round_id, pools[round_id], today, outcome=outcomes[round_id])
         last = completed[0]
-        last_pool = summaries.grid_driver_ids(last, POOL_SIZE)
         open_rounds = summaries.open_round_ids(now)
         for bot in bots:
-            _pick_for(bot, last, last_pool, today, score=True)
+            _pick_for(bot, last, pools[last], today, outcome=outcomes[last])
             for round_id in open_rounds:
-                _pick_for(bot, round_id, last_pool, today, score=False)
+                _pick_for(bot, round_id, pools[last], today, outcome=None)

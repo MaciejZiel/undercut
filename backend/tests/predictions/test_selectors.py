@@ -155,6 +155,7 @@ def test_leaderboard_query_count_does_not_grow_with_players(drivers, clock):
     assert small <= 2
 
 
+@pytest.mark.queryguard_ignore(kind="repeated-statement")  # arrange: 20 users join in a loop
 def test_league_leaderboard_query_count_is_constant(drivers, clock):
     round_, _, _ = make_weekend(2025, 1, quali_start=NOW)
     owner = make_user()
