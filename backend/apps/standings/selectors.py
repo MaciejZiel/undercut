@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Literal
 
+from django.db import models
 from django.db.models import Exists, F, Max, OuterRef, Q, Subquery
 
 from .models import ConstructorStanding, DriverStanding
@@ -38,8 +39,7 @@ def entity_data(kind: Kind, entity) -> dict:
 
 
 def find_season_id(year: int) -> int | None:
-    season_model = DriverStanding._meta.get_field("season").related_model
-    return season_model.objects.filter(year=year).values_list("pk", flat=True).first()
+    return _season_model().objects.filter(year=year).values_list("pk", flat=True).first()
 
 
 @dataclass(frozen=True)
@@ -165,9 +165,11 @@ def points_progression(kind: Kind, season_id: int, top: int = 5) -> dict:
 CONSTRUCTORS_TITLES_FROM = 1958  # the constructors' championship started in 1958
 
 
-def _season_model():
+def _season_model() -> type[models.Model]:
     # Catalog is reached through the ForeignKey, never through an import of its models.
-    return DriverStanding._meta.get_field("season").related_model
+    model = DriverStanding._meta.get_field("season").related_model
+    assert model is not None and not isinstance(model, str)  # a resolved FK target
+    return model
 
 
 def champions(kind: Kind) -> dict[int, int]:

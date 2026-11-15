@@ -1,9 +1,16 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.utils.text import slugify
 
 from .text import make_search_name
+
+if TYPE_CHECKING:
+    from django.db.models.fields.related_descriptors import RelatedManager
 
 COLOR_HEX_VALIDATOR = RegexValidator(r"^#[0-9a-fA-F]{6}$", "Use the #rrggbb format.")
 
@@ -168,6 +175,11 @@ class Driver(models.Model):
 
 
 class Round(models.Model):
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
+    season_id: int
+    circuit_id: int
+    sessions: RelatedManager[Session]
+
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="rounds")
     # Null for cancelled rounds that the source keeps without a number.
     round = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -247,6 +259,11 @@ class Session(models.Model):
 
 
 class Result(models.Model):
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
+    session_id: int
+    driver_id: int
+    constructor_id: int
+
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name="results")
     driver = models.ForeignKey(Driver, on_delete=models.PROTECT, related_name="results")
     # The team on race day; never derived from the driver's current team.

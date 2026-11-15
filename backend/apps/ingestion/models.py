@@ -36,6 +36,9 @@ class DriverNumberMap(models.Model):
     a row that already exists is never overwritten, so a human fix in the admin sticks.
     """
 
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
+    driver_id: int
+
     season_year = models.PositiveSmallIntegerField()
     driver_number = models.PositiveSmallIntegerField()
     driver = models.ForeignKey("catalog.Driver", on_delete=models.CASCADE, related_name="+")

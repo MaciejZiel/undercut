@@ -5,6 +5,9 @@ from django.db.models import Q
 class _StandingBase(models.Model):
     """Imported (never computed) championship table after a given round."""
 
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
+    season_id: int
+
     season = models.ForeignKey("catalog.Season", on_delete=models.CASCADE, related_name="+")
     after_round = models.PositiveSmallIntegerField()
     # Some entries have no classified position (e.g. disqualified from the championship).
@@ -20,6 +23,9 @@ class _StandingBase(models.Model):
 
 
 class DriverStanding(_StandingBase):
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
+    driver_id: int
+
     driver = models.ForeignKey("catalog.Driver", on_delete=models.CASCADE, related_name="standings")
 
     class Meta:
@@ -48,6 +54,9 @@ class DriverStanding(_StandingBase):
 
 
 class ConstructorStanding(_StandingBase):
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
+    constructor_id: int
+
     constructor = models.ForeignKey(
         "catalog.Constructor", on_delete=models.CASCADE, related_name="standings"
     )

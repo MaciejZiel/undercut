@@ -33,6 +33,11 @@ class User(AbstractUser):
 class Favorite(models.Model):
     """A favourite driver or constructor. Exactly one of the two targets is set."""
 
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
+    user_id: int
+    driver_id: int | None
+    constructor_id: int | None
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorites"
     )
@@ -73,6 +78,9 @@ class Favorite(models.Model):
 
 class GoogleIdentity(models.Model):
     """A Google account linked to a user. ``sub`` is Google's stable id; the e-mail may change."""
+
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
+    user_id: int
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="google_identity"

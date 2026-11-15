@@ -1189,7 +1189,7 @@ def last_completed_race() -> dict | None:
     }
 
 
-def _top_standings(kind: str) -> dict:
+def _top_standings(kind: standings.Kind) -> dict:
     latest = standings.latest_position(kind)
     if latest is None:
         return {"season": None, "after_round": None, "entries": []}
@@ -1423,7 +1423,7 @@ def _result_category(position: int | None, text: str, points) -> str:
         return "dnf"
     if position == 1:
         return "win"
-    if position <= 3:
+    if position is not None and position <= 3:  # classified implies a position
         return "podium"
     return "points" if points and points > 0 else "no_points"
 
