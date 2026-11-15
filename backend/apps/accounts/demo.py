@@ -11,7 +11,6 @@ import datetime as dt
 import logging
 import random
 
-from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models.functions import Lower
 
@@ -22,9 +21,9 @@ from apps.predictions import locking, scoring
 from apps.predictions import services as prediction_services
 
 from . import services
+from .models import User
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
 
 BOT_NAMES = ("Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel")
 BOT_USERNAME_PREFIX = "demo-bot-"
