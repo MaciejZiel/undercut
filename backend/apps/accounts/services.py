@@ -1,6 +1,7 @@
 """Account use cases. Views stay thin; everything that must be atomic lives here."""
 
 import logging
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Literal
 
@@ -119,7 +120,9 @@ _KIND_LIMITS = {"driver": MAX_FAVORITE_DRIVERS, "constructor": MAX_FAVORITE_CONS
 
 def _target_model(kind: FavoriteKind):
     # Resolved through the FK so this module never imports catalog's models.
-    return Favorite._meta.get_field(kind).related_model
+    model = Favorite._meta.get_field(kind).related_model
+    assert model is not None and not isinstance(model, str)  # a resolved FK target
+    return model
 
 
 def _resolve(kind: FavoriteKind, slug: str):
@@ -163,14 +166,23 @@ def list_favorites(user) -> dict[str, list]:
 
 def reset_favorites(user, *, drivers=(), constructors=()) -> None:
     """Replace all favourites with the given slugs (unknown slugs are skipped)."""
+    rows = []
+    kinds: tuple[tuple[FavoriteKind, Iterable[str]], ...] = (
+        ("driver", drivers),
+        ("constructor", constructors),
+    )
+    for kind, slugs in kinds:
+        # One lookup per kind, not per slug; order and the per-kind limit are kept.
+        found = _target_model(kind)._default_manager.in_bulk(list(slugs), field_name="slug")
+        wanted = list(dict.fromkeys(slugs))
+        for slug in wanted:
+            if slug not in found:
+                logger.warning("Demo favourite %s %r is not in the catalog", kind, slug)
+        targets = [found[slug] for slug in wanted if slug in found][: _KIND_LIMITS[kind]]
+        rows.extend(Favorite(user=user, **{kind: target}) for target in targets)
     with transaction.atomic():
         Favorite.objects.filter(user=user).delete()
-        for kind, slugs in (("driver", drivers), ("constructor", constructors)):
-            for slug in slugs:
-                try:
-                    add_favorite(user, kind, slug)
-                except NotFound:
-                    logger.warning("Demo favourite %s %r is not in the catalog", kind, slug)
+        Favorite.objects.bulk_create(rows)
 
 
 # --- Export -----------------------------------------------------------------------------------

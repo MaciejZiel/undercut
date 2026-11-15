@@ -70,6 +70,7 @@ def test_delivering_the_same_event_twice_is_safe_for_idempotent_handlers():
 
 
 @pytest.mark.django_db
+@pytest.mark.queryguard_ignore(kind="repeated-statement")  # the test drives one batch per attempt
 def test_failing_handler_is_retried_with_backoff_then_goes_dead():
     def always_fails(_event):
         raise ValueError("nope")

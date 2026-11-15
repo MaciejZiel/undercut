@@ -33,6 +33,26 @@ dev = [
 DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py"]
 testpaths = ["tests", "apps"]
+# N+1 gate (pytest-queryguard, see docs/n-plus-one.md): a lazy relationship load or a statement
+# repeated in a loop fails the test. The rules below are reviewed exceptions, one reason each.
+queryguard_ignore = [
+    # Import pipeline: idempotent per-entity upserts run by the worker after a session or by the
+    # one-off history import (about 30 s for 1950-today). Bounded by one round's rows.
+    "repeated-statement * file=apps/catalog/services.py function=_sync",
+    "repeated-statement * file=apps/catalog/services.py function=_ids",
+    "repeated-statement * file=apps/catalog/services.py function=_create_with_slug",
+    "repeated-statement * file=apps/catalog/services.py function=_bulk_sync",
+    "repeated-statement * file=apps/catalog/services.py function=upsert_constructor_season",
+    # OpenF1 import matches a session's drivers once per imported session (two queries).
+    "repeated-statement * file=apps/catalog/services.py function=_driver_refs",
+    "repeated-statement * file=apps/ingestion/openf1/matching.py function=resolve_drivers",
+    # Post-race e-mail: each recipient is re-checked and marked in its own transaction on
+    # purpose (exactly-once per user and round); SMTP, not the database, is the cost here.
+    "repeated-statement * file=apps/notifications/handlers.py function=_send_one",
+    "repeated-statement * file=apps/accounts/selectors_public.py function=get_race_email_recipient",
+    # Demo reset: one driver pool per sample round, at most three rounds.
+    "repeated-statement * file=apps/catalog/summaries.py function=grid_driver_ids",
+]
 
 [tool.ruff]
 line-length = 100
