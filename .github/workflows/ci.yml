@@ -36,7 +36,13 @@ jobs:
         run: |
           npm install --global pyright@1.1.414
           uv run python scripts/typecheck_ratchet.py
-      - run: uv run pytest -q --cov=apps --cov-report=term --cov-fail-under=90
+      - run: uv run pytest -q --cov=apps --cov-report=term --cov-fail-under=90 --queryguard-mode=warn -o queryguard_test_code=off --queryguard-json=queryguard.json --queryguard-report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: queryguard
+          path: backend/queryguard.json
+          if-no-files-found: ignore
 
   frontend:
     runs-on: ubuntu-latest
