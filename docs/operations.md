@@ -141,6 +141,9 @@ INTERNAL_API_TOKEN=... python scripts/perf/load_test.py https://undercut.maciejz
 Run it against your own deployment only, and keep the load modest on the home server. Without `INTERNAL_API_TOKEN` the
 anonymous throttle (60 requests per minute per address) answers 429, which counts as errors.
 
+The `Perf` workflow runs the same script in GitHub Actions against the Compose stack, per endpoint at 1 and 10
+connections; method and the latest numbers are in [performance.md](performance.md).
+
 ## Catalog data commands (OpenF1)
 
 | Command | What it does |
