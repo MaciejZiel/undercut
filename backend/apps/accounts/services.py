@@ -7,7 +7,7 @@ from typing import Literal
 
 from allauth.account.models import EmailAddress
 from django.contrib.sessions.models import Session
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
@@ -120,7 +120,7 @@ def _target_model(kind: FavoriteKind):
     # Resolved through the FK so this module never imports catalog's models.
     model = Favorite._meta.get_field(kind).related_model
     if model is None or isinstance(model, str):  # a lazy "app.Model" string until apps load
-        raise TypeError(f"foreign key target is not resolved: {model!r}")
+        raise ImproperlyConfigured(f"foreign key target is not resolved: {model!r}")
     return model
 
 

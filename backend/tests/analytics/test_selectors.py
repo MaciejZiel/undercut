@@ -28,7 +28,7 @@ def at(seconds: float) -> datetime:
 # --- Builders (shared with test_api) ---------------------------------------------------------
 
 
-def make_session(year=2024, number=1, type=Session.Type.RACE, status="results_final"):
+def make_session(year=2024, number=1, type=Session.Type.RACE, status="results_final"):  # noqa: A002
     season = f.SeasonFactory._meta.model.objects.filter(year=year).first() or f.SeasonFactory(
         year=year
     )

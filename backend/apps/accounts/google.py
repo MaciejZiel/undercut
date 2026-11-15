@@ -93,7 +93,7 @@ def _post_token(code: str, verifier: str) -> dict:
             "code_verifier": verifier,
         }
     ).encode("ascii")
-    request = urllib.request.Request(  # noqa: S310 (fixed https URL)
+    request = urllib.request.Request(
         TOKEN_URL,
         data=body,
         headers={"Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json"},

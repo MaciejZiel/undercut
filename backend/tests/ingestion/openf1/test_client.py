@@ -77,6 +77,11 @@ def make_client(*steps, **kwargs):
     return client, opener, t
 
 
+def test_base_url_must_be_http():
+    with pytest.raises(ValueError, match="must be an http"):
+        OpenF1Client(base_url="file:///etc/")
+
+
 def test_build_query_supports_comparison_filters():
     query = build_query({"session_key": 9472, "date>=": "2024-03-02T15:00:00", "date<": "x y"})
     assert query == "session_key=9472&date>=2024-03-02T15:00:00&date<x%20y"

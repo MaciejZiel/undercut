@@ -50,7 +50,7 @@ def make_race(db):
 
 @pytest.fixture
 def make_event(db):
-    def make(status=OutboxEvent.Status.PENDING, age=timedelta(0), type="Ping", key=""):
+    def make(status=OutboxEvent.Status.PENDING, age=timedelta(0), type="Ping", key=""):  # noqa: A002
         event = OutboxEvent.objects.create(type=type, key=key, status=status)
         OutboxEvent.objects.filter(pk=event.pk).update(created_at=timezone.now() - age)
         return event

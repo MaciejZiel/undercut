@@ -21,7 +21,7 @@ class RevalidateError(Exception):
 
 
 def _post(url: str, secret: str, tags: list[str]) -> int:
-    request = urllib.request.Request(  # noqa: S310 (REVALIDATE_URL from settings)
+    request = urllib.request.Request(  # noqa: S310 (scheme checked in revalidate)
         url,
         data=json.dumps({"tags": tags}).encode(),
         method="POST",
@@ -48,6 +48,8 @@ def revalidate(
     if not url or not secret:
         log.info("Revalidation not configured, skipping %s tags", len(unique))
         return 0
+    if not url.startswith(("https://", "http://")):
+        raise RevalidateError(f"REVALIDATE_URL must be an http(s) URL, got {url!r}")
     for start in range(0, len(unique), MAX_TAGS_PER_REQUEST):
         chunk = unique[start : start + MAX_TAGS_PER_REQUEST]
         status = (post or _post)(url, secret, chunk)  # resolved late so tests can patch _post

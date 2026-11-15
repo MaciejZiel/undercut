@@ -169,7 +169,7 @@ ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_UNIQUE_EMAIL = True
 
 
-def ACCOUNT_USER_DISPLAY(user):  # noqa: N802 (allauth setting name)
+def ACCOUNT_USER_DISPLAY(user):  # allauth setting name, hence upper case
     """Name used in e-mails: the public display name, never the generated username."""
     return user.display_name or "there"
 

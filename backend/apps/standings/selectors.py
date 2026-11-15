@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Literal
 
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models import Exists, F, Max, OuterRef, Q, Subquery
 
@@ -169,7 +170,7 @@ def _season_model() -> type[models.Model]:
     # Catalog is reached through the ForeignKey, never through an import of its models.
     model = DriverStanding._meta.get_field("season").related_model
     if model is None or isinstance(model, str):  # a lazy "app.Model" string until apps load
-        raise TypeError(f"foreign key target is not resolved: {model!r}")
+        raise ImproperlyConfigured(f"foreign key target is not resolved: {model!r}")
     return model
 
 

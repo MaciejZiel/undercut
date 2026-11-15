@@ -19,7 +19,7 @@ def test_percentile_picks_the_nearest_rank():
 
 
 class _Handler(BaseHTTPRequestHandler):
-    def do_GET(self):  # noqa: N802
+    def do_GET(self):  # the name BaseHTTPRequestHandler dispatches to
         status = 500 if self.path == "/boom" else 200
         self.send_response(status)
         self.end_headers()

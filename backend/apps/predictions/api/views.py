@@ -56,7 +56,7 @@ class RoundPredictionView(BaseView):
         responses={200: s.RoundStateSerializer, 404: s.PredictionErrorSerializer},
         summary="Prediction state of a round: open or closed, closing time, my pick",
     )
-    def get(self, request, year, round):
+    def get(self, request, year, round):  # noqa: A002 - URL keyword
         round_ = services.resolve_round(year, round)
         return Response(selectors.round_state(request.user, round_))
 
@@ -70,7 +70,7 @@ class RoundPredictionView(BaseView):
         },
         summary="Submit or change my pick; 403 after predictions close",
     )
-    def put(self, request, year, round):
+    def put(self, request, year, round):  # noqa: A002 - URL keyword
         data = s.PickInputSerializer(data=request.data)
         data.is_valid(raise_exception=True)
         _, created = services.submit_prediction(
@@ -94,7 +94,7 @@ class RoundStatsView(BaseView):
         },
         summary="Global pick statistics of a round (after predictions close)",
     )
-    def get(self, request, year, round):
+    def get(self, request, year, round):  # noqa: A002 - URL keyword
         return Response(selectors.pick_stats(services.resolve_round(year, round)))
 
 
@@ -257,7 +257,7 @@ class LeaguePicksView(BaseView):
         summary="All members' picks for a round (after predictions close)",
         parameters=[OpenApiParameter("code", str, OpenApiParameter.PATH)],
     )
-    def get(self, request, code, year, round):
+    def get(self, request, code, year, round):  # noqa: A002 - URL keyword
         league = services.get_league(code)
         services.require_member(request.user, league)
         return Response(selectors.league_picks(league, services.resolve_round(year, round)))

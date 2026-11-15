@@ -162,3 +162,9 @@ def test_an_unreachable_frontend_is_retried_later(race, monkeypatch):
     assert event.attempts == 1
     assert event.available_at > dt.datetime.now(dt.UTC)
     registry.clear()
+
+
+@override_settings(REVALIDATE_URL="file:///etc/passwd", REVALIDATE_SECRET="s3cret")
+def test_a_non_http_revalidate_url_is_refused():
+    with pytest.raises(client.RevalidateError, match="must be an http"):
+        client.revalidate(["drivers"], post=lambda *a: 200)
