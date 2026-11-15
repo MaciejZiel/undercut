@@ -11,5 +11,5 @@
     "noUncheckedIndexedAccess": true,
     "types": ["node"]
   },
-  "include": ["playwright.config.ts", "helpers", "tests"]
+  "include": ["playwright.config.ts", "capture.config.ts", "helpers", "tests", "capture"]
 }
