@@ -17,8 +17,8 @@ test("replay: a still and the frames of a short GIF", async ({ page }) => {
 
   const replay = page.getByRole("region", { name: "Session replay" });
   await expect(replay).toBeVisible();
-  await replay.getByLabel("Jump to lap").selectOption("20");
-  await replay.getByRole("button", { name: "Speed 20x" }).click();
+  await replay.getByLabel("Jump to lap").selectOption("34");
+  await replay.getByRole("button", { name: "Speed 60x" }).click();
   await replay.scrollIntoViewIfNeeded();
   await page.evaluate(() => window.scrollBy(0, -16));
 
