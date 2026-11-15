@@ -4,7 +4,7 @@ Status: accepted
 
 ## Context
 FR-502 asks for Google login. allauth's `socialaccount` extra would pull in `requests` and with it
-`certifi` (MPL-2.0, copyleft), which needs written approval from Company Management. Everything
+`certifi` (MPL-2.0, copyleft), and the project keeps copyleft code out of its dependencies. Everything
 else in the stack is permissively licensed.
 
 ## Decision
