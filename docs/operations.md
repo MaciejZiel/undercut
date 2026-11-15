@@ -57,7 +57,7 @@ With `DJANGO_DEBUG=false` the Django processes write JSON lines:
 ## Error reporting (optional)
 
 Set `SENTRY_DSN` in the env file to enable Sentry. The `sentry-sdk` package is deliberately not a project dependency: it
-requires `certifi` (MPL-2.0), and new copyleft code needs written approval from Company Management first. After approval
+requires `certifi` (MPL-2.0), and the project keeps copyleft code out of its dependencies. To use Sentry,
 install it into the venv (`backend/.venv/bin/python -m pip install sentry-sdk==<pinned version>`) and record it in
 `3rdparty_licenses.md`. Without the package the app logs one warning and runs normally. Settings: no personal data
 (`send_default_pii=False`), no request bodies, no local variables, tracing off (`SENTRY_TRACES_SAMPLE_RATE=0`), and every
