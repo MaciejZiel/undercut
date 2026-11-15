@@ -22,7 +22,7 @@ outbox, no broker) and a Next.js frontend, self-hosted and updating itself after
 | Predictions locked server-side at qualifying start, scoring as a pure function, recomputed after corrections | [`apps/predictions`](backend/apps/predictions) |
 | ~930 backend tests on real PostgreSQL, 90% coverage gate, query-count tests and an N+1 gate (pytest-queryguard) | [testing](docs/testing.md), [N+1 write-up](docs/n-plus-one.md) |
 | Playwright end-to-end tests against the full Docker Compose stack in GitHub Actions | [`e2e/`](e2e), [`e2e.yml`](.github/workflows/e2e.yml) |
-| Type-check ratchet (pyright error count may only go down), weekly dependency audit | [`typecheck_ratchet.py`](backend/scripts/typecheck_ratchet.py), [`audit.yml`](.github/workflows/audit.yml) |
+| Type check with zero pyright errors (no ignores, annotated ORM shapes), weekly dependency audit | [`pyrightconfig.json`](backend/pyrightconfig.json), [`audit.yml`](.github/workflows/audit.yml) |
 | Operations: health and readiness, pipeline alerts, JSON logs with request ids, backups with a restore test | [operations](docs/operations.md) |
 
 ## Architecture

@@ -13,7 +13,7 @@ from .serializers import (
 )
 
 
-def _resolve_season(kind: str, year: int | None) -> tuple[int | None, int | None]:
+def _resolve_season(kind: selectors.Kind, year: int | None) -> tuple[int | None, int | None]:
     """Return (season_id, year); (None, None) when nothing is imported yet."""
     if year is None:
         latest = selectors.latest_position(kind)

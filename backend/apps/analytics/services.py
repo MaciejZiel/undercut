@@ -47,7 +47,7 @@ def parse_gap(value: float | int | str | None) -> tuple[int | None, str]:
     return seconds_to_ms(value), ""
 
 
-def _batches(rows: Iterable[Model], size: int = BATCH_SIZE) -> Iterator[list[Model]]:
+def _batches[M: Model](rows: Iterable[M], size: int = BATCH_SIZE) -> Iterator[list[M]]:
     iterator = iter(rows)
     while batch := list(islice(iterator, size)):
         yield batch

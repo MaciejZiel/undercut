@@ -1,4 +1,9 @@
+from __future__ import annotations
+
+from datetime import datetime
+
 from django.db import models
+from django.db.models.functions import Now
 
 
 class OutboxEvent(models.Model):
@@ -18,7 +23,8 @@ class OutboxEvent(models.Model):
     attempts = models.PositiveSmallIntegerField(default=0)
     # Handlers that already succeeded for this event: a retry runs only the failed ones.
     delivered = models.JSONField(default=list, blank=True)
-    available_at = models.DateTimeField(db_default=models.functions.Now())
+    # Declared explicitly: the stubs would otherwise infer the field's value type from Now().
+    available_at: models.DateTimeField[datetime, datetime] = models.DateTimeField(db_default=Now())
     created_at = models.DateTimeField(auto_now_add=True)
     processed_at = models.DateTimeField(null=True, blank=True)
     last_error = models.TextField(blank=True)

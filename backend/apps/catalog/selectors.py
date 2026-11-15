@@ -18,6 +18,7 @@ import datetime as dt
 from collections import defaultdict
 from datetime import timedelta
 from decimal import Decimal
+from typing import TYPE_CHECKING, cast
 
 from django.db.models import (
     Case,
@@ -51,6 +52,20 @@ from .models import (
     Session,
 )
 from .text import make_search_name
+
+if TYPE_CHECKING:
+    # Rows carrying the attributes added by .annotate(). Django adds them at runtime; the stubs
+    # (without the mypy plugin) cannot see them, so the selectors cast to these typing-only shapes.
+    class CircuitWithCounts(Circuit):
+        gp_count: int
+        last_gp_date: dt.date | None
+
+    class RoundWithSprint(Round):
+        has_sprint: bool
+
+    class SessionWithResults(Session):
+        has_results: bool
+
 
 POLE_QUALIFYING_FROM_YEAR = 1994
 SEARCH_MIN_LENGTH = 2
@@ -493,8 +508,8 @@ def circuit_list(
     return _ordered(queryset, CIRCUIT_ORDERINGS, ordering)
 
 
-def circuit_with_counts(slug: str) -> Circuit | None:
-    return circuit_list().filter(slug=slug).first()
+def circuit_with_counts(slug: str) -> CircuitWithCounts | None:
+    return cast("CircuitWithCounts | None", circuit_list().filter(slug=slug).first())
 
 
 def circuit_winners(circuit: Circuit) -> list[dict]:
@@ -611,13 +626,16 @@ def season_list() -> QuerySet:
 
 
 def season_calendar(season: Season) -> list[dict]:
-    rounds = list(
-        Round.objects.filter(season=season)
-        .select_related("circuit")
-        .annotate(
-            has_sprint=Exists(Session.objects.filter(round=OuterRef("pk"), type=SPRINT)),
-        )
-        .order_by("date", "round")
+    rounds = cast(
+        "list[RoundWithSprint]",
+        list(
+            Round.objects.filter(season=season)
+            .select_related("circuit")
+            .annotate(
+                has_sprint=Exists(Session.objects.filter(round=OuterRef("pk"), type=SPRINT)),
+            )
+            .order_by("date", "round")
+        ),
     )
     winners = {
         r.session.round_id: r
@@ -657,11 +675,14 @@ def season_calendar(season: Season) -> list[dict]:
 
 
 def round_detail(round_: Round) -> dict:
-    sessions = list(
-        round_.sessions.annotate(
-            has_results=Exists(Result.objects.filter(session=OuterRef("pk")))
-            | Exists(QualifyingResult.objects.filter(session=OuterRef("pk")))
-        ).order_by(F("start_utc").asc(nulls_last=True), "type")
+    sessions = cast(
+        "list[SessionWithResults]",
+        list(
+            round_.sessions.annotate(
+                has_results=Exists(Result.objects.filter(session=OuterRef("pk")))
+                | Exists(QualifyingResult.objects.filter(session=OuterRef("pk")))
+            ).order_by(F("start_utc").asc(nulls_last=True), "type")
+        ),
     )
     siblings = Round.objects.filter(season_id=round_.season_id, round__isnull=False)
     previous = siblings.filter(round__lt=round_.round).order_by("-round").first()

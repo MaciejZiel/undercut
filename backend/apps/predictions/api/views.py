@@ -25,7 +25,7 @@ HTTP_STATUS = {
 }
 
 
-class DomainErrorMixin:
+class DomainErrorMixin(APIView):
     """Turn domain errors into {"detail", "code"} responses with the right status."""
 
     def handle_exception(self, exc):
