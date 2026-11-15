@@ -5,7 +5,7 @@ from django.db.models import Q
 class _StandingBase(models.Model):
     """Imported (never computed) championship table after a given round."""
 
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     season_id: int
 
     season = models.ForeignKey("catalog.Season", on_delete=models.CASCADE, related_name="+")
@@ -23,7 +23,7 @@ class _StandingBase(models.Model):
 
 
 class DriverStanding(_StandingBase):
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     driver_id: int
 
     driver = models.ForeignKey("catalog.Driver", on_delete=models.CASCADE, related_name="standings")
@@ -54,7 +54,7 @@ class DriverStanding(_StandingBase):
 
 
 class ConstructorStanding(_StandingBase):
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     constructor_id: int
 
     constructor = models.ForeignKey(

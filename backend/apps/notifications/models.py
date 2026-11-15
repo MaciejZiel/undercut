@@ -11,7 +11,7 @@ def new_unsubscribe_token() -> str:
 class NotificationPref(models.Model):
     """E-mail preferences of one user. Created lazily on first access."""
 
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     user_id: int
 
     user = models.OneToOneField(
@@ -33,7 +33,7 @@ class SentEmail(models.Model):
     """Marker that one e-mail went out: (user, kind, ref) is unique, which makes sending
     exactly-once under at-least-once event delivery. Deleted together with the account."""
 
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     user_id: int
 
     user = models.ForeignKey(

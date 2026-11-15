@@ -36,7 +36,7 @@ class DriverNumberMap(models.Model):
     a row that already exists is never overwritten, so a human fix in the admin sticks.
     """
 
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     driver_id: int
 
     season_year = models.PositiveSmallIntegerField()

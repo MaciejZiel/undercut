@@ -175,7 +175,7 @@ class Driver(models.Model):
 
 
 class Round(models.Model):
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     season_id: int
     circuit_id: int
     sessions: RelatedManager[Session]
@@ -259,7 +259,7 @@ class Session(models.Model):
 
 
 class Result(models.Model):
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     session_id: int
     driver_id: int
     constructor_id: int

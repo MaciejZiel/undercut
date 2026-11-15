@@ -71,7 +71,7 @@ class DriverDetailView(PublicDetailView):
     def get(self, request, slug):
         driver = selectors.driver_list(with_titles=False).filter(slug=slug).first()
         if driver is None:
-            raise Http404
+            raise Http404("No Driver matches the given query.")
         summary = selectors.driver_title_summary(driver)
         data = {
             "slug": driver.slug,
@@ -161,7 +161,7 @@ class CircuitDetailView(PublicDetailView):
     def get(self, request, slug):
         circuit = selectors.circuit_with_counts(slug)
         if circuit is None:
-            raise Http404
+            raise Http404("No Circuit matches the given query.")
         winners = selectors.circuit_winners(circuit)
         record = selectors.circuit_lap_record(circuit)
         length_m, length_is_estimate = selectors.circuit_length(circuit)

@@ -20,7 +20,7 @@ def generate_invite_code() -> str:
 
 
 class Prediction(models.Model):
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     user_id: int | None  # SET_NULL
     round_id: int
     p1_id: int
@@ -71,7 +71,7 @@ class Prediction(models.Model):
 
 
 class League(models.Model):
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     owner_id: int | None  # SET_NULL
     memberships: RelatedManager[LeagueMembership]
 
@@ -101,7 +101,7 @@ class League(models.Model):
 
 
 class LeagueMembership(models.Model):
-    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    # Typing only: attributes Django adds at runtime (checked by tests/test_model_annotations.py).
     league_id: int
     user_id: int
 
