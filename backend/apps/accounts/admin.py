@@ -10,7 +10,7 @@ class AccountUserAdmin(UserAdmin):
     list_filter = (*UserAdmin.list_filter, "email_verified", "is_demo")
     search_fields = (*UserAdmin.search_fields, "display_name")
     fieldsets = (
-        *UserAdmin.fieldsets,
+        *(UserAdmin.fieldsets or ()),
         (
             "Undercut",
             {"fields": ("display_name", "email_verified", "timezone", "theme", "is_demo")},

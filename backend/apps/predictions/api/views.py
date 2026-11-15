@@ -25,18 +25,14 @@ HTTP_STATUS = {
 }
 
 
-class DomainErrorMixin:
-    """Turn domain errors into {"detail", "code"} responses with the right status."""
+class BaseView(APIView):
+    """Turns domain errors into {"detail", "code"} responses with the right status."""
 
     def handle_exception(self, exc):
         if isinstance(exc, errors.PredictionsError):
             http_status = HTTP_STATUS.get(type(exc), 400)
             return Response({"detail": str(exc), "code": exc.code}, status=http_status)
         return super().handle_exception(exc)
-
-
-class BaseView(DomainErrorMixin, APIView):
-    pass
 
 
 ERRORS = {

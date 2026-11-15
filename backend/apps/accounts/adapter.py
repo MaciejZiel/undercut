@@ -1,8 +1,10 @@
 from allauth.account.adapter import DefaultAccountAdapter
 
+from .models import User
+
 
 class AccountAdapter(DefaultAccountAdapter):
-    def save_user(self, request, user, form, commit=True):
+    def save_user(self, request, user: User, form, commit=True):
         # Set the display name before the first INSERT so the unique constraint protects it.
         user.display_name = form.cleaned_data.get("display_name")
         return super().save_user(request, user, form, commit=commit)

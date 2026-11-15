@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING, cast
 
 from django.db import connection
 from django.db.models import F, Min
@@ -15,6 +16,12 @@ from apps.ingestion.models import SyncRun
 
 from .heartbeat import EXPECTED
 from .models import Heartbeat
+
+if TYPE_CHECKING:
+    # A race row with the .annotate()d end time, which the stubs cannot see without a plugin.
+    class EndedSession(Session):
+        ended_at: datetime
+
 
 # Alarm thresholds (check_pipeline and /api/ready/).
 OUTBOX_MAX_PENDING_AGE = timedelta(minutes=30)
@@ -91,13 +98,14 @@ def data_freshness(now: datetime | None = None) -> dict:
     """The latest race that has ended and whether its results are final."""
     now = now or timezone.now()
     ended_at = Coalesce("end_utc", F("start_utc") + ASSUMED_RACE_DURATION)
-    race = (
+    race = cast(
+        "EndedSession | None",
         Session.objects.filter(type=Session.Type.RACE, round__is_cancelled=False)
         .annotate(ended_at=ended_at)
         .filter(ended_at__lte=now)
         .select_related("round", "round__season")
         .order_by("-ended_at", "-id")
-        .first()
+        .first(),
     )
     if race is None:
         return {"latest_race": None}
@@ -115,8 +123,8 @@ def data_freshness(now: datetime | None = None) -> dict:
             "season": race.round.season.year,
             "round": race.round.round,
             "name": race.round.name,
-            "ended_at": _iso(race.ended_at),  # pyright: ignore[reportAttributeAccessIssue]
-            "ended_age_seconds": _seconds(now - race.ended_at),  # pyright: ignore[reportAttributeAccessIssue]
+            "ended_at": _iso(race.ended_at),
+            "ended_age_seconds": _seconds(now - race.ended_at),
             "status": race.status,
             "results_final": final,
             # The first finalization event is the best record of when results became final.

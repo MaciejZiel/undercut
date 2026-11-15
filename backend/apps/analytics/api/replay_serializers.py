@@ -91,7 +91,9 @@ class ReplayEventSerializer(serializers.Serializer):
     )
     t = serializers.FloatField()
     lap = serializers.IntegerField()
-    label = serializers.CharField()
+    # Field.label (the field's own display label) has the same name; the serializer metaclass
+    # moves declared fields off the class, so the explicit type only tells the checker so.
+    label: serializers.CharField = serializers.CharField()
     driver = serializers.CharField(allow_null=True, help_text="Driver code for pit stops.")
     end_t = serializers.FloatField(allow_null=True, help_text="End of SC/VSC periods.")
     end_lap = serializers.IntegerField(allow_null=True)

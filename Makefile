@@ -1,4 +1,4 @@
-.PHONY: up down db test lint backend-dev frontend-dev
+.PHONY: up down db test lint typecheck backend-dev frontend-dev
 
 up:            ## full stack via Docker Compose (http://localhost:8080)
 	docker compose up -d --build
@@ -22,3 +22,6 @@ test:
 lint:
 	cd backend && uv run ruff check . && uv run ruff format --check . && uv run lint-imports
 	cd frontend && npm run lint && npm run typecheck
+
+typecheck:     ## pyright on the backend, same version as CI (zero errors)
+	cd backend && npx --yes pyright@1.1.414

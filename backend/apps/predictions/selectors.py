@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, cast
+
 from django.db.models import Count, F, IntegerField, Min, Q, Sum
 from django.db.models.fields.json import KT
 from django.db.models.functions import Cast, Coalesce
@@ -10,6 +12,12 @@ from apps.catalog import selectors as catalog
 
 from . import config, locking
 from .models import League, LeagueMembership, Prediction
+
+if TYPE_CHECKING:
+    # A league row with the .annotate() count, which the stubs cannot see without the mypy plugin.
+    class LeagueWithCount(League):
+        member_count: int
+
 
 DELETED_USER = "Deleted user"
 SLOTS = ("p1", "p2", "p3", "pole", "fastest_lap")
@@ -173,7 +181,10 @@ def leaderboard(
 
 def my_leagues(user) -> list[dict]:
     mine = LeagueMembership.objects.filter(user=user).values("league_id")
-    leagues = League.objects.filter(id__in=mine).annotate(member_count=Count("memberships"))
+    leagues = cast(
+        "list[LeagueWithCount]",
+        list(League.objects.filter(id__in=mine).annotate(member_count=Count("memberships"))),
+    )
     return [
         {
             "name": league.name,
