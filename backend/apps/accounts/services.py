@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from typing import Literal
 
 from allauth.account.models import EmailAddress
-from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
@@ -16,11 +15,10 @@ from apps.events.publisher import publish
 from apps.notifications import services as notifications
 
 from . import exports
-from .models import Favorite
+from .models import Favorite, User
 from .validators import validate_display_name, validate_timezone
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
 
 register_export_provider = exports.register_export_provider
 

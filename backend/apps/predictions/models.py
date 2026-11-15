@@ -1,10 +1,16 @@
+from __future__ import annotations
+
 import secrets
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.db import models
 from django.db.models import F, Q
 
 from . import config
+
+if TYPE_CHECKING:
+    from django.db.models.fields.related_descriptors import RelatedManager
 
 
 def generate_invite_code() -> str:
@@ -14,6 +20,15 @@ def generate_invite_code() -> str:
 
 
 class Prediction(models.Model):
+    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    user_id: int | None  # SET_NULL
+    round_id: int
+    p1_id: int
+    p2_id: int
+    p3_id: int
+    pole_id: int
+    fastest_lap_id: int
+
     # SET_NULL keeps the pick (and its points) when the account is deleted; shown as
     # "Deleted user".
     user = models.ForeignKey(
@@ -56,6 +71,10 @@ class Prediction(models.Model):
 
 
 class League(models.Model):
+    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    owner_id: int | None  # SET_NULL
+    memberships: RelatedManager[LeagueMembership]
+
     name = models.CharField(max_length=60)
     # SET_NULL: a deleted owner leaves the league running without an owner.
     owner = models.ForeignKey(
@@ -82,6 +101,10 @@ class League(models.Model):
 
 
 class LeagueMembership(models.Model):
+    # For the type checker only: Django adds these at runtime (foreign key ids, reverse managers).
+    league_id: int
+    user_id: int
+
     league = models.ForeignKey(League, on_delete=models.CASCADE, related_name="memberships")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="league_memberships"

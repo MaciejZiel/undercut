@@ -1,5 +1,6 @@
 """Thin read-only views: validate input, call a selector, serialise."""
 
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -12,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .. import selectors
-from ..models import Circuit, Constructor, Driver, Round, Season, Session
+from ..models import Constructor, Round, Season, Session
 from . import filters, serializers
 from .pagination import CatalogPagination
 
@@ -70,7 +71,7 @@ class DriverDetailView(PublicDetailView):
     def get(self, request, slug):
         driver = selectors.driver_list(with_titles=False).filter(slug=slug).first()
         if driver is None:
-            get_object_or_404(Driver, slug=slug)  # raises the 404
+            raise Http404
         summary = selectors.driver_title_summary(driver)
         data = {
             "slug": driver.slug,
@@ -160,7 +161,7 @@ class CircuitDetailView(PublicDetailView):
     def get(self, request, slug):
         circuit = selectors.circuit_with_counts(slug)
         if circuit is None:
-            get_object_or_404(Circuit, slug=slug)  # raises the 404
+            raise Http404
         winners = selectors.circuit_winners(circuit)
         record = selectors.circuit_lap_record(circuit)
         length_m, length_is_estimate = selectors.circuit_length(circuit)
