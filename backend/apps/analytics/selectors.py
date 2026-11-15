@@ -26,7 +26,7 @@ from .models import Lap, PitStop, PositionSample, RaceControlMessage, Stint, Wea
 ANALYTICS_FROM_YEAR = 2023
 WEATHER_MAX_POINTS = 120
 
-COMPOUND_LETTERS = {
+COMPOUND_LETTERS: dict[str, str] = {
     Stint.Compound.SOFT: "S",
     Stint.Compound.MEDIUM: "M",
     Stint.Compound.HARD: "H",
@@ -348,7 +348,7 @@ def laps(header: SessionHeader, driver_codes: list[str], hide_slow: bool) -> dic
 
 
 def compound_letter(compound: str) -> str:
-    return COMPOUND_LETTERS.get(compound, "?")  # type: ignore[arg-type]
+    return COMPOUND_LETTERS.get(compound, "?")
 
 
 def _driver_stints(rows: list[tuple], last_lap: int | None) -> list[dict[str, Any]]:
