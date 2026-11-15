@@ -1,6 +1,11 @@
-# braces is only pulled in by development tooling (glob matching in the lint and test chain), never
-# shipped to users, and the advisory has no fixed release yet. Re-check by the date below.
+# Advisories that osv-scanner should not fail on. Every entry is dev-only tooling that never ships
+# to users, has no fixed release inside the range its parent accepts, and expires on a date so it
+# gets looked at again.
+
+# minimatch 10.x is pulled in by @typescript-eslint/typescript-estree (^10.2.2) for the lint run.
+# The ReDoS needs an attacker-controlled glob pattern; ours come from the repository's own config.
+# The fix is only in 11.0.1, outside the range typescript-eslint accepts.
 [[IgnoredVulns]]
-id = "GHSA-vfj7-8cjw-p6xm"
-ignoreUntil = 2027-01-15
-reason = "dev-only transitive dependency, no fixed version available"
+id = "GHSA-g3hv-75wg-m249"
+ignoreUntil = 2027-02-15
+reason = "dev-only (eslint/typescript-estree), patterns are not user input, fix only in a new major"
