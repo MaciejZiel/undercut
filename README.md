@@ -1,39 +1,74 @@
 # Undercut
 
-Formula 1 stats, race analytics and a podium prediction game, on real data from 1950 onwards.
-Unofficial fan project, not affiliated with Formula One Group or the FIA. Non-commercial: no ads,
-no payments.
+[![CI](https://github.com/MaciejZiel/undercut/actions/workflows/ci.yml/badge.svg)](https://github.com/MaciejZiel/undercut/actions/workflows/ci.yml)
+[![E2E](https://github.com/MaciejZiel/undercut/actions/workflows/e2e.yml/badge.svg)](https://github.com/MaciejZiel/undercut/actions/workflows/e2e.yml)
+[![Audit](https://github.com/MaciejZiel/undercut/actions/workflows/audit.yml/badge.svg)](https://github.com/MaciejZiel/undercut/actions/workflows/audit.yml)
 
-Live: https://undercut.maciejzielinski.dev (deployment in progress)
+**Formula 1 since 1950: stats, lap-by-lap race analysis, race replay and a podium prediction
+game.** A Django modular monolith with an event-driven pipeline (PostgreSQL transactional
+outbox, no broker) and a Next.js frontend, self-hosted and updating itself after every session.
 
-## What it does
+**Live: <https://undercut.maciejzielinski.dev>** ("Try the demo without registering" on the login page)
 
-- **Catalog and history:** every season since 1950, rounds, circuits, drivers, constructors and
-  results, with the constructor recorded on race day. Championship tables per round, a points
-  progression chart, title statistics.
-- **Race analytics (2023 onwards):** lap-by-lap positions, lap times with slow-lap filtering,
-  tyre strategy, pit stops with a team ranking, weather and race control messages.
-- **Replay:** play a race back from stored data with a timeline, speeds up to 60x and event markers.
-- **Accounts and predictions:** registration with e-mail verification, favourites, podium
-  predictions locked on the server at qualifying start, automatic scoring, global and private
-  league leaderboards, an e-mail after each race (opt-in).
-- **Self-updating:** results, standings and corrections are synced after every session by an
-  event-driven pipeline; the frontend cache is purged precisely when data changes.
+![Race weekend page: countdown, session times and the circuit](docs/img/home.png)
 
-## Architecture in one minute
+## What is worth a look (for engineers)
 
-A Django **modular monolith** (catalog, ingestion, standings, analytics, accounts, predictions,
-notifications, webcache) plus a Next.js frontend. Modules never import each other's models:
-they call small public interfaces and react to **events** stored in a PostgreSQL **transactional
-outbox** (same transaction as the data change, per-handler retries, no broker).
-See [docs/architecture.md](docs/architecture.md) and the decisions in [docs/adr](docs/adr).
+| | Where |
+|---|---|
+| Modules that cannot import each other's models, enforced in CI by import-linter | [`pyproject.toml`](backend/pyproject.toml), [architecture](docs/architecture.md) |
+| Transactional outbox: events written in the same transaction as the data, per-handler delivery and retries, `SKIP LOCKED` worker, idempotent handlers | [`apps/events`](backend/apps/events), [ADR 003](docs/adr/003-transactional-outbox.md), [event catalog](docs/events.md) |
+| Exactly-once post-race e-mail on top of at-least-once delivery | [`notifications/handlers.py`](backend/apps/notifications/handlers.py) |
+| Predictions locked server-side at qualifying start, scoring as a pure function, recomputed after corrections | [`apps/predictions`](backend/apps/predictions) |
+| ~930 backend tests on real PostgreSQL, 90% coverage gate, query-count tests and an N+1 gate (pytest-queryguard) | [testing](docs/testing.md), [N+1 write-up](docs/n-plus-one.md) |
+| Playwright end-to-end tests against the full Docker Compose stack in GitHub Actions | [`e2e/`](e2e), [`e2e.yml`](.github/workflows/e2e.yml) |
+| Type-check ratchet (pyright error count may only go down), weekly dependency audit | [`typecheck_ratchet.py`](backend/scripts/typecheck_ratchet.py), [`audit.yml`](.github/workflows/audit.yml) |
+| Operations: health and readiness, pipeline alerts, JSON logs with request ids, backups with a restore test | [operations](docs/operations.md) |
+
+## Architecture
+
+```mermaid
+flowchart LR
+    browser([Browser]) --> proxy[nginx / Caddy<br/>one origin]
+    proxy -->|pages| web[Next.js<br/>SSR + tagged cache]
+    proxy -->|/api| api[Django + DRF]
+    web --> api
+    api --> db[(PostgreSQL<br/>data + outbox)]
+    scheduler[Scheduler] -->|due events| db
+    worker[Outbox worker] -->|claim, SKIP LOCKED| db
+    worker -->|results, standings| jolpica[(Jolpica-F1)]
+    worker -->|laps, stints, positions| openf1[(OpenF1)]
+    worker -->|purge cache tags| web
+```
+
+One Django code base runs as three processes (API, outbox worker, scheduler). Modules
+(`catalog`, `ingestion`, `standings`, `analytics`, `accounts`, `predictions`, `notifications`,
+`webcache`) talk only through small public interfaces and events. After a race the chain is:
+scheduler publishes `SessionResultsDue` → ingestion fetches results and publishes
+`SessionResultsFinalized` in the same transaction → standings, prediction scoring, the post-race
+e-mail and precise frontend cache purges follow. Details: [docs/architecture.md](docs/architecture.md),
+decisions: [docs/adr](docs/adr).
 
 | Layer | Choice |
 |---|---|
-| Backend | Django 6, DRF, drf-spectacular (OpenAPI), django-allauth headless (sessions) |
+| Backend | Python 3.13, Django 6, DRF, drf-spectacular (OpenAPI), django-allauth headless (sessions) |
 | Frontend | Next.js (App Router), TypeScript, Tailwind, TanStack Query, ECharts |
-| Data | PostgreSQL 16 only (unaccent, trigram, JSONB, `SKIP LOCKED`) |
-| Quality | pytest + factory_boy on real PostgreSQL, import-linter module contracts, ruff, Vitest, GitHub Actions |
+| Data | PostgreSQL 16+ only (unaccent, trigram, JSONB, `SKIP LOCKED`) |
+| Quality | pytest + factory_boy, pytest-queryguard, import-linter, ruff, pyright, Vitest, Playwright, GitHub Actions |
+
+## Features
+
+- **Catalog and history:** every season since 1950, rounds, circuits, drivers, constructors and
+  results, with the constructor recorded on race day. Championship tables per round, points
+  progression, title statistics, head to head.
+- **Race analysis (2023 onwards):** lap-by-lap positions, lap times with slow-lap filtering, tyre
+  strategy, pit stops, weather and race control messages.
+- **Replay:** play a race back from stored data with a timeline and event markers.
+- **Accounts and predictions:** e-mail sign-in (Google optional), favourites, podium predictions locked at
+  qualifying start, automatic scoring, global and private league leaderboards, post-race e-mail.
+- **Self-updating:** results, standings and corrections are synced after every session.
+
+![Lap-by-lap positions of the 2025 British Grand Prix with safety car periods](docs/img/race-positions.png)
 
 ## Run it
 
@@ -58,10 +93,11 @@ uv run python manage.py migrate
 uv run python manage.py import_history --download
 ```
 
-Tests (run files or folders one at a time on small machines):
+Tests and checks (backend tests need PostgreSQL, e.g. from `make db`):
 
 ```bash
 cd backend && uv run pytest tests/catalog -q
+make lint
 cd frontend && npm test
 ```
 
@@ -70,7 +106,8 @@ cd frontend && npm test
 Results and standings: [Jolpica-F1](https://github.com/jolpica/jolpica-f1) (CC BY-NC-SA 4.0).
 Lap, stint, pit stop, position and weather data: [OpenF1](https://openf1.org). Both are
 community projects used here for non-commercial purposes; any derived data dump must keep the
-same terms. No official logos or driver photos are used.
+same terms. No official logos or driver photos are used. Unofficial fan project, not affiliated
+with Formula One Group or the FIA. No ads, no payments.
 
 ## Self-hosting
 
@@ -78,9 +115,8 @@ Production runs on a self-hosted home server without Docker: PostgreSQL, gunicor
 worker, the scheduler and the Next.js server as plain processes under restart loops, behind
 nginx and a Cloudflare Tunnel. Start scripts, an env example, nginx snippets and a
 deploy/update/rollback runbook are in [deploy/termux/](deploy/termux/README.md).
-`psycopg[c]` replaces `psycopg[binary]` on that platform (handled by `install.sh`).
 
 ## Project status
 
-See [docs/PLAN.md](docs/PLAN.md) for the plan, [docs/events.md](docs/events.md) for the event
-catalog.
+Feature-complete for a season of use; see [docs/PLAN.md](docs/PLAN.md) for the plan and status,
+and [docs/audit-2026-11.md](docs/audit-2026-11.md) for the latest self-review and what is next.
